@@ -1,0 +1,17 @@
+# Node
+node_modules
+dist
+.output
+
+# Editor
+.idea/
+.vscode/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# OS junk
+.DS_Store
+Thumbs.db
