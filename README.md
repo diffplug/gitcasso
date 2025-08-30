@@ -10,3 +10,8 @@ TODO: screenshot of GitHub comment syntax highlighting
 TODO: screenshot of comment draft storage and restoration
 
 If there's something you'd like to add or fix, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Special thanks to:
+- [overtype](https://github.com/panphora/overtype) for the trick which makes syntax highlighting possible
+- [shiki](https://github.com/shikijs/shiki) for the broad library of syntax highlighters
+- [Yukai Huang](https://github.com/Yukaii) for [the PRs](https://github.com/panphora/overtype/issues?q=is%3Apr+author%3AYukaii) which made the two work together

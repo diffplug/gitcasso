@@ -1,0 +1,78 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "useSortedKeys": "on"
+      }
+    },
+    "enabled": true
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [".*", "src/**", "tests/**"]
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": {
+      "arrowParentheses": "always",
+      "attributePosition": "auto",
+      "bracketSameLine": false,
+      "bracketSpacing": true,
+      "jsxQuoteStyle": "single",
+      "quoteProperties": "asNeeded",
+      "quoteStyle": "single",
+      "semicolons": "asNeeded",
+      "trailingCommas": "all"
+    }
+  },
+  "json": {
+    "formatter": {
+      "trailingCommas": "none"
+    }
+  },
+  "linter": {
+    "rules": {
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "warn"
+      },
+      "correctness": {
+        "noUnusedVariables": "error",
+        "useValidTypeof": "error"
+      },
+      "recommended": true,
+      "style": {
+        "noDefaultExport": "off",
+        "noNonNullAssertion": "warn",
+        "noParameterAssign": {
+          "options": {
+            "propertyAssignment": "deny"
+          }
+        },
+        "useConst": "error",
+        "useTemplate": "error"
+      },
+      "suspicious": {
+        "noConsole": {
+          "options": {
+            "allow": ["assert", "error", "info", "warn"]
+          }
+        },
+        "noExplicitAny": "error",
+        "noVar": "error"
+      }
+    }
+  },
+  "vcs": {
+    "clientKind": "git",
+    "enabled": false,
+    "useIgnoreFile": true
+  }
+}

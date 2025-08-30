@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "alwaysStrict": true,
+    "declaration": false,
+
+    // Module resolution
+    "esModuleInterop": true,
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "preserve",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "moduleResolution": "bundler",
+
+    // Emit
+    "noEmit": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedIndexedAccess": true,
+
+    // Additional checks
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+
+    // Skip type checking of declaration files
+    "skipLibCheck": true,
+    "sourceMap": true,
+    // Stricter type checking
+    "strict": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+
+    // Language and Environment
+    "target": "ES2022"
+  },
+  "exclude": ["node_modules", ".output", "dist"],
+  "extends": "./.wxt/tsconfig.json",
+  "include": ["src/entrypoints/**/*", "*.config.ts", ".wxt/wxt.d.ts", "tests/**/*"]
+}
