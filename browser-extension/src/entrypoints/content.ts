@@ -1,12 +1,13 @@
 import { CONFIG } from './content/config'
 import { logger } from './content/logger'
 import { injectStyles } from './content/styles'
+import OverType from 'overtype'
 
 export default defineContentScript({
   main() {
     const textAreasOnPageLoad = document.querySelectorAll<HTMLTextAreaElement>(`textarea`)
     for (const textarea of textAreasOnPageLoad) {
-      initializeMaybe(textarea)
+      initializeTextArea(textarea)
     }
     const observer = new MutationObserver(handleMutations)
     observer.observe(document.body, {
@@ -25,19 +26,16 @@ function handleMutations(mutations: MutationRecord[]): void {
       if (node.nodeType === Node.ELEMENT_NODE) {
         const element = node as Element
         if (element.tagName === 'textarea') {
-          initializeMaybe(element as HTMLTextAreaElement)
+          initializeTextArea(element as HTMLTextAreaElement)
         }
       }
     }
   }
 }
 
-function initializeMaybe(textarea: HTMLTextAreaElement) {
-  if (!textarea.classList.contains(CONFIG.ADDED_OVERTYPE_CLASS)) {
-    logger.debug('activating textarea {}', textarea)
-    injectStyles()
-    textarea.classList.add(CONFIG.ADDED_OVERTYPE_CLASS)
-  } else {
-    logger.debug('already activated textarea {}', textarea)
-  }
+function initializeTextArea(textarea: HTMLTextAreaElement) {
+  logger.debug('activating textarea {}', textarea)  
+  const overtype = new OverType(textarea)[0]
+  logger.debug('overtype initialized {}', overtype)
+  overtype.setValue("Testing 1, 2, 3")
 }
