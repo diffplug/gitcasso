@@ -1,5 +1,12 @@
-# Gitcasso
+# <img align="left" src="browser-extension/public/icons/icon-48.png"> Gitcasso
 
-Browser extension which adds syntax highlighting to the `Write` view when you're commenting on issues and pull requests in GitHub, GitLab, and more!
+*Syntax highlighting and autosave for comments on GitHub (and other other markdown-friendly places).*
+
+- "Syntax highlighting is the lie that enables us to see the truth."
+- "The meaning of life is to find your lost comment drafts. The purpose of life is to post them."
+
+TODO: screenshot of GitHub comment syntax highlighting
+
+TODO: screenshot of comment draft storage and restoration
 
 If there's something you'd like to add or fix, see [CONTRIBUTING.md](CONTRIBUTING.md).
