@@ -34,8 +34,8 @@ function handleMutations(mutations: MutationRecord[]): void {
 }
 
 function initializeTextArea(textarea: HTMLTextAreaElement) {
-  logger.debug('activating textarea {}', textarea)  
+  logger.debug('activating textarea {}', textarea)
   const overtype = new OverType(textarea)[0]
   logger.debug('overtype initialized {}', overtype)
-  overtype.setValue("Testing 1, 2, 3")
+  overtype.setValue('Testing 1, 2, 3')
 }
