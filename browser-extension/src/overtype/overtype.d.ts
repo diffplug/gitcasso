@@ -1,5 +1,5 @@
 interface OverTypeOptions {
-  fontSize?: number;
+  fontSize?: string;
   lineHeight?: number;
   fontFamily?: string;
   theme?: string | ThemeObject;
@@ -9,6 +9,7 @@ interface OverTypeOptions {
   autoResize?: boolean;
   minHeight?: string;
   maxHeight?: string;
+  padding?: string;
   toolbar?: boolean;
   onChange?: (value: string) => void;
   onKeydown?: (event: KeyboardEvent) => void;
@@ -28,7 +29,7 @@ class OverType {
   setValue(value: string): void;
   getRenderedHTML(processContent?: boolean): string;
   getPreviewHTML(): string;
-  setTheme(theme: string | ThemeObject): void;
+  static setTheme(theme: string | ThemeObject): void;
   showStats(show: boolean): void;
   showPlainTextarea(show: boolean): void;
   showPreviewMode(show: boolean): void;
