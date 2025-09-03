@@ -11,7 +11,7 @@ import { themeToCSSVars } from "./themes.js";
  * @returns {string} Complete CSS string
  */
 export function generateStyles(options = {}) {
-  const {
+  let {
     fontSize = "14px",
     lineHeight = 1.6,
     /* System-first, guaranteed monospaced; avoids Android 'ui-monospace' pitfalls */
@@ -20,6 +20,9 @@ export function generateStyles(options = {}) {
     theme = null,
     mobile = {},
   } = options;
+
+  fontFamily = "inherit !important"
+  fontSize = "var(--text-body-size-medium) !important"
 
   // Generate mobile overrides
   const mobileStyles =
@@ -48,9 +51,9 @@ export function generateStyles(options = {}) {
     /* Middle-ground CSS Reset - Prevent parent styles from leaking in */
     .overtype-container * {
       /* Box model - these commonly leak */
-      margin: 0 !important;
+      /* margin: 0 !important; */
       padding: 0 !important;
-      border: 0 !important;
+      /* border: 0 !important; */
       
       /* Layout - these can break our layout */
       /* Don't reset position - it breaks dropdowns */
@@ -111,7 +114,7 @@ export function generateStyles(options = {}) {
     
     .overtype-wrapper {
       position: relative !important; /* Override reset - needed for absolute children */
-      width: 100% !important;
+      /* width: 100% !important; */
       height: 100% !important; /* Take full height of grid cell */
       min-height: 60px !important; /* Minimum usable height */
       overflow: hidden !important;
@@ -265,7 +268,7 @@ export function generateStyles(options = {}) {
 
     /* Markdown element styling - NO SIZE CHANGES */
     .overtype-wrapper .overtype-preview .header {
-      font-weight: bold !important;
+      font-weight: normal !important;
     }
 
     /* Header colors */
@@ -284,7 +287,7 @@ export function generateStyles(options = {}) {
     .overtype-wrapper .overtype-preview h2,
     .overtype-wrapper .overtype-preview h3 {
       font-size: inherit !important;
-      font-weight: bold !important;
+      font-weight: normal !important;
       margin: 0 !important;
       padding: 0 !important;
       display: inline !important;
@@ -321,7 +324,7 @@ export function generateStyles(options = {}) {
     /* Bold text */
     .overtype-wrapper .overtype-preview strong {
       color: var(--strong, #ee964b) !important;
-      font-weight: bold !important;
+      font-weight: normal !important;
     }
 
     /* Italic text */
