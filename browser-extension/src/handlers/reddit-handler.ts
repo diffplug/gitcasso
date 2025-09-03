@@ -24,6 +24,22 @@ export class RedditHandler extends BaseTextareaHandler<RedditContext> {
     ];
   }
 
+  identifyContextOf(textarea: HTMLTextAreaElement): TextareaInfo<RedditContext> | null {
+    // Only handle Reddit domains
+    if (!window.location.hostname.includes('reddit')) {
+      return null;
+    }
+
+    const type = this.determineType(textarea);
+    const context = this.extractContext(textarea);
+    
+    if (type && context) {
+      return { element: textarea, type, context };
+    }
+    
+    return null;
+  }
+
   identify(): TextareaInfo<RedditContext>[] {
     const textareas = document.querySelectorAll<HTMLTextAreaElement>('textarea');
     const results: TextareaInfo<RedditContext>[] = [];

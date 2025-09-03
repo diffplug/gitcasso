@@ -48,11 +48,13 @@ function initializeMaybe(textarea: HTMLTextAreaElement) {
     injectStyles()
     textarea.classList.add(CONFIG.ADDED_OVERTYPE_CLASS)
     
-    // Use registry to identify and handle this textarea
-    const textareaInfos = registry.identifyAll().filter(info => info.element === textarea)
-    for (const info of textareaInfos) {
-      logger.debug('Identified textarea:', info.type, info.context.unique_key)
+    // Use registry to identify and handle this specific textarea
+    const textareaInfo = registry.identifyTextarea(textarea)
+    if (textareaInfo) {
+      logger.debug('Identified textarea:', textareaInfo.type, textareaInfo.context.unique_key)
       // TODO: Set up textarea monitoring and draft saving
+    } else {
+      logger.debug('No handler found for textarea')
     }
   } else {
     logger.debug('already activated textarea {}', textarea)

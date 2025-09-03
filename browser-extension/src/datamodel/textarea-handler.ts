@@ -12,6 +12,8 @@ export interface TextareaInfo<T extends CommentContext = CommentContext> {
 export interface TextareaHandler<T extends CommentContext = CommentContext> {
   // Handler metadata
   forCommentTypes(): string[];
+  // whenever a new `textarea` is added to any webpage, this method is called to try to find a handler for it
+  identifyContextOf(textarea: HTMLTextAreaElement): TextareaInfo | null;
   
   // Content script functionality
   identify(): TextareaInfo<T>[];
@@ -37,6 +39,7 @@ export abstract class BaseTextareaHandler<T extends CommentContext = CommentCont
   }
   
   abstract forCommentTypes(): string[];
+  abstract identifyContextOf(textarea: HTMLTextAreaElement): TextareaInfo<T> | null;
   abstract identify(): TextareaInfo<T>[];
   abstract extractContext(textarea: HTMLTextAreaElement): T | null;
   abstract determineType(textarea: HTMLTextAreaElement): string | null;

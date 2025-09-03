@@ -24,6 +24,20 @@ export class HandlerRegistry {
     return null;
   }
 
+  identifyTextarea(textarea: HTMLTextAreaElement): TextareaInfo<any> | null {
+    for (const handler of this.handlers) {
+      try {
+        const result = handler.identifyContextOf(textarea);
+        if (result) {
+          return result;
+        }
+      } catch (error) {
+        console.warn('Handler failed to identify textarea:', error);
+      }
+    }
+    return null;
+  }
+
   identifyAll(): TextareaInfo<any>[] {
     const allTextareas: TextareaInfo<any>[] = [];
     
