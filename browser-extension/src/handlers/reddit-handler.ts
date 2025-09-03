@@ -1,4 +1,4 @@
-import { CommentContext, BaseTextareaHandler, TextareaInfo } from '../datamodel/textarea-handler';
+import { CommentContext, TextareaHandler, TextareaInfo } from '../datamodel/textarea-handler';
 
 export type RedditCommentType = 
   | 'REDDIT_POST_NEW'
@@ -11,10 +11,7 @@ export interface RedditContext extends CommentContext {
   commentId?: string | undefined; // for editing existing comments
 }
 
-export class RedditHandler extends BaseTextareaHandler<RedditContext> {
-  constructor() {
-    super('reddit.com');
-  }
+export class RedditHandler implements TextareaHandler<RedditContext> {
 
   forCommentTypes(): string[] {
     return [
