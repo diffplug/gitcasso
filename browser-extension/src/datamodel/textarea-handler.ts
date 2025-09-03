@@ -29,6 +29,9 @@ export interface TextareaInfo<T extends CommentContext = CommentContext> {
 }
 
 export interface TextareaHandler<T extends CommentContext = CommentContext> {
+  // Handler metadata
+  forCommentTypes(): CommentType[];
+  
   // Content script functionality
   identify(): TextareaInfo<T>[];
   readContent(textarea: HTMLTextAreaElement): string;
@@ -52,6 +55,7 @@ export abstract class BaseTextareaHandler<T extends CommentContext = CommentCont
     this.domain = domain;
   }
   
+  abstract forCommentTypes(): CommentType[];
   abstract identify(): TextareaInfo<T>[];
   abstract extractContext(textarea: HTMLTextAreaElement): T | null;
   abstract determineType(textarea: HTMLTextAreaElement): CommentType | null;
