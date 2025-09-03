@@ -49,21 +49,6 @@ export class GitHubHandler extends BaseTextareaHandler<GitHubContext> {
     return null;
   }
 
-  identify(): TextareaInfo<GitHubContext>[] {
-    const textareas = document.querySelectorAll<HTMLTextAreaElement>('textarea');
-    const results: TextareaInfo<GitHubContext>[] = [];
-
-    for (const textarea of textareas) {
-      const type = this.determineType(textarea);
-      const context = this.extractContext(textarea);
-      
-      if (type && context) {
-        results.push({ element: textarea, type, context });
-      }
-    }
-
-    return results;
-  }
 
   extractContext(textarea: HTMLTextAreaElement): GitHubContext | null {
     const pathname = window.location.pathname;

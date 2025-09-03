@@ -40,21 +40,6 @@ export class RedditHandler extends BaseTextareaHandler<RedditContext> {
     return null;
   }
 
-  identify(): TextareaInfo<RedditContext>[] {
-    const textareas = document.querySelectorAll<HTMLTextAreaElement>('textarea');
-    const results: TextareaInfo<RedditContext>[] = [];
-
-    for (const textarea of textareas) {
-      const type = this.determineType(textarea);
-      const context = this.extractContext(textarea);
-      
-      if (type && context) {
-        results.push({ element: textarea, type, context });
-      }
-    }
-
-    return results;
-  }
 
   extractContext(textarea: HTMLTextAreaElement): RedditContext | null {
     const pathname = window.location.pathname;

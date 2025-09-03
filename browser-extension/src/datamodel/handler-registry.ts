@@ -38,20 +38,6 @@ export class HandlerRegistry {
     return null;
   }
 
-  identifyAll(): TextareaInfo<any>[] {
-    const allTextareas: TextareaInfo<any>[] = [];
-    
-    for (const handler of this.handlers) {
-      try {
-        const textareas = handler.identify();
-        allTextareas.push(...textareas);
-      } catch (error) {
-        console.warn('Handler failed to identify textareas:', error);
-      }
-    }
-    
-    return allTextareas;
-  }
 
   getAllHandlers(): TextareaHandler<any>[] {
     return Array.from(this.handlers);
