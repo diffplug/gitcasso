@@ -2,6 +2,10 @@ import OverType from "../overtype/overtype";
 
 export default defineContentScript({
   main() {
+    if (window.location.hostname !== "github.com") {
+      return;
+    }
+    
     const ghCommentBox = document.getElementById("new_comment_field") as
       | HTMLTextAreaElement
       | undefined;
