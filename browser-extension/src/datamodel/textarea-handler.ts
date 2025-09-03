@@ -1,22 +1,3 @@
-export type CommentType = 
-  | 'GH_ISSUE_NEW'
-  | 'GH_PR_NEW' 
-  | 'GH_ISSUE_ADD_COMMENT'
-  | 'GH_ISSUE_EDIT_COMMENT'
-  | 'GH_PR_ADD_COMMENT'
-  | 'GH_PR_EDIT_COMMENT'
-  | 'GH_PR_CODE_COMMENT'
-  | 'REDDIT_POST_NEW'
-  | 'REDDIT_COMMENT_NEW'
-  | 'REDDIT_COMMENT_EDIT'
-  | 'GL_ISSUE_NEW'
-  | 'GL_MR_NEW'
-  | 'GL_ISSUE_ADD_COMMENT'
-  | 'GL_MR_ADD_COMMENT'
-  | 'BB_ISSUE_NEW'
-  | 'BB_PR_NEW'
-  | 'BB_ISSUE_ADD_COMMENT'
-  | 'BB_PR_ADD_COMMENT';
 
 export interface CommentContext {
   unique_key: string;
@@ -24,13 +5,13 @@ export interface CommentContext {
 
 export interface TextareaInfo<T extends CommentContext = CommentContext> {
   element: HTMLTextAreaElement;
-  type: CommentType;
+  type: string;
   context: T;
 }
 
 export interface TextareaHandler<T extends CommentContext = CommentContext> {
   // Handler metadata
-  forCommentTypes(): CommentType[];
+  forCommentTypes(): string[];
   
   // Content script functionality
   identify(): TextareaInfo<T>[];
@@ -40,11 +21,11 @@ export interface TextareaHandler<T extends CommentContext = CommentContext> {
   
   // Context extraction
   extractContext(textarea: HTMLTextAreaElement): T | null;
-  determineType(textarea: HTMLTextAreaElement): CommentType | null;
+  determineType(textarea: HTMLTextAreaElement): string | null;
   
   // Popup functionality helpers
   generateDisplayTitle(context: T): string;
-  generateIcon(type: CommentType): string;
+  generateIcon(type: string): string;
   buildUrl(context: T, withDraft?: boolean): string;
 }
 
@@ -55,12 +36,12 @@ export abstract class BaseTextareaHandler<T extends CommentContext = CommentCont
     this.domain = domain;
   }
   
-  abstract forCommentTypes(): CommentType[];
+  abstract forCommentTypes(): string[];
   abstract identify(): TextareaInfo<T>[];
   abstract extractContext(textarea: HTMLTextAreaElement): T | null;
-  abstract determineType(textarea: HTMLTextAreaElement): CommentType | null;
+  abstract determineType(textarea: HTMLTextAreaElement): string | null;
   abstract generateDisplayTitle(context: T): string;
-  abstract generateIcon(type: CommentType): string;
+  abstract generateIcon(type: string): string;
   abstract buildUrl(context: T, withDraft?: boolean): string;
   
   readContent(textarea: HTMLTextAreaElement): string {

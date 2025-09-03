@@ -1,4 +1,4 @@
-import { CommentType, CommentContext, TextareaHandler, TextareaInfo } from './textarea-handler';
+import { CommentContext, TextareaHandler, TextareaInfo } from './textarea-handler';
 import { GitHubHandler } from '../handlers/github-handler';
 import { RedditHandler } from '../handlers/reddit-handler';
 
@@ -15,7 +15,7 @@ export class HandlerRegistry {
     this.handlers.add(handler);
   }
 
-  getHandlerForType(type: CommentType): TextareaHandler<any> | null {
+  getHandlerForType(type: string): TextareaHandler<any> | null {
     for (const handler of this.handlers) {
       if (handler.forCommentTypes().includes(type)) {
         return handler;
@@ -43,7 +43,7 @@ export class HandlerRegistry {
     return Array.from(this.handlers);
   }
 
-  getCommentTypesForHandler(handler: TextareaHandler<any>): CommentType[] {
+  getCommentTypesForHandler(handler: TextareaHandler<any>): string[] {
     return handler.forCommentTypes();
   }
 }

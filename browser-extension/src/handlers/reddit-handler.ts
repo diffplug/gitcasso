@@ -1,9 +1,14 @@
-import { CommentType, CommentContext, BaseTextareaHandler, TextareaInfo } from '../datamodel/textarea-handler';
+import { CommentContext, BaseTextareaHandler, TextareaInfo } from '../datamodel/textarea-handler';
+
+export type RedditCommentType = 
+  | 'REDDIT_POST_NEW'
+  | 'REDDIT_COMMENT_NEW'
+  | 'REDDIT_COMMENT_EDIT';
 
 export interface RedditContext extends CommentContext {
   subreddit: string;
-  postId?: string;
-  commentId?: string; // for editing existing comments
+  postId?: string | undefined;
+  commentId?: string | undefined; // for editing existing comments
 }
 
 export class RedditHandler extends BaseTextareaHandler<RedditContext> {
@@ -11,7 +16,7 @@ export class RedditHandler extends BaseTextareaHandler<RedditContext> {
     super('reddit.com');
   }
 
-  forCommentTypes(): CommentType[] {
+  forCommentTypes(): string[] {
     return [
       'REDDIT_POST_NEW',
       'REDDIT_COMMENT_NEW',
@@ -43,7 +48,7 @@ export class RedditHandler extends BaseTextareaHandler<RedditContext> {
     const submitMatch = pathname.match(/^\/r\/([^\/]+)\/submit/);
     const subredditMatch = pathname.match(/^\/r\/([^\/]+)/);
     
-    let subreddit: string;
+    let subreddit: string | undefined;
     let postId: string | undefined;
     
     if (postMatch) {
@@ -52,7 +57,9 @@ export class RedditHandler extends BaseTextareaHandler<RedditContext> {
       [, subreddit] = submitMatch;
     } else if (subredditMatch) {
       [, subreddit] = subredditMatch;
-    } else {
+    }
+    
+    if (!subreddit) {
       return null;
     }
 
@@ -74,11 +81,11 @@ export class RedditHandler extends BaseTextareaHandler<RedditContext> {
       unique_key,
       subreddit,
       postId,
-      commentId
+      commentId: commentId || undefined
     };
   }
 
-  determineType(textarea: HTMLTextAreaElement): CommentType | null {
+  determineType(textarea: HTMLTextAreaElement): RedditCommentType | null {
     const pathname = window.location.pathname;
     
     // New post submission
@@ -109,7 +116,7 @@ export class RedditHandler extends BaseTextareaHandler<RedditContext> {
     return `New post in r/${subreddit}`;
   }
 
-  generateIcon(type: CommentType): string {
+  generateIcon(type: string): string {
     switch (type) {
       case 'REDDIT_POST_NEW':
         return '📝'; // Post icon
@@ -122,7 +129,7 @@ export class RedditHandler extends BaseTextareaHandler<RedditContext> {
     }
   }
 
-  buildUrl(context: RedditContext, withDraft?: boolean): string {
+  buildUrl(context: RedditContext): string {
     const baseUrl = `https://reddit.com/r/${context.subreddit}`;
     
     if (context.postId) {

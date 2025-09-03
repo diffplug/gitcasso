@@ -1,10 +1,19 @@
-import { CommentType, CommentContext, BaseTextareaHandler, TextareaInfo } from '../datamodel/textarea-handler';
+import { CommentContext, BaseTextareaHandler, TextareaInfo } from '../datamodel/textarea-handler';
+
+export type GitHubCommentType = 
+  | 'GH_ISSUE_NEW'
+  | 'GH_PR_NEW'
+  | 'GH_ISSUE_ADD_COMMENT'
+  | 'GH_ISSUE_EDIT_COMMENT'
+  | 'GH_PR_ADD_COMMENT'
+  | 'GH_PR_EDIT_COMMENT'
+  | 'GH_PR_CODE_COMMENT';
 
 export interface GitHubContext extends CommentContext {
   domain: string;
   slug: string; // owner/repo
-  number?: number; // issue/PR number
-  commentId?: string; // for editing existing comments
+  number?: number | undefined; // issue/PR number
+  commentId?: string | undefined; // for editing existing comments
 }
 
 export class GitHubHandler extends BaseTextareaHandler<GitHubContext> {
@@ -12,7 +21,7 @@ export class GitHubHandler extends BaseTextareaHandler<GitHubContext> {
     super('github.com');
   }
 
-  forCommentTypes(): CommentType[] {
+  forCommentTypes(): string[] {
     return [
       'GH_ISSUE_NEW',
       'GH_PR_NEW',
@@ -41,7 +50,6 @@ export class GitHubHandler extends BaseTextareaHandler<GitHubContext> {
   }
 
   extractContext(textarea: HTMLTextAreaElement): GitHubContext | null {
-    const url = window.location.href;
     const pathname = window.location.pathname;
     
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
@@ -71,11 +79,11 @@ export class GitHubHandler extends BaseTextareaHandler<GitHubContext> {
       domain: window.location.hostname,
       slug,
       number,
-      commentId
+      commentId: commentId || undefined
     };
   }
 
-  determineType(textarea: HTMLTextAreaElement): CommentType | null {
+  determineType(textarea: HTMLTextAreaElement): GitHubCommentType | null {
     const pathname = window.location.pathname;
     
     // New issue
@@ -124,7 +132,7 @@ export class GitHubHandler extends BaseTextareaHandler<GitHubContext> {
     return `New ${window.location.pathname.includes('/issues/') ? 'issue' : 'PR'} in ${slug}`;
   }
 
-  generateIcon(type: CommentType): string {
+  generateIcon(type: string): string {
     switch (type) {
       case 'GH_ISSUE_NEW':
       case 'GH_ISSUE_ADD_COMMENT':
@@ -141,7 +149,7 @@ export class GitHubHandler extends BaseTextareaHandler<GitHubContext> {
     }
   }
 
-  buildUrl(context: GitHubContext, withDraft?: boolean): string {
+  buildUrl(context: GitHubContext): string {
     const baseUrl = `https://${context.domain}/${context.slug}`;
     
     if (context.number) {
