@@ -40,14 +40,14 @@ export class GitHubHandler implements TextareaHandler<GitHubContext> {
     const context = this.extractContext(textarea);
     
     if (type && context) {
-      return { element: textarea, type, context };
+      return { element: textarea, context: { ...context, type } };
     }
     
     return null;
   }
 
 
-  extractContext(textarea: HTMLTextAreaElement): GitHubContext | null {
+  private extractContext(textarea: HTMLTextAreaElement): GitHubContext | null {
     const pathname = window.location.pathname;
     
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
@@ -74,6 +74,7 @@ export class GitHubHandler implements TextareaHandler<GitHubContext> {
 
     return {
       unique_key,
+      type: '', // Will be set by caller
       domain: window.location.hostname,
       slug,
       number,
@@ -81,7 +82,7 @@ export class GitHubHandler implements TextareaHandler<GitHubContext> {
     };
   }
 
-  determineType(textarea: HTMLTextAreaElement): GitHubCommentType | null {
+  private determineType(textarea: HTMLTextAreaElement): GitHubCommentType | null {
     const pathname = window.location.pathname;
     
     // New issue
@@ -130,8 +131,8 @@ export class GitHubHandler implements TextareaHandler<GitHubContext> {
     return `New ${window.location.pathname.includes('/issues/') ? 'issue' : 'PR'} in ${slug}`;
   }
 
-  generateIcon(type: string): string {
-    switch (type) {
+  generateIcon(context: GitHubContext): string {
+    switch (context.type) {
       case 'GH_ISSUE_NEW':
       case 'GH_ISSUE_ADD_COMMENT':
       case 'GH_ISSUE_EDIT_COMMENT':

@@ -31,14 +31,14 @@ export class RedditHandler implements TextareaHandler<RedditContext> {
     const context = this.extractContext(textarea);
     
     if (type && context) {
-      return { element: textarea, type, context };
+      return { element: textarea, context: { ...context, type } };
     }
     
     return null;
   }
 
 
-  extractContext(textarea: HTMLTextAreaElement): RedditContext | null {
+  private extractContext(textarea: HTMLTextAreaElement): RedditContext | null {
     const pathname = window.location.pathname;
     
     // Parse Reddit URL structure: /r/subreddit/comments/postid/title/
@@ -77,13 +77,14 @@ export class RedditHandler implements TextareaHandler<RedditContext> {
 
     return {
       unique_key,
+      type: '', // Will be set by caller
       subreddit,
       postId,
       commentId: commentId || undefined
     };
   }
 
-  determineType(textarea: HTMLTextAreaElement): RedditCommentType | null {
+  private determineType(textarea: HTMLTextAreaElement): RedditCommentType | null {
     const pathname = window.location.pathname;
     
     // New post submission
@@ -114,8 +115,8 @@ export class RedditHandler implements TextareaHandler<RedditContext> {
     return `New post in r/${subreddit}`;
   }
 
-  generateIcon(type: string): string {
-    switch (type) {
+  generateIcon(context: RedditContext): string {
+    switch (context.type) {
       case 'REDDIT_POST_NEW':
         return '📝'; // Post icon
       case 'REDDIT_COMMENT_NEW':

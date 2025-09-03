@@ -51,7 +51,7 @@ function initializeMaybe(textarea: HTMLTextAreaElement) {
     // Use registry to identify and handle this specific textarea
     const textareaInfo = registry.identifyTextarea(textarea)
     if (textareaInfo) {
-      logger.debug('Identified textarea:', textareaInfo.type, textareaInfo.context.unique_key)
+      logger.debug('Identified textarea:', textareaInfo.context.type, textareaInfo.context.unique_key)
       // TODO: Set up textarea monitoring and draft saving
     } else {
       logger.debug('No handler found for textarea')
