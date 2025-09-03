@@ -265,7 +265,7 @@ export function generateStyles(options = {}) {
 
     /* Markdown element styling - NO SIZE CHANGES */
     .overtype-wrapper .overtype-preview .header {
-      font-weight: normal !important;
+      font-weight: bold !important;
     }
 
     /* Header colors */
@@ -284,7 +284,7 @@ export function generateStyles(options = {}) {
     .overtype-wrapper .overtype-preview h2,
     .overtype-wrapper .overtype-preview h3 {
       font-size: inherit !important;
-      font-weight: normal !important;
+      font-weight: bold !important;
       margin: 0 !important;
       padding: 0 !important;
       display: inline !important;
@@ -321,7 +321,7 @@ export function generateStyles(options = {}) {
     /* Bold text */
     .overtype-wrapper .overtype-preview strong {
       color: var(--strong, #ee964b) !important;
-      font-weight: normal !important;
+      font-weight: bold !important;
     }
 
     /* Italic text */
