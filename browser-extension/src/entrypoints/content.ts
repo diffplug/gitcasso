@@ -5,7 +5,7 @@ export default defineContentScript({
     if (window.location.hostname !== "github.com") {
       return;
     }
-    
+
     const ghCommentBox = document.getElementById("new_comment_field") as
       | HTMLTextAreaElement
       | undefined;
@@ -13,6 +13,8 @@ export default defineContentScript({
       const overtypeContainer = modifyGithubDOM(ghCommentBox);
       new OverType(overtypeContainer, {
         placeholder: "Add your comment here...",
+        autoResize: true,
+        minHeight: "102px",
       });
     }
   },

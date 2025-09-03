@@ -7,8 +7,8 @@ interface OverTypeOptions {
   placeholder?: string;
   value?: string;
   autoResize?: boolean;
-  minHeight?: number;
-  maxHeight?: number;
+  minHeight?: string;
+  maxHeight?: string;
   toolbar?: boolean;
   onChange?: (value: string) => void;
   onKeydown?: (event: KeyboardEvent) => void;
