@@ -169,6 +169,7 @@ class OverType {
       toolbar: false,
       statsFormatter: null,
       smartLists: true, // Enable smart list continuation
+      codeHighlighter: null, // Per-instance code highlighter
     };
 
     // Remove theme and colors from options - these are now global
@@ -475,7 +476,8 @@ class OverType {
     const html = MarkdownParser.parse(
       text,
       activeLine,
-      this.options.showActiveLineRaw
+      this.options.showActiveLineRaw,
+      this.options.codeHighlighter
     );
     this.preview.innerHTML =
       html || '<span style="color: #808080;">Start typing...</span>';
@@ -819,11 +821,16 @@ class OverType {
    */
   getRenderedHTML(processForPreview = false) {
     const markdown = this.getValue();
-    let html = MarkdownParser.parse(markdown);
+    let html = MarkdownParser.parse(
+      markdown,
+      -1,
+      false,
+      this.options.codeHighlighter
+    );
 
     if (processForPreview) {
       // Post-process HTML for preview mode
-      html = MarkdownParser.postProcessHTML(html);
+      html = MarkdownParser.postProcessHTML(html, this.options.codeHighlighter);
     }
 
     return html;
@@ -866,6 +873,15 @@ class OverType {
   reinit(options = {}) {
     this.options = this._mergeOptions({ ...this.options, ...options });
     this._applyOptions();
+    this.updatePreview();
+  }
+
+  /**
+   * Set instance-specific code highlighter
+   * @param {Function|null} highlighter - Function that takes (code, language) and returns highlighted HTML
+   */
+  setCodeHighlighter(highlighter) {
+    this.options.codeHighlighter = highlighter;
     this.updatePreview();
   }
 
@@ -1142,6 +1158,22 @@ class OverType {
     document.head.appendChild(styleEl);
 
     OverType.stylesInjected = true;
+  }
+
+  /**
+   * Set global code highlighter for all OverType instances
+   * @param {Function|null} highlighter - Function that takes (code, language) and returns highlighted HTML
+   */
+  static setCodeHighlighter(highlighter) {
+    MarkdownParser.setCodeHighlighter(highlighter);
+
+    // Update all existing instances
+    document.querySelectorAll(".overtype-wrapper").forEach((wrapper) => {
+      const instance = wrapper._instance;
+      if (instance && instance.updatePreview) {
+        instance.updatePreview();
+      }
+    });
   }
 
   /**
