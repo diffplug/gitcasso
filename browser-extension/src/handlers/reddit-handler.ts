@@ -27,18 +27,6 @@ export class RedditHandler implements TextareaHandler<RedditContext> {
       return null;
     }
 
-    const type = this.determineType(textarea);
-    const context = this.extractContext(textarea);
-    
-    if (type && context) {
-      return { element: textarea, context: { ...context, type } };
-    }
-    
-    return null;
-  }
-
-
-  private extractContext(textarea: HTMLTextAreaElement): RedditContext | null {
     const pathname = window.location.pathname;
     
     // Parse Reddit URL structure: /r/subreddit/comments/postid/title/
@@ -61,6 +49,24 @@ export class RedditHandler implements TextareaHandler<RedditContext> {
       return null;
     }
 
+    // Check if editing existing comment
+    const commentId = this.getCommentId(textarea);
+    
+    // Determine comment type
+    let type: RedditCommentType;
+    
+    // New post submission
+    if (pathname.includes('/submit')) {
+      type = 'REDDIT_POST_NEW';
+    }
+    // Check if we're on a post page
+    else if (pathname.match(/\/r\/[^\/]+\/comments\/[^\/]+/)) {
+      const isEditingComment = commentId !== null;
+      type = isEditingComment ? 'REDDIT_COMMENT_EDIT' : 'REDDIT_COMMENT_NEW';
+    } else {
+      return null;
+    }
+
     // Generate unique key
     let unique_key = `reddit:${subreddit}`;
     if (postId) {
@@ -69,36 +75,19 @@ export class RedditHandler implements TextareaHandler<RedditContext> {
       unique_key += ':new';
     }
 
-    // Check if editing existing comment
-    const commentId = this.getCommentId(textarea);
     if (commentId) {
       unique_key += `:edit:${commentId}`;
     }
 
-    return {
+    const context: RedditContext = {
       unique_key,
-      type: '', // Will be set by caller
+      type,
       subreddit,
       postId,
       commentId: commentId || undefined
     };
-  }
 
-  private determineType(textarea: HTMLTextAreaElement): RedditCommentType | null {
-    const pathname = window.location.pathname;
-    
-    // New post submission
-    if (pathname.includes('/submit')) {
-      return 'REDDIT_POST_NEW';
-    }
-    
-    // Check if we're on a post page
-    if (pathname.match(/\/r\/[^\/]+\/comments\/[^\/]+/)) {
-      const isEditingComment = this.getCommentId(textarea) !== null;
-      return isEditingComment ? 'REDDIT_COMMENT_EDIT' : 'REDDIT_COMMENT_NEW';
-    }
-    
-    return null;
+    return { element: textarea, context };
   }
 
   generateDisplayTitle(context: RedditContext): string {

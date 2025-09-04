@@ -36,85 +36,73 @@ export class GitHubHandler implements TextareaHandler<GitHubContext> {
       return null;
     }
 
-    const type = this.determineType(textarea);
-    const context = this.extractContext(textarea);
-    
-    if (type && context) {
-      return { element: textarea, context: { ...context, type } };
-    }
-    
-    return null;
-  }
-
-
-  private extractContext(textarea: HTMLTextAreaElement): GitHubContext | null {
     const pathname = window.location.pathname;
     
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
     const match = pathname.match(/^\/([^\/]+)\/([^\/]+)(?:\/(issues|pull)\/(\d+))?/);
     if (!match) return null;
 
-    const [, owner, repo, type, numberStr] = match;
+    const [, owner, repo, urlType, numberStr] = match;
     const slug = `${owner}/${repo}`;
     const number = numberStr ? parseInt(numberStr, 10) : undefined;
+    
+    // Check if editing existing comment
+    const commentId = this.getCommentId(textarea);
+    
+    // Determine comment type
+    let type: GitHubCommentType;
+    
+    // New issue
+    if (pathname.includes('/issues/new')) {
+      type = 'GH_ISSUE_NEW';
+    }
+    // New PR
+    else if (pathname.includes('/compare/') || pathname.endsWith('/compare')) {
+      type = 'GH_PR_NEW';
+    }
+    // Existing issue or PR page
+    else if (urlType && number) {
+      const isEditingComment = commentId !== null;
+      
+      if (urlType === 'issues') {
+        type = isEditingComment ? 'GH_ISSUE_EDIT_COMMENT' : 'GH_ISSUE_ADD_COMMENT';
+      } else {
+        // Check if it's a code comment (in Files Changed tab)
+        const isCodeComment = textarea.closest('.js-inline-comment-form') !== null ||
+                             textarea.closest('[data-path]') !== null;
+        
+        if (isCodeComment) {
+          type = 'GH_PR_CODE_COMMENT';
+        } else {
+          type = isEditingComment ? 'GH_PR_EDIT_COMMENT' : 'GH_PR_ADD_COMMENT';
+        }
+      }
+    } else {
+      return null;
+    }
     
     // Generate unique key based on context
     let unique_key = `github:${slug}`;
     if (number) {
-      unique_key += `:${type}:${number}`;
+      unique_key += `:${urlType}:${number}`;
     } else {
       unique_key += ':new';
     }
-
-    // Check if editing existing comment
-    const commentId = this.getCommentId(textarea);
+    
     if (commentId) {
       unique_key += `:edit:${commentId}`;
     }
 
-    return {
+    const context: GitHubContext = {
       unique_key,
-      type: '', // Will be set by caller
+      type,
       domain: window.location.hostname,
       slug,
       number,
       commentId: commentId || undefined
     };
-  }
 
-  private determineType(textarea: HTMLTextAreaElement): GitHubCommentType | null {
-    const pathname = window.location.pathname;
-    
-    // New issue
-    if (pathname.includes('/issues/new')) {
-      return 'GH_ISSUE_NEW';
-    }
-    
-    // New PR
-    if (pathname.includes('/compare/') || pathname.endsWith('/compare')) {
-      return 'GH_PR_NEW';
-    }
-    
-    // Check if we're on an issue or PR page
-    const match = pathname.match(/\/(issues|pull)\/(\d+)/);
-    if (!match) return null;
-    
-    const [, type] = match;
-    const isEditingComment = this.getCommentId(textarea) !== null;
-    
-    if (type === 'issues') {
-      return isEditingComment ? 'GH_ISSUE_EDIT_COMMENT' : 'GH_ISSUE_ADD_COMMENT';
-    } else {
-      // Check if it's a code comment (in Files Changed tab)
-      const isCodeComment = textarea.closest('.js-inline-comment-form') !== null ||
-                           textarea.closest('[data-path]') !== null;
-      
-      if (isCodeComment) {
-        return 'GH_PR_CODE_COMMENT';
-      }
-      
-      return isEditingComment ? 'GH_PR_EDIT_COMMENT' : 'GH_PR_ADD_COMMENT';
-    }
+    return { element: textarea, context };
   }
 
   generateDisplayTitle(context: GitHubContext): string {
