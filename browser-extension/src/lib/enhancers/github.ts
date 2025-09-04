@@ -1,6 +1,7 @@
 import hljs from 'highlight.js'
 import OverType, { type OverTypeInstance } from '../../overtype/overtype'
 import type { CommentEnhancer, CommentSpot } from '../enhancer'
+import { logger } from '../../lib/logger'
 
 const GITHUB_SPOT_TYPES = [
   'GH_PR_ADD_COMMENT',
@@ -35,7 +36,10 @@ export class GitHubAddCommentEnhancer implements CommentEnhancer<GitHubAddCommen
     }
 
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
+    logger.debug(`${this.constructor.name} examing url`, window.location.pathname)
+
     const match = window.location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/pull\/(\d+))/)
+    logger.debug(`${this.constructor.name} found match`, window.location.pathname)
     if (!match) return null
     const [, owner, repo, numberStr] = match
     const slug = `${owner}/${repo}`
