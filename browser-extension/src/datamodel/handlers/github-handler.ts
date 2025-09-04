@@ -5,10 +5,12 @@ const GITHUB_COMMENT_TYPES = [
   'GH_ISSUE_NEW',
   'GH_PR_NEW',
   'GH_ISSUE_ADD_COMMENT',
-  'GH_ISSUE_EDIT_COMMENT',
   'GH_PR_ADD_COMMENT',
+  /* TODO
+  'GH_ISSUE_EDIT_COMMENT',
   'GH_PR_EDIT_COMMENT',
   'GH_PR_CODE_COMMENT',
+  */
 ] as const
 
 export type GitHubCommentType = (typeof GITHUB_COMMENT_TYPES)[number]
@@ -17,8 +19,7 @@ export interface GitHubContext extends CommentSpot {
   type: GitHubCommentType // Override to narrow from string to specific union
   domain: string
   slug: string // owner/repo
-  number?: number | undefined // issue/PR number
-  commentId?: string | undefined // for editing existing comments
+  number?: number | undefined // issue/PR number, undefined for new issues and PRs
 }
 
 export class GitHubHandler implements CommentEnhancer<GitHubContext> {
@@ -42,9 +43,6 @@ export class GitHubHandler implements CommentEnhancer<GitHubContext> {
     const slug = `${owner}/${repo}`
     const number = numberStr ? parseInt(numberStr, 10) : undefined
 
-    // Check if editing existing comment
-    const commentId = this.getCommentId(textarea)
-
     // Determine comment type
     let type: GitHubCommentType
 
@@ -58,21 +56,10 @@ export class GitHubHandler implements CommentEnhancer<GitHubContext> {
     }
     // Existing issue or PR page
     else if (urlType && number) {
-      const isEditingComment = commentId !== null
-
       if (urlType === 'issues') {
-        type = isEditingComment ? 'GH_ISSUE_EDIT_COMMENT' : 'GH_ISSUE_ADD_COMMENT'
+        type = 'GH_ISSUE_ADD_COMMENT'
       } else {
-        // Check if it's a code comment (in Files Changed tab)
-        const isCodeComment =
-          textarea.closest('.js-inline-comment-form') !== null ||
-          textarea.closest('[data-path]') !== null
-
-        if (isCodeComment) {
-          type = 'GH_PR_CODE_COMMENT'
-        } else {
-          type = isEditingComment ? 'GH_PR_EDIT_COMMENT' : 'GH_PR_ADD_COMMENT'
-        }
+        type = 'GH_PR_ADD_COMMENT'
       }
     } else {
       return null
@@ -86,12 +73,8 @@ export class GitHubHandler implements CommentEnhancer<GitHubContext> {
       unique_key += ':new'
     }
 
-    if (commentId) {
-      unique_key += `:edit:${commentId}`
-    }
 
     const context: GitHubContext = {
-      commentId: commentId || undefined,
       domain: window.location.hostname,
       number,
       slug,
@@ -106,16 +89,10 @@ export class GitHubHandler implements CommentEnhancer<GitHubContext> {
   }
 
   generateDisplayTitle(context: GitHubContext): string {
-    const { slug, number, commentId } = context
-
-    if (commentId) {
-      return `Edit comment in ${slug}${number ? ` #${number}` : ''}`
-    }
-
+    const { slug, number } = context
     if (number) {
       return `Comment on ${slug} #${number}`
     }
-
     return `New ${window.location.pathname.includes('/issues/') ? 'issue' : 'PR'} in ${slug}`
   }
 
@@ -123,16 +100,10 @@ export class GitHubHandler implements CommentEnhancer<GitHubContext> {
     switch (context.type) {
       case 'GH_ISSUE_NEW':
       case 'GH_ISSUE_ADD_COMMENT':
-      case 'GH_ISSUE_EDIT_COMMENT':
         return '🐛' // Issue icon
       case 'GH_PR_NEW':
       case 'GH_PR_ADD_COMMENT':
-      case 'GH_PR_EDIT_COMMENT':
         return '🔄' // PR icon
-      case 'GH_PR_CODE_COMMENT':
-        return '💬' // Code comment icon
-      default:
-        return '📝' // Generic comment icon
     }
   }
 
@@ -141,28 +112,9 @@ export class GitHubHandler implements CommentEnhancer<GitHubContext> {
 
     if (context.number) {
       const type = window.location.pathname.includes('/issues/') ? 'issues' : 'pull'
-      return `${baseUrl}/${type}/${context.number}${context.commentId ? `#issuecomment-${context.commentId}` : ''}`
+      return `${baseUrl}/${type}/${context.number}`
     }
 
     return baseUrl
-  }
-
-  private getCommentId(textarea: HTMLTextAreaElement): string | null {
-    // Look for edit comment form indicators
-    const commentForm = textarea.closest('[data-comment-id]')
-    if (commentForm) {
-      return commentForm.getAttribute('data-comment-id')
-    }
-
-    const editForm = textarea.closest('.js-comment-edit-form')
-    if (editForm) {
-      const commentContainer = editForm.closest('.js-comment-container')
-      if (commentContainer) {
-        const id = commentContainer.getAttribute('data-gid') || commentContainer.getAttribute('id')
-        return id ? id.replace('issuecomment-', '') : null
-      }
-    }
-
-    return null
   }
 }
