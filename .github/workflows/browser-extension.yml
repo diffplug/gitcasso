@@ -1,10 +1,11 @@
 on:
-  push:
-    paths:
-      - 'browser-extension/**'
   pull_request:
-    paths:
-      - 'browser-extension/**'
+  push:
+    branches: [main, release]
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   lint-test-and-build:
     runs-on: ubuntu-latest
