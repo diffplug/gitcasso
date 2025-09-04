@@ -1,14 +1,8 @@
-import path from 'node:path'
 import { defineConfig } from 'vitest/config'
+import { WxtVitest } from 'wxt/testing'
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './entrypoints'),
-      '@content': path.resolve(__dirname, './entrypoints/content'),
-      '@utils': path.resolve(__dirname, './entrypoints/content/utils'),
-    },
-  },
+  plugins: [WxtVitest()],
   test: {
     coverage: {
       exclude: [

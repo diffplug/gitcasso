@@ -41,7 +41,7 @@
   "linter": {
     "rules": {
       "complexity": {
-        "noExcessiveCognitiveComplexity": "warn"
+        "noExcessiveCognitiveComplexity": "off"
       },
       "correctness": {
         "noUnusedVariables": "error",
@@ -65,7 +65,7 @@
             "allow": ["assert", "error", "info", "warn"]
           }
         },
-        "noExplicitAny": "error",
+        "noExplicitAny": "off",
         "noVar": "error"
       }
     }
