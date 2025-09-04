@@ -6,7 +6,7 @@
     "overtype": "^1.2.3",
     "webextension-polyfill": "^0.12.0"
   },
-  "description": "Syntax highlighting and autosave for comments on GitHub (and other other markdown-friendly places).",
+  "description": "Syntax highlighting and autosave for comments on GitHub (and other other markdown-friendly websites).",
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
     "@testing-library/jest-dom": "^6.6.4",
@@ -43,5 +43,5 @@
     "zip:firefox": "wxt zip -b firefox"
   },
   "type": "module",
-  "version": "1.0.0"
+  "version": "0.0.1"
 }
