@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`GitHub PR Content Script > should create correct GitHubContext spot for PR comment > github-pr-517-spot 1`] = `
+{
+  "commentId": undefined,
+  "domain": "github.com",
+  "number": 517,
+  "slug": "diffplug/selfie",
+  "type": "GH_PR_ADD_COMMENT",
+  "unique_key": "github:diffplug/selfie:pull:517",
+}
+`;
