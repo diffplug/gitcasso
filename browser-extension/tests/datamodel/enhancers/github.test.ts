@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { EnhancerRegistry, TextareaRegistry } from '../../../src/datamodel/registries'
+import { EnhancerRegistry, TextareaRegistry } from '../../../src/logic/registries'
 
 // Mock WXT's defineContentScript global
 vi.stubGlobal('defineContentScript', vi.fn())

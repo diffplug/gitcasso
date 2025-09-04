@@ -1,6 +1,6 @@
-import { CONFIG } from '../common/config'
-import { logger } from '../common/logger'
-import { EnhancerRegistry, TextareaRegistry } from '../datamodel/registries'
+import { EnhancerRegistry, TextareaRegistry } from '../logic/registries'
+import { CONFIG } from '../util/config'
+import { logger } from '../util/logger'
 
 const enhancers = new EnhancerRegistry()
 const enhancedTextareas = new TextareaRegistry()
