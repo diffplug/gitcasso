@@ -1,7 +1,7 @@
 import { OverType } from '../../overtype/mock-overtype'
 import type { CommentEnhancer, CommentSpot } from '../enhancer'
 
-const GITHUB_COMMENT_TYPES = [
+const GITHUB_SPOT_TYPES = [
   'GH_ISSUE_NEW',
   'GH_PR_NEW',
   'GH_ISSUE_ADD_COMMENT',
@@ -13,10 +13,10 @@ const GITHUB_COMMENT_TYPES = [
   */
 ] as const
 
-export type GitHubCommentType = (typeof GITHUB_COMMENT_TYPES)[number]
+export type GitHubSpotType = (typeof GITHUB_SPOT_TYPES)[number]
 
 export interface GitHubSpot extends CommentSpot {
-  type: GitHubCommentType // Override to narrow from string to specific union
+  type: GitHubSpotType // Override to narrow from string to specific union
   domain: string
   slug: string // owner/repo
   number?: number | undefined // issue/PR number, undefined for new issues and PRs
@@ -24,7 +24,7 @@ export interface GitHubSpot extends CommentSpot {
 
 export class GitHubEnhancer implements CommentEnhancer<GitHubSpot> {
   forSpotTypes(): string[] {
-    return [...GITHUB_COMMENT_TYPES]
+    return [...GITHUB_SPOT_TYPES]
   }
 
   tryToEnhance(textarea: HTMLTextAreaElement): [OverType, GitHubSpot] | null {
@@ -44,7 +44,7 @@ export class GitHubEnhancer implements CommentEnhancer<GitHubSpot> {
     const number = numberStr ? parseInt(numberStr, 10) : undefined
 
     // Determine comment type
-    let type: GitHubCommentType
+    let type: GitHubSpotType
 
     if (pathname.includes('/issues/new')) {
       type = 'GH_ISSUE_NEW'
