@@ -2,6 +2,7 @@
   "author": "DiffPlug",
   "dependencies": {
     "@wxt-dev/webextension-polyfill": "^1.0.0",
+    "highlight.js": "^11.11.1",
     "webextension-polyfill": "^0.12.0"
   },
   "description": "Syntax highlighting and autosave for comments on GitHub (and other other markdown-friendly websites).",
