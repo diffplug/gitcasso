@@ -1,4 +1,4 @@
-import { CommentContext, TextareaHandler, TextareaInfo } from '../datamodel/textarea-handler';
+import { CommentContext, TextareaHandler } from '../datamodel/textarea-handler';
 
 export type GitHubCommentType = 
   | 'GH_ISSUE_NEW'
