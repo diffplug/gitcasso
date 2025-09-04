@@ -1,3 +1,4 @@
+import { OverType } from '../../overtype/mock-overtype'
 import type { CommentEnhancer, CommentSpot } from '../enhancer'
 
 export type RedditCommentType = 'REDDIT_POST_NEW' | 'REDDIT_COMMENT_NEW' | 'REDDIT_COMMENT_EDIT'
@@ -14,7 +15,7 @@ export class RedditHandler implements CommentEnhancer<RedditContext> {
     return ['REDDIT_POST_NEW', 'REDDIT_COMMENT_NEW', 'REDDIT_COMMENT_EDIT']
   }
 
-  identifyContextOf(textarea: HTMLTextAreaElement): RedditContext | null {
+  tryToEnhance(textarea: HTMLTextAreaElement): [OverType, RedditContext] | null {
     // Only handle Reddit domains
     if (!window.location.hostname.includes('reddit')) {
       return null
@@ -80,7 +81,10 @@ export class RedditHandler implements CommentEnhancer<RedditContext> {
       unique_key,
     }
 
-    return context
+    // Create OverType instance for this textarea
+    const overtype = new OverType(textarea)
+
+    return [overtype, context]
   }
 
   generateDisplayTitle(context: RedditContext): string {

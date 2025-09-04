@@ -42,5 +42,5 @@
   },
   "exclude": ["node_modules", ".output", "dist"],
   "extends": "./.wxt/tsconfig.json",
-  "include": ["src/entrypoints/**/*", "*.config.ts", ".wxt/wxt.d.ts", "tests/**/*"]
+  "include": ["src/**/*", "*.config.ts", ".wxt/wxt.d.ts", "tests/**/*"]
 }

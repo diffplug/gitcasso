@@ -1,3 +1,4 @@
+import { OverType } from '../../overtype/mock-overtype'
 import type { CommentEnhancer, CommentSpot } from '../enhancer'
 
 export type GitHubCommentType =
@@ -30,7 +31,7 @@ export class GitHubHandler implements CommentEnhancer<GitHubContext> {
     ]
   }
 
-  identifyContextOf(textarea: HTMLTextAreaElement): GitHubContext | null {
+  tryToEnhance(textarea: HTMLTextAreaElement): [OverType, GitHubContext] | null {
     // Only handle GitHub domains
     if (!window.location.hostname.includes('github')) {
       return null
@@ -103,7 +104,10 @@ export class GitHubHandler implements CommentEnhancer<GitHubContext> {
       unique_key,
     }
 
-    return context
+    // Create OverType instance for this textarea
+    const overtype = new OverType(textarea)
+
+    return [overtype, context]
   }
 
   generateDisplayTitle(context: GitHubContext): string {
