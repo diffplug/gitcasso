@@ -1,4 +1,4 @@
-import type { OverType } from '../overtype/mock-overtype'
+import type { OverTypeInstance } from '../overtype/overtype'
 
 /**
  * stores enough info about the location of a draft to:
@@ -18,7 +18,7 @@ export interface CommentEnhancer<Spot extends CommentSpot = CommentSpot> {
    * whenever a new `textarea` is added to any webpage, this method is called.
    * if we return non-null, then we become the handler for that text area.
    */
-  tryToEnhance(textarea: HTMLTextAreaElement): [OverType, Spot] | null
+  tryToEnhance(textarea: HTMLTextAreaElement): [OverTypeInstance, Spot] | null
 
   tableIcon(spot: Spot): string
   tableTitle(spot: Spot): string

@@ -1,12 +1,12 @@
-import type { OverType } from '../overtype/mock-overtype'
+import type { OverTypeInstance } from '../overtype/overtype'
 import type { CommentEnhancer, CommentSpot } from './enhancer'
 import { GitHubAddCommentEnhancer } from './enhancers/github'
 
 export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
   textarea: HTMLTextAreaElement
   spot: T
-  handler: CommentEnhancer<T>
-  overtype: OverType
+  enhancer: CommentEnhancer<T>
+  overtype: OverTypeInstance
 }
 
 export class EnhancerRegistry {
@@ -22,12 +22,12 @@ export class EnhancerRegistry {
   }
 
   tryToEnhance(textarea: HTMLTextAreaElement): EnhancedTextarea<any> | null {
-    for (const handler of this.enhancers) {
+    for (const enhancer of this.enhancers) {
       try {
-        const result = handler.tryToEnhance(textarea)
+        const result = enhancer.tryToEnhance(textarea)
         if (result) {
           const [overtype, spot] = result
-          return { handler, overtype, spot, textarea }
+          return { enhancer, overtype, spot, textarea }
         }
       } catch (error) {
         console.warn('Handler failed to identify textarea:', error)

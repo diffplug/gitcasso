@@ -1,4 +1,5 @@
-import { OverType } from '../../overtype/mock-overtype'
+import hljs from 'highlight.js'
+import OverType, { type OverTypeInstance } from '../../overtype/overtype'
 import type { CommentEnhancer, CommentSpot } from '../enhancer'
 
 const GITHUB_SPOT_TYPES = [
@@ -27,7 +28,7 @@ export class GitHubAddCommentEnhancer implements CommentEnhancer<GitHubAddCommen
     return [...GITHUB_SPOT_TYPES]
   }
 
-  tryToEnhance(textarea: HTMLTextAreaElement): [OverType, GitHubAddCommentSpot] | null {
+  tryToEnhance(textarea: HTMLTextAreaElement): [OverTypeInstance, GitHubAddCommentSpot] | null {
     // Only handle github.com domains TODO: identify GitHub Enterprise somehow
     if (window.location.hostname !== 'github.com') {
       return null
@@ -49,8 +50,31 @@ export class GitHubAddCommentEnhancer implements CommentEnhancer<GitHubAddCommen
       type: 'GH_PR_ADD_COMMENT',
       unique_key,
     }
-    const overtype = new OverType(textarea)
-    return [overtype, spot]
+    return [this.createOvertypeFor(textarea), spot]
+  }
+
+  private createOvertypeFor(ghCommentBox: HTMLTextAreaElement): OverTypeInstance {
+    OverType.setCodeHighlighter(hljsHighlighter)
+    const overtypeContainer = this.modifyDOM(ghCommentBox)
+    return new OverType(overtypeContainer, {
+      autoResize: true,
+      minHeight: '102px',
+      padding: 'var(--base-size-8)',
+      placeholder: 'Add your comment here...',
+    })[0]!
+  }
+
+  private modifyDOM(overtypeInput: HTMLTextAreaElement): HTMLElement {
+    overtypeInput.classList.add('overtype-input')
+    const overtypePreview = document.createElement('div')
+    overtypePreview.classList.add('overtype-preview')
+    overtypeInput.insertAdjacentElement('afterend', overtypePreview)
+    const overtypeWrapper = overtypeInput.parentElement!.closest('div')!
+    overtypeWrapper.classList.add('overtype-wrapper')
+    overtypeInput.placeholder = 'Add your comment here...'
+    const overtypeContainer = overtypeWrapper.parentElement!.closest('div')!
+    overtypeContainer.classList.add('overtype-container')
+    return overtypeContainer.parentElement!.closest('div')!
   }
 
   tableTitle(spot: GitHubAddCommentSpot): string {
@@ -64,5 +88,20 @@ export class GitHubAddCommentEnhancer implements CommentEnhancer<GitHubAddCommen
 
   buildUrl(spot: GitHubAddCommentSpot): string {
     return `https://${spot.domain}/${spot.slug}/pull/${spot.number}`
+  }
+}
+
+function hljsHighlighter(code: string, language: string) {
+  try {
+    if (language && hljs.getLanguage(language)) {
+      const result = hljs.highlight(code, { language })
+      return result.value
+    } else {
+      const result = hljs.highlightAuto(code)
+      return result.value
+    }
+  } catch (error) {
+    console.warn('highlight.js highlighting failed:', error)
+    return code
   }
 }
