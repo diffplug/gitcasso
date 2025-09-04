@@ -102,6 +102,7 @@ export interface OverTypeConstructor {
   getInstance(element: Element): OverTypeInstance | null;
   destroyAll(): void;
   injectStyles(force?: boolean): void;
+  setCodeHighlighter(highlighterFn: (code: string, language: string) => string);
   setTheme(theme: string | Theme, customColors?: Partial<Theme['colors']>): void;
   initGlobalListeners(): void;
   getTheme(name: string): Theme;
