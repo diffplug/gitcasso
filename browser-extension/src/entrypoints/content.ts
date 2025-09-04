@@ -1,12 +1,17 @@
 import { CONFIG } from '../lib/config'
 import { logger } from '../lib/logger'
 import { EnhancerRegistry, TextareaRegistry } from '../lib/registries'
+import { githubPrNewCommentContentScript } from '../playgrounds/github-playground'
 
 const enhancers = new EnhancerRegistry()
 const enhancedTextareas = new TextareaRegistry()
 
 export default defineContentScript({
   main() {
+    if (CONFIG.MODE === 'PLAYGROUNDS_PR') {
+      githubPrNewCommentContentScript()
+      return
+    }
     const textAreasOnPageLoad = document.querySelectorAll<HTMLTextAreaElement>(`textarea`)
     for (const textarea of textAreasOnPageLoad) {
       enhanceMaybe(textarea)
