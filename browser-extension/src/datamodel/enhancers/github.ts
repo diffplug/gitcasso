@@ -22,7 +22,7 @@ export interface GitHubSpot extends CommentSpot {
   number?: number | undefined // issue/PR number, undefined for new issues and PRs
 }
 
-export class GitHubHandler implements CommentEnhancer<GitHubSpot> {
+export class GitHubEnhancer implements CommentEnhancer<GitHubSpot> {
   forCommentTypes(): string[] {
     return [...GITHUB_COMMENT_TYPES]
   }
