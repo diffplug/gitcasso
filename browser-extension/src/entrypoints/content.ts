@@ -1,4 +1,3 @@
-import { CONFIG } from './content/config'
 import { logger } from './content/logger'
 import { injectStyles } from './content/styles'
 import { HandlerRegistry } from '../datamodel/handler-registry'
@@ -11,7 +10,7 @@ export default defineContentScript({
   main() {
     const textAreasOnPageLoad = document.querySelectorAll<HTMLTextAreaElement>(`textarea`)
     for (const textarea of textAreasOnPageLoad) {
-      initializeMaybe(textarea)
+      initializeMaybeIsPageload(textarea, true)
     }
     const observer = new MutationObserver(handleMutations)
     observer.observe(document.body, {
@@ -30,13 +29,13 @@ function handleMutations(mutations: MutationRecord[]): void {
       if (node.nodeType === Node.ELEMENT_NODE) {
         const element = node as Element
         if (element.tagName === 'TEXTAREA') {
-          initializeMaybe(element as HTMLTextAreaElement)
+          initializeMaybeIsPageload(element as HTMLTextAreaElement, false)
         }
         // Also check for textareas within added subtrees
         const textareas = element.querySelectorAll?.('textarea')
         if (textareas) {
           for (const textarea of textareas) {
-            initializeMaybe(textarea)
+            initializeMaybeIsPageload(textarea, false)
           }
         }
       }
@@ -44,21 +43,22 @@ function handleMutations(mutations: MutationRecord[]): void {
   }
 }
 
-function initializeMaybe(textarea: HTMLTextAreaElement) {
-  if (!textarea.classList.contains(CONFIG.ADDED_OVERTYPE_CLASS)) {
-    logger.debug('activating textarea {}', textarea)
-    injectStyles()
-    textarea.classList.add(CONFIG.ADDED_OVERTYPE_CLASS)
-    
-    // Use registry to identify and handle this specific textarea
-    const textareaInfo = handlerRegistry.identifyTextarea(textarea)
-    if (textareaInfo) {
-      logger.debug('Identified textarea:', textareaInfo.context.type, textareaInfo.context.unique_key)
-      textareaRegistry.register(textareaInfo)
-    } else {
-      logger.debug('No handler found for textarea')
-    }
+function initializeMaybeIsPageload(textarea: HTMLTextAreaElement, isPageload: boolean) {
+  // Check if this textarea is already registered
+  if (textareaRegistry.get(textarea)) {
+    logger.debug('textarea already registered {}', textarea)
+    return
+  }
+
+  logger.debug('activating textarea {}', textarea)
+  injectStyles()
+  
+  // Use registry to identify and handle this specific textarea
+  const textareaInfo = handlerRegistry.identifyTextarea(textarea)
+  if (textareaInfo) {
+    logger.debug('Identified textarea:', textareaInfo.context.type, textareaInfo.context.unique_key)
+    textareaRegistry.register(textareaInfo)
   } else {
-    logger.debug('already activated textarea {}', textarea)
+    logger.debug('No handler found for textarea')
   }
 }
