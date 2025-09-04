@@ -3,13 +3,13 @@
  * - display it in a table
  * - reopen the draft in-context
  */
-export interface CommentContext {
+export interface CommentSpot {
   unique_key: string
   type: string
 }
 
 /** wraps the textareas of a given platform with Gitcasso's enhancements */
-export interface CommentEnhancer<T extends CommentContext = CommentContext> {
+export interface CommentEnhancer<T extends CommentSpot = CommentSpot> {
   /** guarantees to only return a type within this list */
   forCommentTypes(): string[]
   /**

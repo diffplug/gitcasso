@@ -1,8 +1,8 @@
-import type { CommentContext, CommentEnhancer } from './enhancer'
+import type { CommentEnhancer, CommentSpot } from './enhancer'
 import { GitHubHandler as GitHubEnhancer } from './handlers/github-handler'
 import { RedditHandler as RedditEnhancer } from './handlers/reddit-handler'
 
-export interface EnhancedTextarea<T extends CommentContext = CommentContext> {
+export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
   element: HTMLTextAreaElement
   context: T
   handler: CommentEnhancer<T>
@@ -17,7 +17,7 @@ export class EnhancerRegistry {
     this.register(new RedditEnhancer())
   }
 
-  private register<T extends CommentContext>(handler: CommentEnhancer<T>): void {
+  private register<T extends CommentSpot>(handler: CommentEnhancer<T>): void {
     this.enhancers.add(handler)
   }
 
@@ -56,7 +56,7 @@ export class EnhancerRegistry {
 export class TextareaRegistry {
   private textareas = new Map<HTMLTextAreaElement, EnhancedTextarea<any>>()
 
-  register<T extends CommentContext>(textareaInfo: EnhancedTextarea<T>): void {
+  register<T extends CommentSpot>(textareaInfo: EnhancedTextarea<T>): void {
     this.textareas.set(textareaInfo.element, textareaInfo)
     // TODO: register as a draft in progress with the global list
   }

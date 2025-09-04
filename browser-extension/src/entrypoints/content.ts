@@ -2,21 +2,21 @@ import { CONFIG } from '../common/config'
 import { logger } from '../common/logger'
 import { EnhancerRegistry, TextareaRegistry } from '../datamodel/registries'
 
-const handlerRegistry = new EnhancerRegistry()
-const textareaRegistry = new TextareaRegistry()
+const enhancers = new EnhancerRegistry()
+const enhancedTextareas = new TextareaRegistry()
 
 export default defineContentScript({
   main() {
     const textAreasOnPageLoad = document.querySelectorAll<HTMLTextAreaElement>(`textarea`)
     for (const textarea of textAreasOnPageLoad) {
-      initializeMaybeIsPageload(textarea)
+      enhanceMaybe(textarea)
     }
     const observer = new MutationObserver(handleMutations)
     observer.observe(document.body, {
       childList: true,
       subtree: true,
     })
-    logger.debug('Extension loaded with', handlerRegistry.getAllHandlers().length, 'handlers')
+    logger.debug('Extension loaded with', enhancers.getAllHandlers().length, 'handlers')
   },
   matches: ['<all_urls>'],
   runAt: 'document_end',
@@ -29,13 +29,13 @@ function handleMutations(mutations: MutationRecord[]): void {
       if (node.nodeType === Node.ELEMENT_NODE) {
         const element = node as Element
         if (element.tagName === 'TEXTAREA') {
-          initializeMaybeIsPageload(element as HTMLTextAreaElement)
+          enhanceMaybe(element as HTMLTextAreaElement)
         } else {
           // Also check for textareas within added subtrees
           const textareas = element.querySelectorAll?.('textarea')
           if (textareas) {
             for (const textarea of textareas) {
-              initializeMaybeIsPageload(textarea)
+              enhanceMaybe(textarea)
             }
           }
         }
@@ -47,13 +47,13 @@ function handleMutations(mutations: MutationRecord[]): void {
       if (node.nodeType === Node.ELEMENT_NODE) {
         const element = node as Element
         if (element.tagName === 'TEXTAREA') {
-          textareaRegistry.unregisterDueToModification(element as HTMLTextAreaElement)
+          enhancedTextareas.unregisterDueToModification(element as HTMLTextAreaElement)
         } else {
           // Also check for textareas within removed subtrees
           const textareas = element.querySelectorAll?.('textarea')
           if (textareas) {
             for (const textarea of textareas) {
-              textareaRegistry.unregisterDueToModification(textarea)
+              enhancedTextareas.unregisterDueToModification(textarea)
             }
           }
         }
@@ -62,9 +62,9 @@ function handleMutations(mutations: MutationRecord[]): void {
   }
 }
 
-function initializeMaybeIsPageload(textarea: HTMLTextAreaElement) {
+function enhanceMaybe(textarea: HTMLTextAreaElement) {
   // Check if this textarea is already registered
-  if (textareaRegistry.get(textarea)) {
+  if (enhancedTextareas.get(textarea)) {
     logger.debug('textarea already registered {}', textarea)
     return
   }
@@ -73,10 +73,14 @@ function initializeMaybeIsPageload(textarea: HTMLTextAreaElement) {
   injectStyles()
 
   // Use registry to identify and handle this specific textarea
-  const textareaInfo = handlerRegistry.identifyTextarea(textarea)
-  if (textareaInfo) {
-    logger.debug('Identified textarea:', textareaInfo.context.type, textareaInfo.context.unique_key)
-    textareaRegistry.register(textareaInfo)
+  const enhancedTextarea = enhancers.identifyTextarea(textarea)
+  if (enhancedTextarea) {
+    logger.debug(
+      'Identified textarea:',
+      enhancedTextarea.context.type,
+      enhancedTextarea.context.unique_key,
+    )
+    enhancedTextareas.register(enhancedTextarea)
   } else {
     logger.debug('No handler found for textarea')
   }

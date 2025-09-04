@@ -1,8 +1,8 @@
-import type { CommentContext, CommentEnhancer } from '../enhancer'
+import type { CommentEnhancer, CommentSpot } from '../enhancer'
 
 export type RedditCommentType = 'REDDIT_POST_NEW' | 'REDDIT_COMMENT_NEW' | 'REDDIT_COMMENT_EDIT'
 
-export interface RedditContext extends CommentContext {
+export interface RedditContext extends CommentSpot {
   type: RedditCommentType // Override to narrow from string to specific union
   subreddit: string
   postId?: string | undefined

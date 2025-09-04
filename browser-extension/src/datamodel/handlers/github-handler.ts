@@ -1,4 +1,4 @@
-import type { CommentContext, CommentEnhancer } from '../enhancer'
+import type { CommentEnhancer, CommentSpot } from '../enhancer'
 
 export type GitHubCommentType =
   | 'GH_ISSUE_NEW'
@@ -9,7 +9,7 @@ export type GitHubCommentType =
   | 'GH_PR_EDIT_COMMENT'
   | 'GH_PR_CODE_COMMENT'
 
-export interface GitHubContext extends CommentContext {
+export interface GitHubContext extends CommentSpot {
   type: GitHubCommentType // Override to narrow from string to specific union
   domain: string
   slug: string // owner/repo
