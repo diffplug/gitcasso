@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`GitHub PR Content Script > should create correct GitHubContext spot for PR comment > github-pr-517-spot 1`] = `
+exports[`GitHubHandler > should create correct GitHubContext spot for PR comment > github-pr-517-spot 1`] = `
 {
   "commentId": undefined,
   "domain": "github.com",

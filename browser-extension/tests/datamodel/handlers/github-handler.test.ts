@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { EnhancerRegistry, TextareaRegistry } from '../datamodel/registries'
+import { EnhancerRegistry, TextareaRegistry } from '../../../src/datamodel/registries'
 
 // Mock WXT's defineContentScript global
 vi.stubGlobal('defineContentScript', vi.fn())
 
-describe('GitHub PR Content Script', () => {
+describe('GitHubHandler', () => {
   let enhancers: EnhancerRegistry
   let enhancedTextareas: TextareaRegistry
   let mockTextarea: HTMLTextAreaElement
