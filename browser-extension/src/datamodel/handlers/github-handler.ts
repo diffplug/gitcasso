@@ -1,14 +1,17 @@
 import { OverType } from '../../overtype/mock-overtype'
 import type { CommentEnhancer, CommentSpot } from '../enhancer'
 
-export type GitHubCommentType =
-  | 'GH_ISSUE_NEW'
-  | 'GH_PR_NEW'
-  | 'GH_ISSUE_ADD_COMMENT'
-  | 'GH_ISSUE_EDIT_COMMENT'
-  | 'GH_PR_ADD_COMMENT'
-  | 'GH_PR_EDIT_COMMENT'
-  | 'GH_PR_CODE_COMMENT'
+const GITHUB_COMMENT_TYPES = [
+  'GH_ISSUE_NEW',
+  'GH_PR_NEW',
+  'GH_ISSUE_ADD_COMMENT',
+  'GH_ISSUE_EDIT_COMMENT',
+  'GH_PR_ADD_COMMENT',
+  'GH_PR_EDIT_COMMENT',
+  'GH_PR_CODE_COMMENT',
+] as const
+
+export type GitHubCommentType = (typeof GITHUB_COMMENT_TYPES)[number]
 
 export interface GitHubContext extends CommentSpot {
   type: GitHubCommentType // Override to narrow from string to specific union
@@ -20,15 +23,7 @@ export interface GitHubContext extends CommentSpot {
 
 export class GitHubHandler implements CommentEnhancer<GitHubContext> {
   forCommentTypes(): string[] {
-    return [
-      'GH_ISSUE_NEW',
-      'GH_PR_NEW',
-      'GH_ISSUE_ADD_COMMENT',
-      'GH_ISSUE_EDIT_COMMENT',
-      'GH_PR_ADD_COMMENT',
-      'GH_PR_EDIT_COMMENT',
-      'GH_PR_CODE_COMMENT',
-    ]
+    return [...GITHUB_COMMENT_TYPES]
   }
 
   tryToEnhance(textarea: HTMLTextAreaElement): [OverType, GitHubContext] | null {
