@@ -27,10 +27,18 @@
 
 This is a [WXT](https://wxt.dev/)-based browser extension that
 
-- finds `textarea` components and decorates them with [overtype](https://overtype.dev/) and [shiki](https://github.com/shikijs/shiki). 
+- finds `textarea` components and decorates them with [overtype](https://overtype.dev/) and [highlightjs](https://highlightjs.org/)
 - stores unposted comment drafts, and makes them easy to find via the extension popup
 
 ### Entry points
 
-- src/entrypoints/content.ts - injected into every webpage
-- src/entrypoints/popup - html/css/ts which opens when the extension's button gets clicked
+- `src/entrypoints/content.ts` - injected into every webpage
+- `src/entrypoints/popup` - html/css/ts which opens when the extension's button gets clicked
+
+### Architecture
+
+Every time a `textarea` shows up on a page, on initial load or later on, it gets passed to a list of `CommentEnhancer`s. Each one gets a turn to say "I can enhance this box!". They show that they can enhance it by returning a [`CommentSpot`, `Overtype`].
+
+Those values get bundled up with the `HTMLTextAreaElement` itself into an `EnhancedTextarea`, which gets added to the `TextareaRegistry`. At some interval, draft edits will get saved by the browser extension (TODO).
+
+When the `textarea` gets removed from the page, the `TextareaRegistry` is notified so that the `CommentSpot` can be marked as abandoned or submitted as appropriate (TODO).
