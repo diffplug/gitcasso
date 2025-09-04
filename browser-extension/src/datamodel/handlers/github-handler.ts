@@ -1,4 +1,4 @@
-import type { CommentContext, TextareaHandler } from '../datamodel/textarea-handler'
+import type { CommentContext, CommentEnhancer } from '../enhancer'
 
 export type GitHubCommentType =
   | 'GH_ISSUE_NEW'
@@ -17,7 +17,7 @@ export interface GitHubContext extends CommentContext {
   commentId?: string | undefined // for editing existing comments
 }
 
-export class GitHubHandler implements TextareaHandler<GitHubContext> {
+export class GitHubHandler implements CommentEnhancer<GitHubContext> {
   forCommentTypes(): string[] {
     return [
       'GH_ISSUE_NEW',

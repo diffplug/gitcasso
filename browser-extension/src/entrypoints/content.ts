@@ -1,9 +1,8 @@
-import { HandlerRegistry } from '../datamodel/handler-registry'
-import { TextareaRegistry } from '../datamodel/textarea-registry'
+import { EnhancerRegistry, TextareaRegistry } from '../datamodel/registries'
 import { logger } from './content/logger'
 import { injectStyles } from './content/styles'
 
-const handlerRegistry = new HandlerRegistry()
+const handlerRegistry = new EnhancerRegistry()
 const textareaRegistry = new TextareaRegistry()
 
 export default defineContentScript({
