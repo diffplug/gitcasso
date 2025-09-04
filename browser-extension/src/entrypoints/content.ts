@@ -77,8 +77,8 @@ function enhanceMaybe(textarea: HTMLTextAreaElement) {
   if (enhancedTextarea) {
     logger.debug(
       'Identified textarea:',
-      enhancedTextarea.context.type,
-      enhancedTextarea.context.unique_key,
+      enhancedTextarea.spot.type,
+      enhancedTextarea.spot.unique_key,
     )
     enhancedTextareas.register(enhancedTextarea)
   } else {

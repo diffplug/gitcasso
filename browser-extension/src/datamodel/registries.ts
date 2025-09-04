@@ -5,7 +5,7 @@ import { RedditHandler as RedditEnhancer } from './handlers/reddit-handler'
 
 export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
   element: HTMLTextAreaElement
-  context: T
+  spot: T
   handler: CommentEnhancer<T>
   overtype: OverType
 }
@@ -37,8 +37,8 @@ export class EnhancerRegistry {
       try {
         const result = handler.tryToEnhance(textarea)
         if (result) {
-          const [overtype, context] = result
-          return { context, element: textarea, handler, overtype }
+          const [overtype, spot] = result
+          return { element: textarea, handler, overtype, spot }
         }
       } catch (error) {
         console.warn('Handler failed to identify textarea:', error)
