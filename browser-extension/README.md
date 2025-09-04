@@ -17,7 +17,7 @@
 - `npm run biome` - runs `biome check` (lint & formatting)
 - `npm run biome:fix` - fixes most of what `biome check` finds
 - `npm run compile` - typechecking
-- `npm run test` - vitest
+- `npm test` - vitest
 
 ### Deployment
 - `npm run build` - build for mv3 for most browsers
