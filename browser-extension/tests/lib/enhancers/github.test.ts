@@ -1,19 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { EnhancerRegistry, TextareaRegistry } from '../../../src/lib/registries'
+import { EnhancerRegistry } from '../../../src/lib/registries'
 
 // Mock WXT's defineContentScript global
 vi.stubGlobal('defineContentScript', vi.fn())
 
 describe('GitHubHandler', () => {
   let enhancers: EnhancerRegistry
-  let _enhancedTextareas: TextareaRegistry
   let mockTextarea: HTMLTextAreaElement
 
   beforeEach(() => {
     // Reset DOM and registries for each test
     document.body.innerHTML = ''
     enhancers = new EnhancerRegistry()
-    _enhancedTextareas = new TextareaRegistry()
 
     // Mock window.location for GitHub PR page
     Object.defineProperty(window, 'location', {
@@ -55,13 +53,10 @@ describe('GitHubHandler', () => {
   })
 
   it('should create correct GitHubContext spot for PR comment', () => {
-    const _enhancedTextarea = enhancers.tryToEnhance(mockTextarea)
-
+    // const _enhancedTextarea = enhancers.tryToEnhance(mockTextarea)
     // expect(enhancedTextarea).toBeTruthy()
-
     // Snapshot test on the spot value
     // expect(enhancedTextarea?.spot).toMatchSnapshot('github-pr-517-spot')
-
     // Also verify specific expected values
     // expect(enhancedTextarea?.spot).toMatchObject({
     //   domain: 'github.com',
