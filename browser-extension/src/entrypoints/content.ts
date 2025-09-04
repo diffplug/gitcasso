@@ -1,3 +1,4 @@
+import hljs from "highlight.js";
 import OverType from "../overtype/overtype";
 
 export default defineContentScript({
@@ -5,7 +6,7 @@ export default defineContentScript({
     if (window.location.hostname !== "github.com") {
       return;
     }
-
+    OverType.setCodeHighlighter(hljsHighlighter);
     const ghCommentBox = document.getElementById(
       "new_comment_field"
     ) as HTMLTextAreaElement | null;
@@ -34,4 +35,19 @@ function modifyDOM(overtypeInput: HTMLTextAreaElement): HTMLElement {
   const overtypeContainer = overtypeWrapper.parentElement!.closest("div")!;
   overtypeContainer.classList.add("overtype-container");
   return overtypeContainer.parentElement!.closest("div")!;
+}
+
+function hljsHighlighter(code: string, language: string) {
+  try {
+    if (language && hljs.getLanguage(language)) {
+      const result = hljs.highlight(code, { language });
+      return result.value;
+    } else {
+      const result = hljs.highlightAuto(code);
+      return result.value;
+    }
+  } catch (error) {
+    console.warn("highlight.js highlighting failed:", error);
+    return code;
+  }
 }

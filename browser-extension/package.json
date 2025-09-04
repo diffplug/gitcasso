@@ -2,6 +2,7 @@
   "author": "DiffPlug",
   "dependencies": {
     "@wxt-dev/webextension-polyfill": "^1.0.0",
+    "highlight.js": "^11.11.1",
     "overtype": "^1.2.3",
     "webextension-polyfill": "^0.12.0"
   },
