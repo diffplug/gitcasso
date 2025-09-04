@@ -50,7 +50,7 @@
       "recommended": true,
       "style": {
         "noDefaultExport": "off",
-        "noNonNullAssertion": "warn",
+        "noNonNullAssertion": "off",
         "noParameterAssign": {
           "options": {
             "propertyAssignment": "deny"

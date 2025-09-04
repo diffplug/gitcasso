@@ -1,12 +1,14 @@
-import { OverType } from '../../overtype/mock-overtype'
+import hljs from 'highlight.js'
+import { logger } from '../../lib/logger'
+import OverType, { type OverTypeInstance } from '../../overtype/overtype'
 import type { CommentEnhancer, CommentSpot } from '../enhancer'
 
 const GITHUB_SPOT_TYPES = [
+  'GH_PR_ADD_COMMENT',
+  /* TODO
   'GH_ISSUE_NEW',
   'GH_PR_NEW',
   'GH_ISSUE_ADD_COMMENT',
-  'GH_PR_ADD_COMMENT',
-  /* TODO
   'GH_ISSUE_EDIT_COMMENT',
   'GH_PR_EDIT_COMMENT',
   'GH_PR_CODE_COMMENT',
@@ -15,95 +17,95 @@ const GITHUB_SPOT_TYPES = [
 
 export type GitHubSpotType = (typeof GITHUB_SPOT_TYPES)[number]
 
-export interface GitHubSpot extends CommentSpot {
+export interface GitHubAddCommentSpot extends CommentSpot {
   type: GitHubSpotType // Override to narrow from string to specific union
   domain: string
   slug: string // owner/repo
-  number?: number | undefined // issue/PR number, undefined for new issues and PRs
+  number: number // issue/PR number, undefined for new issues and PRs
 }
 
-export class GitHubEnhancer implements CommentEnhancer<GitHubSpot> {
+export class GitHubAddCommentEnhancer implements CommentEnhancer<GitHubAddCommentSpot> {
   forSpotTypes(): string[] {
     return [...GITHUB_SPOT_TYPES]
   }
 
-  tryToEnhance(textarea: HTMLTextAreaElement): [OverType, GitHubSpot] | null {
-    // Only handle GitHub domains
-    if (!window.location.hostname.includes('github')) {
+  tryToEnhance(textarea: HTMLTextAreaElement): [OverTypeInstance, GitHubAddCommentSpot] | null {
+    // Only handle github.com domains TODO: identify GitHub Enterprise somehow
+    if (window.location.hostname !== 'github.com') {
       return null
     }
-
-    const pathname = window.location.pathname
 
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
-    const match = pathname.match(/^\/([^/]+)\/([^/]+)(?:\/(issues|pull)\/(\d+))?/)
+    logger.debug(`${this.constructor.name} examing url`, window.location.pathname)
+
+    const match = window.location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/pull\/(\d+))/)
+    logger.debug(`${this.constructor.name} found match`, window.location.pathname)
     if (!match) return null
-
-    const [, owner, repo, urlType, numberStr] = match
+    const [, owner, repo, numberStr] = match
     const slug = `${owner}/${repo}`
-    const number = numberStr ? parseInt(numberStr, 10) : undefined
+    const number = parseInt(numberStr!, 10)
 
-    // Determine comment type
-    let type: GitHubSpotType
+    const unique_key = `github.com:${slug}:${number}`
 
-    if (pathname.includes('/issues/new')) {
-      type = 'GH_ISSUE_NEW'
-    } else if (pathname.includes('/compare/') || pathname.endsWith('/compare')) {
-      type = 'GH_PR_NEW'
-    } else if (urlType && number) {
-      if (urlType === 'issues') {
-        type = 'GH_ISSUE_ADD_COMMENT'
-      } else {
-        type = 'GH_PR_ADD_COMMENT'
-      }
-    } else {
-      return null
-    }
-
-    // Generate unique key based on context
-    let unique_key = `github:${slug}`
-    if (number) {
-      unique_key += `:${urlType}:${number}`
-    } else {
-      unique_key += ':new'
-    }
-
-    const spot: GitHubSpot = {
-      domain: window.location.hostname,
+    const spot: GitHubAddCommentSpot = {
+      domain: 'github.com',
       number,
       slug,
-      type,
+      type: 'GH_PR_ADD_COMMENT',
       unique_key,
     }
-    const overtype = new OverType(textarea)
-    return [overtype, spot]
+    return [this.createOvertypeFor(textarea), spot]
   }
 
-  tableTitle(spot: GitHubSpot): string {
+  private createOvertypeFor(ghCommentBox: HTMLTextAreaElement): OverTypeInstance {
+    OverType.setCodeHighlighter(hljsHighlighter)
+    const overtypeContainer = this.modifyDOM(ghCommentBox)
+    return new OverType(overtypeContainer, {
+      autoResize: true,
+      minHeight: '102px',
+      padding: 'var(--base-size-8)',
+      placeholder: 'Add your comment here...',
+    })[0]!
+  }
+
+  private modifyDOM(overtypeInput: HTMLTextAreaElement): HTMLElement {
+    overtypeInput.classList.add('overtype-input')
+    const overtypePreview = document.createElement('div')
+    overtypePreview.classList.add('overtype-preview')
+    overtypeInput.insertAdjacentElement('afterend', overtypePreview)
+    const overtypeWrapper = overtypeInput.parentElement!.closest('div')!
+    overtypeWrapper.classList.add('overtype-wrapper')
+    overtypeInput.placeholder = 'Add your comment here...'
+    const overtypeContainer = overtypeWrapper.parentElement!.closest('div')!
+    overtypeContainer.classList.add('overtype-container')
+    return overtypeContainer.parentElement!.closest('div')!
+  }
+
+  tableTitle(spot: GitHubAddCommentSpot): string {
     const { slug, number } = spot
-    if (number) {
-      return `Comment on ${slug} #${number}`
-    }
-    return `New ${window.location.pathname.includes('/issues/') ? 'issue' : 'PR'} in ${slug}`
+    return `${slug} PR #${number}`
   }
 
-  tableIcon(spot: GitHubSpot): string {
-    switch (spot.type) {
-      case 'GH_ISSUE_NEW':
-      case 'GH_ISSUE_ADD_COMMENT':
-        return '🐛' // Issue icon
-      case 'GH_PR_NEW':
-      case 'GH_PR_ADD_COMMENT':
-        return '🔄' // PR icon
-    }
+  tableIcon(_: GitHubAddCommentSpot): string {
+    return '🔄' // PR icon TODO: icon urls in /public
   }
 
-  buildUrl(spot: GitHubSpot): string {
-    const baseUrl = `https://${spot.domain}/${spot.slug}`
-    if (spot.number) {
-      const type = spot.type.indexOf('ISSUE') ? 'issues' : 'pull'
-      return `${baseUrl}/${type}/${spot.number}`
+  buildUrl(spot: GitHubAddCommentSpot): string {
+    return `https://${spot.domain}/${spot.slug}/pull/${spot.number}`
+  }
+}
+
+function hljsHighlighter(code: string, language: string) {
+  try {
+    if (language && hljs.getLanguage(language)) {
+      const result = hljs.highlight(code, { language })
+      return result.value
+    } else {
+      const result = hljs.highlightAuto(code)
+      return result.value
     }
-    return baseUrl
+  } catch (error) {
+    console.warn('highlight.js highlighting failed:', error)
+    return code
   }
 }
