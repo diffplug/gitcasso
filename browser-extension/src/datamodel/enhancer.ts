@@ -20,7 +20,7 @@ export interface CommentEnhancer<Spot extends CommentSpot = CommentSpot> {
    */
   tryToEnhance(textarea: HTMLTextAreaElement): [OverType, Spot] | null
 
-  generateIcon(spot: Spot): string
-  generateDisplayTitle(spot: Spot): string
+  tableIcon(spot: Spot): string
+  tableTitle(spot: Spot): string
   buildUrl(spot: Spot): string
 }

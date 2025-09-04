@@ -79,7 +79,7 @@ export class GitHubEnhancer implements CommentEnhancer<GitHubSpot> {
     return [overtype, spot]
   }
 
-  generateDisplayTitle(spot: GitHubSpot): string {
+  tableTitle(spot: GitHubSpot): string {
     const { slug, number } = spot
     if (number) {
       return `Comment on ${slug} #${number}`
@@ -87,7 +87,7 @@ export class GitHubEnhancer implements CommentEnhancer<GitHubSpot> {
     return `New ${window.location.pathname.includes('/issues/') ? 'issue' : 'PR'} in ${slug}`
   }
 
-  generateIcon(spot: GitHubSpot): string {
+  tableIcon(spot: GitHubSpot): string {
     switch (spot.type) {
       case 'GH_ISSUE_NEW':
       case 'GH_ISSUE_ADD_COMMENT':
