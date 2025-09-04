@@ -27,7 +27,7 @@
 
 This is a [WXT](https://wxt.dev/)-based browser extension that
 
-- finds `textarea` components and decorates them with [overtype](https://overtype.dev/) and [highlightjs](https://highlightjs.org/)
+- finds `textarea` components and decorates them with [overtype](https://overtype.dev/) and [highlight.js](https://highlightjs.org/)
 - stores unposted comment drafts, and makes them easy to find via the extension popup
 
 ### Entry points
