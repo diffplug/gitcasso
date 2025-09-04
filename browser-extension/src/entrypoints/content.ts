@@ -24,7 +24,6 @@ export default defineContentScript({
 
 function handleMutations(mutations: MutationRecord[]): void {
   for (const mutation of mutations) {
-    // Handle added nodes
     for (const node of mutation.addedNodes) {
       if (node.nodeType === Node.ELEMENT_NODE) {
         const element = node as Element
@@ -42,7 +41,6 @@ function handleMutations(mutations: MutationRecord[]): void {
       }
     }
 
-    // Handle removed nodes
     for (const node of mutation.removedNodes) {
       if (node.nodeType === Node.ELEMENT_NODE) {
         const element = node as Element
@@ -63,7 +61,6 @@ function handleMutations(mutations: MutationRecord[]): void {
 }
 
 function enhanceMaybe(textarea: HTMLTextAreaElement) {
-  // Check if this textarea is already registered
   if (enhancedTextareas.get(textarea)) {
     logger.debug('textarea already registered {}', textarea)
     return
@@ -72,7 +69,6 @@ function enhanceMaybe(textarea: HTMLTextAreaElement) {
   logger.debug('activating textarea {}', textarea)
   injectStyles()
 
-  // Use registry to identify and handle this specific textarea
   const enhancedTextarea = enhancers.tryToEnhance(textarea)
   if (enhancedTextarea) {
     logger.debug(
