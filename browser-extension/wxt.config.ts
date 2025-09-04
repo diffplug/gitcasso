@@ -3,7 +3,7 @@ import { defineConfig } from 'wxt'
 export default defineConfig({
   manifest: {
     description:
-      'Syntax highlighting and autosave for comments on GitHub (and other other markdown-friendly places).',
+      'Syntax highlighting and autosave for comments on GitHub (and other other markdown-friendly websites).',
     host_permissions: ['https://*/*', 'http://*/*'],
     icons: {
       16: '/icons/icon-16.png',
