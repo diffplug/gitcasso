@@ -29,7 +29,7 @@ export class HandlerRegistry {
       try {
         const context = handler.identifyContextOf(textarea);
         if (context) {
-          return { element: textarea, context };
+          return { element: textarea, context, handler };
         }
       } catch (error) {
         console.warn('Handler failed to identify textarea:', error);

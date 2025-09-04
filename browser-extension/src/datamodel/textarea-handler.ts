@@ -7,6 +7,7 @@ export interface CommentContext {
 export interface TextareaInfo<T extends CommentContext = CommentContext> {
   element: HTMLTextAreaElement;
   context: T;
+  handler: TextareaHandler<T>;
 }
 
 export interface TextareaHandler<T extends CommentContext = CommentContext> {

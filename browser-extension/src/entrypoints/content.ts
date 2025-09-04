@@ -2,8 +2,10 @@ import { CONFIG } from './content/config'
 import { logger } from './content/logger'
 import { injectStyles } from './content/styles'
 import { HandlerRegistry } from '../datamodel/handler-registry'
+import { TextareaRegistry } from '../datamodel/textarea-registry'
 
-const registry = new HandlerRegistry()
+const handlerRegistry = new HandlerRegistry()
+const textareaRegistry = new TextareaRegistry()
 
 export default defineContentScript({
   main() {
@@ -16,7 +18,7 @@ export default defineContentScript({
       childList: true,
       subtree: true,
     })
-    logger.debug('Extension loaded with', registry.getAllHandlers().length, 'handlers')
+    logger.debug('Extension loaded with', handlerRegistry.getAllHandlers().length, 'handlers')
   },
   matches: ['<all_urls>'],
   runAt: 'document_end',
@@ -49,10 +51,10 @@ function initializeMaybe(textarea: HTMLTextAreaElement) {
     textarea.classList.add(CONFIG.ADDED_OVERTYPE_CLASS)
     
     // Use registry to identify and handle this specific textarea
-    const textareaInfo = registry.identifyTextarea(textarea)
+    const textareaInfo = handlerRegistry.identifyTextarea(textarea)
     if (textareaInfo) {
       logger.debug('Identified textarea:', textareaInfo.context.type, textareaInfo.context.unique_key)
-      // TODO: Set up textarea monitoring and draft saving
+      textareaRegistry.register(textareaInfo)
     } else {
       logger.debug('No handler found for textarea')
     }
