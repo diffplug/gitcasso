@@ -1,6 +1,6 @@
 import type { OverType } from '../overtype/mock-overtype'
 import type { CommentEnhancer, CommentSpot } from './enhancer'
-import { GitHubEnhancer } from './enhancers/github'
+import { GitHubAddCommentEnhancer } from './enhancers/github'
 
 export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
   textarea: HTMLTextAreaElement
@@ -14,7 +14,7 @@ export class EnhancerRegistry {
 
   constructor() {
     // Register all available handlers
-    this.register(new GitHubEnhancer())
+    this.register(new GitHubAddCommentEnhancer())
   }
 
   private register<T extends CommentSpot>(handler: CommentEnhancer<T>): void {
