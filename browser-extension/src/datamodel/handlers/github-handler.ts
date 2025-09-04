@@ -15,19 +15,19 @@ const GITHUB_COMMENT_TYPES = [
 
 export type GitHubCommentType = (typeof GITHUB_COMMENT_TYPES)[number]
 
-export interface GitHubContext extends CommentSpot {
+export interface GitHubSpot extends CommentSpot {
   type: GitHubCommentType // Override to narrow from string to specific union
   domain: string
   slug: string // owner/repo
   number?: number | undefined // issue/PR number, undefined for new issues and PRs
 }
 
-export class GitHubHandler implements CommentEnhancer<GitHubContext> {
+export class GitHubHandler implements CommentEnhancer<GitHubSpot> {
   forCommentTypes(): string[] {
     return [...GITHUB_COMMENT_TYPES]
   }
 
-  tryToEnhance(textarea: HTMLTextAreaElement): [OverType, GitHubContext] | null {
+  tryToEnhance(textarea: HTMLTextAreaElement): [OverType, GitHubSpot] | null {
     // Only handle GitHub domains
     if (!window.location.hostname.includes('github')) {
       return null
@@ -46,16 +46,11 @@ export class GitHubHandler implements CommentEnhancer<GitHubContext> {
     // Determine comment type
     let type: GitHubCommentType
 
-    // New issue
     if (pathname.includes('/issues/new')) {
       type = 'GH_ISSUE_NEW'
-    }
-    // New PR
-    else if (pathname.includes('/compare/') || pathname.endsWith('/compare')) {
+    } else if (pathname.includes('/compare/') || pathname.endsWith('/compare')) {
       type = 'GH_PR_NEW'
-    }
-    // Existing issue or PR page
-    else if (urlType && number) {
+    } else if (urlType && number) {
       if (urlType === 'issues') {
         type = 'GH_ISSUE_ADD_COMMENT'
       } else {
@@ -73,30 +68,27 @@ export class GitHubHandler implements CommentEnhancer<GitHubContext> {
       unique_key += ':new'
     }
 
-    const context: GitHubContext = {
+    const spot: GitHubSpot = {
       domain: window.location.hostname,
       number,
       slug,
       type,
       unique_key,
     }
-
-    // Create OverType instance for this textarea
     const overtype = new OverType(textarea)
-
-    return [overtype, context]
+    return [overtype, spot]
   }
 
-  generateDisplayTitle(context: GitHubContext): string {
-    const { slug, number } = context
+  generateDisplayTitle(spot: GitHubSpot): string {
+    const { slug, number } = spot
     if (number) {
       return `Comment on ${slug} #${number}`
     }
     return `New ${window.location.pathname.includes('/issues/') ? 'issue' : 'PR'} in ${slug}`
   }
 
-  generateIcon(context: GitHubContext): string {
-    switch (context.type) {
+  generateIcon(spot: GitHubSpot): string {
+    switch (spot.type) {
       case 'GH_ISSUE_NEW':
       case 'GH_ISSUE_ADD_COMMENT':
         return '🐛' // Issue icon
@@ -106,14 +98,12 @@ export class GitHubHandler implements CommentEnhancer<GitHubContext> {
     }
   }
 
-  buildUrl(context: GitHubContext): string {
-    const baseUrl = `https://${context.domain}/${context.slug}`
-
-    if (context.number) {
-      const type = window.location.pathname.includes('/issues/') ? 'issues' : 'pull'
-      return `${baseUrl}/${type}/${context.number}`
+  buildUrl(spot: GitHubSpot): string {
+    const baseUrl = `https://${spot.domain}/${spot.slug}`
+    if (spot.number) {
+      const type = spot.type.indexOf('ISSUE') ? 'issues' : 'pull'
+      return `${baseUrl}/${type}/${spot.number}`
     }
-
     return baseUrl
   }
 }
