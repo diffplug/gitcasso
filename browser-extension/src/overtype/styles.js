@@ -21,8 +21,8 @@ export function generateStyles(options = {}) {
     mobile = {},
   } = options;
 
-  fontFamily = "inherit !important"
-  fontSize = "var(--text-body-size-medium) !important"
+  fontFamily = "inherit";
+  fontSize = "var(--text-body-size-medium)";
 
   // Generate mobile overrides
   const mobileStyles =
@@ -47,6 +47,11 @@ export function generateStyles(options = {}) {
 
   return `
     /* OverType Editor Styles */
+    /* GitHub styles */
+    .overtype-preview pre.code-block {
+      font-family: ${fontFamily} !important;
+      font-size: ${fontSize} !important;
+    }
     
     /* Middle-ground CSS Reset - Prevent parent styles from leaking in */
     .overtype-container * {
