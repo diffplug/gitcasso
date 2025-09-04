@@ -1,7 +1,7 @@
 import hljs from 'highlight.js'
+import { logger } from '../../lib/logger'
 import OverType, { type OverTypeInstance } from '../../overtype/overtype'
 import type { CommentEnhancer, CommentSpot } from '../enhancer'
-import { logger } from '../../lib/logger'
 
 const GITHUB_SPOT_TYPES = [
   'GH_PR_ADD_COMMENT',
