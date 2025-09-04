@@ -3,7 +3,7 @@ import type { CommentEnhancer, CommentSpot } from './enhancer'
 import { GitHubEnhancer } from './enhancers/github'
 
 export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
-  element: HTMLTextAreaElement
+  textarea: HTMLTextAreaElement
   spot: T
   handler: CommentEnhancer<T>
   overtype: OverType
@@ -36,7 +36,7 @@ export class EnhancerRegistry {
         const result = handler.tryToEnhance(textarea)
         if (result) {
           const [overtype, spot] = result
-          return { element: textarea, handler, overtype, spot }
+          return { handler, overtype, spot, textarea }
         }
       } catch (error) {
         console.warn('Handler failed to identify textarea:', error)
@@ -58,7 +58,7 @@ export class TextareaRegistry {
   private textareas = new Map<HTMLTextAreaElement, EnhancedTextarea<any>>()
 
   register<T extends CommentSpot>(textareaInfo: EnhancedTextarea<T>): void {
-    this.textareas.set(textareaInfo.element, textareaInfo)
+    this.textareas.set(textareaInfo.textarea, textareaInfo)
     // TODO: register as a draft in progress with the global list
   }
 

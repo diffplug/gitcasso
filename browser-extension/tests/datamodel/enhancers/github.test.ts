@@ -43,7 +43,7 @@ describe('GitHubHandler', () => {
     const enhancedTextarea = enhancers.tryToEnhance(mockTextarea)
 
     expect(enhancedTextarea).toBeTruthy()
-    expect(enhancedTextarea?.element).toBe(mockTextarea)
+    expect(enhancedTextarea?.textarea).toBe(mockTextarea)
     expect(enhancedTextarea?.spot.type).toBe('GH_PR_ADD_COMMENT')
 
     // Register the enhanced textarea
@@ -54,7 +54,7 @@ describe('GitHubHandler', () => {
     // Verify it's in the registry
     const registeredTextarea = enhancedTextareas.get(mockTextarea)
     expect(registeredTextarea).toBeTruthy()
-    expect(registeredTextarea?.element).toBe(mockTextarea)
+    expect(registeredTextarea?.textarea).toBe(mockTextarea)
   })
 
   it('should create correct GitHubContext spot for PR comment', () => {
