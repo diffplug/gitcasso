@@ -6,5 +6,5 @@ export const CONFIG = {
   ADDED_OVERTYPE_CLASS: 'gitcasso-overtype',
   DEBUG: true, // enabled debug logging
   EXTENSION_NAME: 'gitcasso', // decorates logs
-  MODE: 'PLAYGROUNDS_PR' satisfies ModeType,
+  MODE: 'PROD' satisfies ModeType,
 } as const
