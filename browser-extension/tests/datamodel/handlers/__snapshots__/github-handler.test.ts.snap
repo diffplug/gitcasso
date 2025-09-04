@@ -2,7 +2,6 @@
 
 exports[`GitHubHandler > should create correct GitHubContext spot for PR comment > github-pr-517-spot 1`] = `
 {
-  "commentId": undefined,
   "domain": "github.com",
   "number": 517,
   "slug": "diffplug/selfie",

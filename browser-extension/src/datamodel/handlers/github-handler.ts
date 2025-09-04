@@ -73,7 +73,6 @@ export class GitHubHandler implements CommentEnhancer<GitHubContext> {
       unique_key += ':new'
     }
 
-
     const context: GitHubContext = {
       domain: window.location.hostname,
       number,

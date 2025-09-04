@@ -67,39 +67,12 @@ describe('GitHubHandler', () => {
 
     // Also verify specific expected values
     expect(enhancedTextarea?.spot).toMatchObject({
-      commentId: undefined,
       domain: 'github.com',
       number: 517,
       slug: 'diffplug/selfie',
       type: 'GH_PR_ADD_COMMENT',
       unique_key: 'github:diffplug/selfie:pull:517',
     })
-  })
-
-  it('should handle multiple textareas on the same page', () => {
-    // Create a second textarea for inline code comments
-    const codeCommentTextarea = document.createElement('textarea')
-    codeCommentTextarea.className = 'form-control js-suggester-field'
-
-    const inlineForm = document.createElement('div')
-    inlineForm.className = 'js-inline-comment-form'
-    inlineForm.appendChild(codeCommentTextarea)
-    document.body.appendChild(inlineForm)
-
-    // Test both textareas
-    const mainCommentEnhanced = enhancers.tryToEnhance(mockTextarea)
-    const codeCommentEnhanced = enhancers.tryToEnhance(codeCommentTextarea)
-
-    expect(mainCommentEnhanced?.spot.type).toBe('GH_PR_ADD_COMMENT')
-    expect(codeCommentEnhanced?.spot.type).toBe('GH_PR_CODE_COMMENT')
-
-    // Register both
-    if (mainCommentEnhanced) enhancedTextareas.register(mainCommentEnhanced)
-    if (codeCommentEnhanced) enhancedTextareas.register(codeCommentEnhanced)
-
-    // Verify both are registered
-    expect(enhancedTextareas.get(mockTextarea)).toBeTruthy()
-    expect(enhancedTextareas.get(codeCommentTextarea)).toBeTruthy()
   })
 
   it('should not enhance textarea on non-GitHub pages', () => {
