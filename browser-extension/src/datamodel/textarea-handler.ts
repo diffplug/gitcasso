@@ -13,7 +13,7 @@ export interface TextareaHandler<T extends CommentContext = CommentContext> {
   // Handler metadata
   forCommentTypes(): string[];
   // whenever a new `textarea` is added to any webpage, this method is called to try to find a handler for it
-  identifyContextOf(textarea: HTMLTextAreaElement): TextareaInfo | null;
+  identifyContextOf(textarea: HTMLTextAreaElement): T | null;
   
   // Popup functionality helpers
   generateDisplayTitle(context: T): string;

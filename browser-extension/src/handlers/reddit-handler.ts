@@ -21,7 +21,7 @@ export class RedditHandler implements TextareaHandler<RedditContext> {
     ];
   }
 
-  identifyContextOf(textarea: HTMLTextAreaElement): TextareaInfo<RedditContext> | null {
+  identifyContextOf(textarea: HTMLTextAreaElement): RedditContext | null {
     // Only handle Reddit domains
     if (!window.location.hostname.includes('reddit')) {
       return null;
@@ -87,7 +87,7 @@ export class RedditHandler implements TextareaHandler<RedditContext> {
       commentId: commentId || undefined
     };
 
-    return { element: textarea, context };
+    return context;
   }
 
   generateDisplayTitle(context: RedditContext): string {

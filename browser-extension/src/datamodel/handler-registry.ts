@@ -27,9 +27,9 @@ export class HandlerRegistry {
   identifyTextarea(textarea: HTMLTextAreaElement): TextareaInfo<any> | null {
     for (const handler of this.handlers) {
       try {
-        const result = handler.identifyContextOf(textarea);
-        if (result) {
-          return result;
+        const context = handler.identifyContextOf(textarea);
+        if (context) {
+          return { element: textarea, context };
         }
       } catch (error) {
         console.warn('Handler failed to identify textarea:', error);

@@ -30,7 +30,7 @@ export class GitHubHandler implements TextareaHandler<GitHubContext> {
     ];
   }
 
-  identifyContextOf(textarea: HTMLTextAreaElement): TextareaInfo<GitHubContext> | null {
+  identifyContextOf(textarea: HTMLTextAreaElement): GitHubContext | null {
     // Only handle GitHub domains
     if (!window.location.hostname.includes('github')) {
       return null;
@@ -102,7 +102,7 @@ export class GitHubHandler implements TextareaHandler<GitHubContext> {
       commentId: commentId || undefined
     };
 
-    return { element: textarea, context };
+    return context;
   }
 
   generateDisplayTitle(context: GitHubContext): string {
