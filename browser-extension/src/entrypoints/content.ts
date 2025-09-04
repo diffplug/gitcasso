@@ -1,6 +1,6 @@
+import { CONFIG } from '../common/config'
+import { logger } from '../common/logger'
 import { EnhancerRegistry, TextareaRegistry } from '../datamodel/registries'
-import { logger } from './content/logger'
-import { injectStyles } from './content/styles'
 
 const handlerRegistry = new EnhancerRegistry()
 const textareaRegistry = new TextareaRegistry()
@@ -79,5 +79,20 @@ function initializeMaybeIsPageload(textarea: HTMLTextAreaElement) {
     textareaRegistry.register(textareaInfo)
   } else {
     logger.debug('No handler found for textarea')
+  }
+}
+
+const STYLES = `
+.${CONFIG.ADDED_OVERTYPE_CLASS} {
+  background: cyan !important;
+}
+`
+
+function injectStyles(): void {
+  if (!document.getElementById('gitcasso-styles')) {
+    const style = document.createElement('style')
+    style.textContent = STYLES
+    style.id = 'gitcasso-styles'
+    document.head.appendChild(style)
   }
 }
