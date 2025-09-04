@@ -73,7 +73,7 @@ function enhanceMaybe(textarea: HTMLTextAreaElement) {
   injectStyles()
 
   // Use registry to identify and handle this specific textarea
-  const enhancedTextarea = enhancers.identifyTextarea(textarea)
+  const enhancedTextarea = enhancers.tryToEnhance(textarea)
   if (enhancedTextarea) {
     logger.debug(
       'Identified textarea:',

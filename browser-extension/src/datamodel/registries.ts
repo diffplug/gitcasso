@@ -32,7 +32,7 @@ export class EnhancerRegistry {
     return null
   }
 
-  identifyTextarea(textarea: HTMLTextAreaElement): EnhancedTextarea<any> | null {
+  tryToEnhance(textarea: HTMLTextAreaElement): EnhancedTextarea<any> | null {
     for (const handler of this.enhancers) {
       try {
         const result = handler.tryToEnhance(textarea)
