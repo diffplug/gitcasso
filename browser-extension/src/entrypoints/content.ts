@@ -1,4 +1,4 @@
-import { CONFIG } from '../lib/config'
+import { CONFIG, ModeType } from '../lib/config'
 import { logger } from '../lib/logger'
 import { EnhancerRegistry, TextareaRegistry } from '../lib/registries'
 import { githubPrNewCommentContentScript } from '../playgrounds/github-playground'
@@ -8,7 +8,7 @@ const enhancedTextareas = new TextareaRegistry()
 
 export default defineContentScript({
   main() {
-    if (CONFIG.MODE === 'PLAYGROUNDS_PR') {
+    if (CONFIG.MODE as ModeType === 'PLAYGROUNDS_PR') {
       githubPrNewCommentContentScript()
       return
     }
