@@ -10,7 +10,7 @@ export default defineContentScript({
   main() {
     const textAreasOnPageLoad = document.querySelectorAll<HTMLTextAreaElement>(`textarea`)
     for (const textarea of textAreasOnPageLoad) {
-      initializeMaybeIsPageload(textarea, true)
+      initializeMaybeIsPageload(textarea)
     }
     const observer = new MutationObserver(handleMutations)
     observer.observe(document.body, {
@@ -25,17 +25,35 @@ export default defineContentScript({
 
 function handleMutations(mutations: MutationRecord[]): void {
   for (const mutation of mutations) {
+    // Handle added nodes
     for (const node of mutation.addedNodes) {
       if (node.nodeType === Node.ELEMENT_NODE) {
         const element = node as Element
         if (element.tagName === 'TEXTAREA') {
-          initializeMaybeIsPageload(element as HTMLTextAreaElement, false)
+          initializeMaybeIsPageload(element as HTMLTextAreaElement)
         }
         // Also check for textareas within added subtrees
         const textareas = element.querySelectorAll?.('textarea')
         if (textareas) {
           for (const textarea of textareas) {
-            initializeMaybeIsPageload(textarea, false)
+            initializeMaybeIsPageload(textarea)
+          }
+        }
+      }
+    }
+
+    // Handle removed nodes
+    for (const node of mutation.removedNodes) {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const element = node as Element
+        if (element.tagName === 'TEXTAREA') {
+          textareaRegistry.unregisterDueToModification(element as HTMLTextAreaElement)
+        }
+        // Also check for textareas within removed subtrees
+        const textareas = element.querySelectorAll?.('textarea')
+        if (textareas) {
+          for (const textarea of textareas) {
+            textareaRegistry.unregisterDueToModification(textarea)
           }
         }
       }
@@ -43,7 +61,7 @@ function handleMutations(mutations: MutationRecord[]): void {
   }
 }
 
-function initializeMaybeIsPageload(textarea: HTMLTextAreaElement, isPageload: boolean) {
+function initializeMaybeIsPageload(textarea: HTMLTextAreaElement) {
   // Check if this textarea is already registered
   if (textareaRegistry.get(textarea)) {
     logger.debug('textarea already registered {}', textarea)
