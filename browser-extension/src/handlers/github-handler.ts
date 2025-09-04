@@ -10,6 +10,7 @@ export type GitHubCommentType =
   | 'GH_PR_CODE_COMMENT';
 
 export interface GitHubContext extends CommentContext {
+  type: GitHubCommentType; // Override to narrow from string to specific union
   domain: string;
   slug: string; // owner/repo
   number?: number | undefined; // issue/PR number

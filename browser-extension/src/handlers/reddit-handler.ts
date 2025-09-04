@@ -6,6 +6,7 @@ export type RedditCommentType =
   | 'REDDIT_COMMENT_EDIT';
 
 export interface RedditContext extends CommentContext {
+  type: RedditCommentType; // Override to narrow from string to specific union
   subreddit: string;
   postId?: string | undefined;
   commentId?: string | undefined; // for editing existing comments
