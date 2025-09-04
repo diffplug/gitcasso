@@ -21,15 +21,6 @@ export class EnhancerRegistry {
     this.enhancers.add(handler)
   }
 
-  getHandlerForType(type: string): CommentEnhancer<any> | null {
-    for (const handler of this.enhancers) {
-      if (handler.forCommentTypes().includes(type)) {
-        return handler
-      }
-    }
-    return null
-  }
-
   tryToEnhance(textarea: HTMLTextAreaElement): EnhancedTextarea<any> | null {
     for (const handler of this.enhancers) {
       try {
@@ -45,12 +36,8 @@ export class EnhancerRegistry {
     return null
   }
 
-  getAllHandlers(): CommentEnhancer<any>[] {
-    return Array.from(this.enhancers)
-  }
-
-  getCommentTypesForHandler(handler: CommentEnhancer<any>): string[] {
-    return handler.forCommentTypes()
+  getEnhancerCount(): number {
+    return this.enhancers.size
   }
 }
 

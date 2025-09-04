@@ -16,7 +16,7 @@ export default defineContentScript({
       childList: true,
       subtree: true,
     })
-    logger.debug('Extension loaded with', enhancers.getAllHandlers().length, 'handlers')
+    logger.debug('Extension loaded with', enhancers.getEnhancerCount, 'handlers')
   },
   matches: ['<all_urls>'],
   runAt: 'document_end',

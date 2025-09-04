@@ -23,7 +23,7 @@ export interface GitHubSpot extends CommentSpot {
 }
 
 export class GitHubEnhancer implements CommentEnhancer<GitHubSpot> {
-  forCommentTypes(): string[] {
+  forSpotTypes(): string[] {
     return [...GITHUB_COMMENT_TYPES]
   }
 
