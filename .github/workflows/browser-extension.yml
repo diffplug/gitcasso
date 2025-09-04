@@ -1,0 +1,23 @@
+on:
+  push:
+    paths:
+      - 'browser-extension/**'
+  pull_request:
+    paths:
+      - 'browser-extension/**'
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          cache-dependency-path: browser-extension/package-lock.json
+      - run: npm ci
+        working-directory: browser-extension
+      - run: npm run biome
+        working-directory: browser-extension
+      - run: npm run compile
+        working-directory: browser-extension
