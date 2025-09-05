@@ -42,3 +42,21 @@ Every time a `textarea` shows up on a page, on initial load or later on, it gets
 Those values get bundled up with the `HTMLTextAreaElement` itself into an `EnhancedTextarea`, which gets added to the `TextareaRegistry`. At some interval, draft edits will get saved by the browser extension (TODO).
 
 When the `textarea` gets removed from the page, the `TextareaRegistry` is notified so that the `CommentSpot` can be marked as abandoned or submitted as appropriate (TODO).
+
+## Testing
+
+In `tests/har` there are various `.har` files. These are complete recordings of a single page load.
+
+- `npm run har:view` and you can see the recordings, without our browser extension.
+
+### Recording new HAR files
+
+- you can add or change URLs in `tests/har-index.ts`
+- `npx playwright codegen https://github.com/login --save-storage=playwright/.auth/gh.json` will store new auth tokens
+  - login manually, then close the browser
+  - ***these cookies are very sensitive! we only run this script using a test account that has no permissions or memberships to anything, recommend you do the same!***
+- `npm run har:record` this records new snapshots using those auth tokens (it needs args, run it with no args for docs)
+  - DO NOT COMMIT AND PUSH NEW OR CHANGED `har` files!
+  - we try to sanitize these (see `har-record.ts` for details) but there may be important PII in them
+  - if you need new HAR files for something, let us know and we will generate them ourselves using a dummy account
+  - IF YOUR PR CHANGES OR ADDS HAR FILES WE WILL CLOSE IT. Ask for HAR files and we'll be happy to generate clean ones you can test against.

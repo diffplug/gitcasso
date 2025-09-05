@@ -11,9 +11,13 @@
     "@biomejs/biome": "^2.1.2",
     "@testing-library/jest-dom": "^6.6.4",
     "@types/node": "^22.16.5",
+    "@playwright/test": "^1.46.0",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "^3.2.4",
+    "express": "^4.19.2",
+    "@types/express": "^4.17.21",
     "happy-dom": "^18.0.1",
+    "tsx": "^4.19.1",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4",
     "wxt": "^0.20.7"
@@ -39,6 +43,8 @@
     "dev:firefox": "wxt -b firefox",
     "postinstall": "wxt prepare",
     "test": "vitest run",
+    "har:record": "tsx tests/har-record.ts",
+    "har:view": "tsx tests/har-view.ts",
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox"
   },

@@ -16,3 +16,8 @@ dist/
 # OS junk
 .DS_Store
 Thumbs.db
+
+# playright
+browser-extension/playwright-report/
+browser-extension/playwright/
+browser-extension/test-results/
