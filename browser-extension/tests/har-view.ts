@@ -63,7 +63,7 @@ async function loadHar(filename: string) {
 }
 
 // List available HAR files
-app.get('/', async (req, res) => {
+app.get('/', async (_req, res) => {
   try {
     const harDir = path.join(__dirname, 'har')
     const files = await fs.readdir(harDir)
@@ -168,10 +168,10 @@ app.get('/page/:filename', async (req, res) => {
       `/asset/${filename.replace('.har', '')}`,
     )
 
-    res.send(html)
+    return res.send(html)
   } catch (error) {
     console.error('Error serving page:', error)
-    res.status(500).send('Error loading page')
+    return res.status(500).send('Error loading page')
   }
 })
 
@@ -270,10 +270,10 @@ app.get('/page/:filename/gitcasso', async (req, res) => {
       html += contentScriptTag
     }
 
-    res.send(html)
+    return res.send(html)
   } catch (error) {
     console.error('Error serving page:', error)
-    res.status(500).send('Error loading page')
+    return res.status(500).send('Error loading page')
   }
 })
 
@@ -301,13 +301,13 @@ app.get('/asset/:harname/*', async (req, res) => {
     res.set('Content-Type', mimeType)
 
     if (content.encoding === 'base64') {
-      res.send(Buffer.from(content.text, 'base64'))
+      return res.send(Buffer.from(content.text, 'base64'))
     } else {
-      res.send(content.text || '')
+      return res.send(content.text || '')
     }
   } catch (error) {
     console.error('Error serving asset:', error)
-    res.status(404).send('Asset not found')
+    return res.status(404).send('Asset not found')
   }
 })
 

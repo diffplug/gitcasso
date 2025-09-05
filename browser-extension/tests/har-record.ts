@@ -15,7 +15,7 @@ function globToRegex(pattern: string): RegExp {
 // Filter pages based on pattern
 function filterPages(pattern: string) {
   const regex = globToRegex(pattern)
-  return PAGES.filter(([name]) => regex.test(name))
+  return Object.entries(PAGES).filter(([name]) => regex.test(name))
 }
 
 const FILTER =
@@ -88,7 +88,7 @@ async function sanitize(filename: string) {
   // If no argument provided, show available keys
   if (!pattern) {
     console.log('Available recording targets:')
-    for (const [name] of PAGES) {
+    for (const [name] of Object.entries(PAGES)) {
       console.log(`  ${name}`)
     }
     console.log('\nUsage: npm run har:record <pattern>')
@@ -105,7 +105,7 @@ async function sanitize(filename: string) {
   if (pagesToRecord.length === 0) {
     console.log(`No targets match pattern: ${pattern}`)
     console.log('Available targets:')
-    for (const [name] of PAGES) {
+    for (const [name] of Object.entries(PAGES)) {
       console.log(`  ${name}`)
     }
     return
