@@ -1,6 +1,6 @@
-import { chromium } from '@playwright/test'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { chromium } from '@playwright/test'
 import { PAGES } from './har-index'
 
 // Convert glob pattern to regex
@@ -18,7 +18,8 @@ function filterPages(pattern: string) {
   return PAGES.filter(([name]) => regex.test(name))
 }
 
-const FILTER = /^(https?:\/\/(github\.com|assets\.github\.com|avatars\.githubusercontent\.com|user-images\.githubusercontent\.com))/
+const FILTER =
+  /^(https?:\/\/(github\.com|assets\.github\.com|avatars\.githubusercontent\.com|user-images\.githubusercontent\.com))/
 
 // Sanitization config
 const REDACTIONS: Array<[RegExp, string]> = [
@@ -29,15 +30,15 @@ const REDACTIONS: Array<[RegExp, string]> = [
 
 async function record(name: string, url: string) {
   console.log('Recording HAR:', name, url)
-  
+
   const browser = await chromium.launch()
   const context = await browser.newContext({
-    storageState: 'playwright/.auth/gh.json', // local-only; never commit
     recordHar: {
-      path: `tests/har/${name}.har`,
       mode: 'minimal', // smaller; omits cookies etc.
+      path: `tests/har/${name}.har`,
       urlFilter: FILTER, // restrict scope to GitHub + assets
     },
+    storageState: 'playwright/.auth/gh.json', // local-only; never commit
   })
 
   const page = await context.newPage()
@@ -61,7 +62,7 @@ function stripHeaders(headers?: any[]) {
 
 async function sanitize(filename: string) {
   console.log('Sanitizing:', filename)
-  
+
   const p = path.join('tests/har', filename)
   const har = JSON.parse(await fs.readFile(p, 'utf8'))
 
@@ -83,7 +84,7 @@ async function sanitize(filename: string) {
 
 ;(async () => {
   const pattern = process.argv[2]
-  
+
   // If no argument provided, show available keys
   if (!pattern) {
     console.log('Available recording targets:')
@@ -97,10 +98,10 @@ async function sanitize(filename: string) {
     console.log('  npm run har:record "github_issue"   # Record specific target')
     return
   }
-  
+
   // Filter pages based on pattern
   const pagesToRecord = filterPages(pattern)
-  
+
   if (pagesToRecord.length === 0) {
     console.log(`No targets match pattern: ${pattern}`)
     console.log('Available targets:')
@@ -109,26 +110,26 @@ async function sanitize(filename: string) {
     }
     return
   }
-  
+
   console.log(`Recording ${pagesToRecord.length} target(s) matching "${pattern}":`)
   for (const [name] of pagesToRecord) {
     console.log(`  ${name}`)
   }
   console.log()
-  
+
   await fs.mkdir('tests/har', { recursive: true })
-  
+
   // Record filtered HAR files
   for (const [name, url] of pagesToRecord) {
     await record(name, url)
   }
-  
+
   console.log('Recording complete. Sanitizing...')
-  
+
   // Sanitize recorded HAR files
   for (const [name] of pagesToRecord) {
     await sanitize(`${name}.har`)
   }
-  
+
   console.log('Done.')
 })()

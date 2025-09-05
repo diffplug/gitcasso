@@ -1,7 +1,7 @@
-import express from 'express'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import express from 'express'
 import { PAGES } from './har-index'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -13,7 +13,7 @@ const harCache = new Map<string, any>()
 
 // Create mapping from HAR filename to original URL
 const harToUrlMap = Object.fromEntries(
-  Object.entries(PAGES).map(([key, url]) => [`${key}.har`, url])
+  Object.entries(PAGES).map(([key, url]) => [`${key}.har`, url]),
 )
 
 // Extract URL parts for location patching
@@ -22,14 +22,14 @@ function getUrlParts(filename: string) {
   if (!originalUrl) {
     return null
   }
-  
+
   try {
     const url = new URL(originalUrl)
     return {
+      host: url.host,
       hostname: url.hostname,
-      pathname: url.pathname,
       href: originalUrl,
-      host: url.host
+      pathname: url.pathname,
     }
   } catch {
     return null
@@ -39,9 +39,9 @@ function getUrlParts(filename: string) {
 // Check if WXT dev server is running
 async function checkDevServer(): Promise<boolean> {
   try {
-    const response = await fetch('http://localhost:3000/@vite/client', { 
+    const response = await fetch('http://localhost:3000/@vite/client', {
       method: 'HEAD',
-      signal: AbortSignal.timeout(2000)
+      signal: AbortSignal.timeout(2000),
     })
     return response.ok
   } catch {
@@ -54,7 +54,7 @@ async function loadHar(filename: string) {
   if (harCache.has(filename)) {
     return harCache.get(filename)
   }
-  
+
   const harPath = path.join(__dirname, 'har', filename)
   const harContent = await fs.readFile(harPath, 'utf-8')
   const harData = JSON.parse(harContent)
@@ -67,19 +67,22 @@ app.get('/', async (req, res) => {
   try {
     const harDir = path.join(__dirname, 'har')
     const files = await fs.readdir(harDir)
-    const harFiles = files.filter(file => file.endsWith('.har'))
+    const harFiles = files.filter((file) => file.endsWith('.har'))
     const devServerRunning = await checkDevServer()
-    
-    const devServerWarning = !devServerRunning ? `
+
+    const devServerWarning = !devServerRunning
+      ? `
       <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
         <strong>⚠️ Warning:</strong> WXT dev server is not running on localhost:3000<br>
         <small>Gitcasso-enabled links won't work. Run <code>npm run dev</code> to start the server and <strong>then refresh this page</strong>.</small>
       </div>
-    ` : ''
-    
-    const links = harFiles.map(file => {
-      const basename = path.basename(file, '.har')
-      return `
+    `
+      : ''
+
+    const links = harFiles
+      .map((file) => {
+        const basename = path.basename(file, '.har')
+        return `
         <li>
           <div style="margin-bottom: 10px; font-weight: bold; color: #555;">${basename}</div>
           <div style="display: flex; gap: 10px;">
@@ -90,8 +93,9 @@ app.get('/', async (req, res) => {
           </div>
         </li>
       `
-    }).join('')
-    
+      })
+      .join('')
+
     res.send(`
 <!DOCTYPE html>
 <html>
@@ -141,28 +145,29 @@ app.get('/page/:filename', async (req, res) => {
     if (!filename.endsWith('.har')) {
       return res.status(400).send('Invalid file type')
     }
-    
+
     const harData = await loadHar(filename)
-    
+
     // Find the main HTML response
-    const mainEntry = harData.log.entries.find((entry: any) => 
-      entry.request.url.includes('github.com') && 
-      entry.response.content.mimeType?.includes('text/html') &&
-      entry.response.content.text
+    const mainEntry = harData.log.entries.find(
+      (entry: any) =>
+        entry.request.url.includes('github.com') &&
+        entry.response.content.mimeType?.includes('text/html') &&
+        entry.response.content.text,
     )
-    
+
     if (!mainEntry) {
       return res.status(404).send('No HTML content found in HAR file')
     }
-    
+
     let html = mainEntry.response.content.text
-    
+
     // Replace external URLs with local asset URLs
     html = html.replace(
       /https:\/\/(github\.com|assets\.github\.com|avatars\.githubusercontent\.com|user-images\.githubusercontent\.com)/g,
-      `/asset/${filename.replace('.har', '')}`
+      `/asset/${filename.replace('.har', '')}`,
     )
-    
+
     res.send(html)
   } catch (error) {
     console.error('Error serving page:', error)
@@ -177,34 +182,35 @@ app.get('/page/:filename/gitcasso', async (req, res) => {
     if (!filename.endsWith('.har')) {
       return res.status(400).send('Invalid file type')
     }
-    
+
     // Get original URL parts for location patching
     const urlParts = getUrlParts(filename)
     if (!urlParts) {
       return res.status(400).send('Unknown HAR file - not found in har-index.ts')
     }
-    
+
     const harData = await loadHar(filename)
-    
+
     // Find the main HTML response
-    const mainEntry = harData.log.entries.find((entry: any) => 
-      entry.request.url.includes('github.com') && 
-      entry.response.content.mimeType?.includes('text/html') &&
-      entry.response.content.text
+    const mainEntry = harData.log.entries.find(
+      (entry: any) =>
+        entry.request.url.includes('github.com') &&
+        entry.response.content.mimeType?.includes('text/html') &&
+        entry.response.content.text,
     )
-    
+
     if (!mainEntry) {
       return res.status(404).send('No HTML content found in HAR file')
     }
-    
+
     let html = mainEntry.response.content.text
-    
+
     // Replace external URLs with local asset URLs
     html = html.replace(
       /https:\/\/(github\.com|assets\.github\.com|avatars\.githubusercontent\.com|user-images\.githubusercontent\.com)/g,
-      `/asset/${filename.replace('.har', '')}`
+      `/asset/${filename.replace('.har', '')}`,
     )
-    
+
     // Inject patched content script with location patching
     const contentScriptTag = `
       <script>
@@ -256,14 +262,14 @@ app.get('/page/:filename/gitcasso', async (req, res) => {
           });
       </script>
     `
-    
+
     // Insert script before closing body tag, or at the end if no body tag
     if (html.includes('</body>')) {
       html = html.replace('</body>', `${contentScriptTag}</body>`)
     } else {
       html += contentScriptTag
     }
-    
+
     res.send(html)
   } catch (error) {
     console.error('Error serving page:', error)
@@ -276,24 +282,24 @@ app.get('/asset/:harname/*', async (req, res) => {
   try {
     const harname = req.params.harname + '.har'
     const assetPath = (req.params as any)[0] as string
-    
+
     const harData = await loadHar(harname)
-    
+
     // Find matching asset in HAR
     const assetEntry = harData.log.entries.find((entry: any) => {
       const url = new URL(entry.request.url)
       return url.pathname === '/' + assetPath || url.pathname.endsWith('/' + assetPath)
     })
-    
+
     if (!assetEntry) {
       return res.status(404).send('Asset not found')
     }
-    
+
     const content = assetEntry.response.content
     const mimeType = content.mimeType || 'application/octet-stream'
-    
+
     res.set('Content-Type', mimeType)
-    
+
     if (content.encoding === 'base64') {
       res.send(Buffer.from(content.text, 'base64'))
     } else {
