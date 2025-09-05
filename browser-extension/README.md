@@ -47,7 +47,7 @@ When the `textarea` gets removed from the page, the `TextareaRegistry` is notifi
 
 In `tests/har` there are various `.har` files. These are complete recordings of a single page load.
 
-- `npm run har:view` and you can see the recordings, without our browser extension.
+- `npm run har:view` and you can see the recordings, with or without our browser extension.
 
 ### Recording new HAR files
 
