@@ -1,23 +1,12 @@
-import hljs from 'highlight.js'
-import { logger } from '../../lib/logger'
-import OverType, { type OverTypeInstance } from '../../overtype/overtype'
-import type { CommentEnhancer, CommentSpot } from '../enhancer'
+import OverType, { type OverTypeInstance } from '../../../overtype/overtype'
+import type { CommentEnhancer, CommentSpot } from '../../enhancer'
+import { logger } from '../../logger'
+import { githubHighlighter } from './githubHighlighter'
+import { GITHUB_SPOT_TYPES } from './githubSpotTypes'
 
-const GITHUB_SPOT_TYPES = [
-  'GH_PR_ADD_COMMENT',
-  /* TODO
-  'GH_ISSUE_NEW',
-  'GH_PR_NEW',
-  'GH_ISSUE_ADD_COMMENT',
-  'GH_ISSUE_EDIT_COMMENT',
-  'GH_PR_EDIT_COMMENT',
-  'GH_PR_CODE_COMMENT',
-  */
-] as const
+type GitHubSpotType = (typeof GITHUB_SPOT_TYPES)[number]
 
-export type GitHubSpotType = (typeof GITHUB_SPOT_TYPES)[number]
-
-export interface GitHubAddCommentSpot extends CommentSpot {
+interface GitHubAddCommentSpot extends CommentSpot {
   type: GitHubSpotType // Override to narrow from string to specific union
   domain: string
   slug: string // owner/repo
@@ -55,7 +44,7 @@ export class GitHubAddCommentEnhancer implements CommentEnhancer<GitHubAddCommen
   }
 
   prepareForFirstEnhancement(): void {
-    OverType.setCodeHighlighter(hljsHighlighter)
+    OverType.setCodeHighlighter(githubHighlighter)
   }
 
   enhance(textArea: HTMLTextAreaElement, _spot: GitHubAddCommentSpot): OverTypeInstance {
@@ -92,20 +81,5 @@ export class GitHubAddCommentEnhancer implements CommentEnhancer<GitHubAddCommen
 
   buildUrl(spot: GitHubAddCommentSpot): string {
     return `https://${spot.domain}/${spot.slug}/pull/${spot.number}`
-  }
-}
-
-function hljsHighlighter(code: string, language: string) {
-  try {
-    if (language && hljs.getLanguage(language)) {
-      const result = hljs.highlight(code, { language })
-      return result.value
-    } else {
-      const result = hljs.highlightAuto(code)
-      return result.value
-    }
-  } catch (error) {
-    console.warn('highlight.js highlighting failed:', error)
-    return code
   }
 }
