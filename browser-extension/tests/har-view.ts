@@ -5,10 +5,23 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
-const PORT = 3000
+const PORT = 3001
 
 // Store HAR data
 const harCache = new Map<string, any>()
+
+// Check if WXT dev server is running
+async function checkDevServer(): Promise<boolean> {
+  try {
+    const response = await fetch('http://localhost:3000/@vite/client', { 
+      method: 'HEAD',
+      signal: AbortSignal.timeout(2000)
+    })
+    return response.ok
+  } catch {
+    return false
+  }
+}
 
 // Load and cache HAR file
 async function loadHar(filename: string) {
@@ -29,10 +42,28 @@ app.get('/', async (req, res) => {
     const harDir = path.join(__dirname, 'har')
     const files = await fs.readdir(harDir)
     const harFiles = files.filter(file => file.endsWith('.har'))
+    const devServerRunning = await checkDevServer()
+    
+    const devServerWarning = !devServerRunning ? `
+      <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
+        <strong>⚠️ Warning:</strong> WXT dev server is not running on localhost:3000<br>
+        <small>Gitcasso-enabled links won't work. Run <code>npm run dev</code> to start the server and <strong>then refresh this page</strong>.</small>
+      </div>
+    ` : ''
     
     const links = harFiles.map(file => {
       const basename = path.basename(file, '.har')
-      return `<li><a href="/page/${file}">${basename}</a></li>`
+      return `
+        <li>
+          <div style="margin-bottom: 10px; font-weight: bold; color: #555;">${basename}</div>
+          <div style="display: flex; gap: 10px;">
+            <a href="/page/${file}" style="flex: 1; text-align: center;">🔍 Clean</a>
+            <a href="/page/${file}/gitcasso" style="flex: 1; text-align: center; ${!devServerRunning ? 'opacity: 0.5; pointer-events: none;' : ''}">
+              🚀 Gitcasso-enabled
+            </a>
+          </div>
+        </li>
+      `
     }).join('')
     
     res.send(`
@@ -43,27 +74,30 @@ app.get('/', async (req, res) => {
     <style>
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 600px; 
+            max-width: 700px; 
             margin: 50px auto; 
             padding: 20px;
         }
         h1 { color: #333; }
         ul { list-style: none; padding: 0; }
-        li { margin: 10px 0; }
+        li { margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; }
         a { 
             display: block; 
-            padding: 15px 20px; 
-            background: #f8f9fa; 
+            padding: 12px 20px; 
+            background: #fff; 
             text-decoration: none; 
             color: #333; 
             border-radius: 6px;
-            border: 1px solid #e9ecef;
+            border: 1px solid #dee2e6;
+            transition: all 0.2s;
         }
-        a:hover { background: #e9ecef; }
+        a:hover:not([style*="pointer-events: none"]) { background: #e9ecef; transform: translateY(-1px); }
+        code { background: #f1f3f4; padding: 2px 4px; border-radius: 3px; font-size: 0.9em; }
     </style>
 </head>
 <body>
     <h1>📄 HAR Page Viewer</h1>
+    ${devServerWarning}
     <p>Select a recorded page to view:</p>
     <ul>${links}</ul>
 </body>
@@ -110,11 +144,66 @@ app.get('/page/:filename', async (req, res) => {
   }
 })
 
+// Serve the main HTML page from HAR with Gitcasso content script injected
+app.get('/page/:filename/gitcasso', async (req, res) => {
+  try {
+    const filename = req.params.filename
+    if (!filename.endsWith('.har')) {
+      return res.status(400).send('Invalid file type')
+    }
+    
+    const harData = await loadHar(filename)
+    
+    // Find the main HTML response
+    const mainEntry = harData.log.entries.find((entry: any) => 
+      entry.request.url.includes('github.com') && 
+      entry.response.content.mimeType?.includes('text/html') &&
+      entry.response.content.text
+    )
+    
+    if (!mainEntry) {
+      return res.status(404).send('No HTML content found in HAR file')
+    }
+    
+    let html = mainEntry.response.content.text
+    
+    // Replace external URLs with local asset URLs
+    html = html.replace(
+      /https:\/\/(github\.com|assets\.github\.com|avatars\.githubusercontent\.com|user-images\.githubusercontent\.com)/g,
+      `/asset/${filename.replace('.har', '')}`
+    )
+    
+    // Inject the Gitcasso content script at the end of the body
+    const contentScriptTag = `
+      <script>
+        // Load the Gitcasso content script from the dev server
+        const script = document.createElement('script');
+        script.src = 'http://localhost:3000/content-scripts/content.js';
+        script.onload = () => console.log('Gitcasso content script loaded successfully');
+        script.onerror = () => console.error('Failed to load Gitcasso content script - is the dev server running?');
+        document.body.appendChild(script);
+      </script>
+    `
+    
+    // Insert script before closing body tag, or at the end if no body tag
+    if (html.includes('</body>')) {
+      html = html.replace('</body>', `${contentScriptTag}</body>`)
+    } else {
+      html += contentScriptTag
+    }
+    
+    res.send(html)
+  } catch (error) {
+    console.error('Error serving page:', error)
+    res.status(500).send('Error loading page')
+  }
+})
+
 // Serve assets from HAR file
 app.get('/asset/:harname/*', async (req, res) => {
   try {
     const harname = req.params.harname + '.har'
-    const assetPath = req.params[0]
+    const assetPath = (req.params as any)[0] as string
     
     const harData = await loadHar(harname)
     
