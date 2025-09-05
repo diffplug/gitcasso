@@ -30,8 +30,8 @@ export class GitHubAddCommentEnhancer implements CommentEnhancer<GitHubAddCommen
   }
 
   tryToEnhance(textarea: HTMLTextAreaElement): [OverTypeInstance, GitHubAddCommentSpot] | null {
-    // Only handle github.com domains TODO: identify GitHub Enterprise somehow
-    if (window.location.hostname !== 'github.com') {
+    // Only handle github.com domains - check meta tag for testing compatibility
+    if (document.querySelector('meta[name="hostname"]')?.getAttribute('content') !== 'github.com') {
       return null
     }
 
