@@ -3,7 +3,7 @@
  * Embedded in JavaScript to ensure single-file distribution
  */
 
-import { themeToCSSVars } from "./themes.js";
+import { themeToCSSVars } from './themes.js'
 
 /**
  * Generate the complete CSS for the editor
@@ -12,17 +12,17 @@ import { themeToCSSVars } from "./themes.js";
  */
 export function generateStyles(options = {}) {
   let {
-    fontSize = "14px",
+    fontSize = '14px',
     lineHeight = 1.6,
     /* System-first, guaranteed monospaced; avoids Android 'ui-monospace' pitfalls */
     fontFamily = '"SF Mono", SFMono-Regular, Menlo, Monaco, "Cascadia Code", Consolas, "Roboto Mono", "Noto Sans Mono", "Droid Sans Mono", "Ubuntu Mono", "DejaVu Sans Mono", "Liberation Mono", "Courier New", Courier, monospace',
-    padding = "20px",
+    padding = '20px',
     theme = null,
     mobile = {},
-  } = options;
+  } = options
 
-  fontFamily = "inherit";
-  fontSize = "var(--text-body-size-medium)";
+  fontFamily = 'inherit'
+  fontSize = 'var(--text-body-size-medium)'
 
   // Generate mobile overrides
   const mobileStyles =
@@ -33,17 +33,17 @@ export function generateStyles(options = {}) {
       .overtype-wrapper .overtype-preview {
         ${Object.entries(mobile)
           .map(([prop, val]) => {
-            const cssProp = prop.replace(/([A-Z])/g, "-$1").toLowerCase();
-            return `${cssProp}: ${val} !important;`;
+            const cssProp = prop.replace(/([A-Z])/g, '-$1').toLowerCase()
+            return `${cssProp}: ${val} !important;`
           })
-          .join("\n        ")}
+          .join('\n        ')}
       }
     }
   `
-      : "";
+      : ''
 
   // Generate theme variables if provided
-  const themeVars = theme && theme.colors ? themeToCSSVars(theme.colors) : "";
+  const themeVars = theme && theme.colors ? themeToCSSVars(theme.colors) : ''
 
   return `
     /* OverType Editor Styles */
@@ -54,7 +54,9 @@ export function generateStyles(options = {}) {
     }
     
     /* Middle-ground CSS Reset - Prevent parent styles from leaking in */
-    .overtype-container * {
+    .overtype-container .overtype-wrapper,
+    .overtype-container .overtype-input,
+    .overtype-container .overtype-preview {
       /* Box model - these commonly leak */
       /* margin: 0 !important; */
       padding: 0 !important;
@@ -96,7 +98,7 @@ export function generateStyles(options = {}) {
           ? `
       /* Theme Variables */
       ${themeVars}`
-          : ""
+          : ''
       }
     }
     
@@ -820,5 +822,5 @@ export function generateStyles(options = {}) {
     }
 
     ${mobileStyles}
-  `;
+  `
 }
