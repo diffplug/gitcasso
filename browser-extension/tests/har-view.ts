@@ -13,7 +13,7 @@ const harCache = new Map<string, any>()
 
 // Create mapping from HAR filename to original URL
 const harToUrlMap = Object.fromEntries(
-  PAGES.map(([key, url]) => [`${key}.har`, url])
+  Object.entries(PAGES).map(([key, url]) => [`${key}.har`, url])
 )
 
 // Extract URL parts for location patching
