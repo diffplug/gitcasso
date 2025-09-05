@@ -133,7 +133,7 @@ app.get('/', async (_req, res) => {
 </body>
 </html>
     `)
-  } catch (error) {
+  } catch (_error) {
     res.status(500).send('Error listing HAR files')
   }
 })
@@ -280,7 +280,7 @@ app.get('/page/:filename/gitcasso', async (req, res) => {
 // Serve assets from HAR file
 app.get('/asset/:harname/*', async (req, res) => {
   try {
-    const harname = req.params.harname + '.har'
+    const harname = `${req.params.harname}.har`
     const assetPath = (req.params as any)[0] as string
 
     const harData = await loadHar(harname)
@@ -288,7 +288,7 @@ app.get('/asset/:harname/*', async (req, res) => {
     // Find matching asset in HAR
     const assetEntry = harData.log.entries.find((entry: any) => {
       const url = new URL(entry.request.url)
-      return url.pathname === '/' + assetPath || url.pathname.endsWith('/' + assetPath)
+      return url.pathname === `/${assetPath}` || url.pathname.endsWith(`/${assetPath}`)
     })
 
     if (!assetEntry) {
