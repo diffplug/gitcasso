@@ -173,15 +173,42 @@ app.get('/page/:filename/gitcasso', async (req, res) => {
       `/asset/${filename.replace('.har', '')}`
     )
     
-    // Inject the Gitcasso content script at the end of the body
+    // Inject patched content script that bypasses webextension-polyfill
     const contentScriptTag = `
       <script>
-        // Load the Gitcasso content script from the dev server
-        const script = document.createElement('script');
-        script.src = 'http://localhost:3000/content-scripts/content.js';
-        script.onload = () => console.log('Gitcasso content script loaded successfully');
-        script.onerror = () => console.error('Failed to load Gitcasso content script - is the dev server running?');
-        document.body.appendChild(script);
+        // Fetch and patch the content script to remove webextension-polyfill issues
+        fetch('http://localhost:3000/.output/chrome-mv3-dev/content-scripts/content.js')
+          .then(response => response.text())
+          .then(code => {
+            console.log('Fetched content script, patching webextension-polyfill...');
+            
+            // Replace the problematic webextension-polyfill error check
+            const patchedCode = code.replace(
+              /throw new Error\\("This script should only be loaded in a browser extension\\."/g,
+              'console.warn("Webextension-polyfill check bypassed for HAR testing"'
+            );
+            
+            // Mock necessary APIs before executing
+            window.chrome = window.chrome || {
+              runtime: {
+                getURL: (path) => 'chrome-extension://gitcasso-test/' + path,
+                onMessage: { addListener: () => {} },
+                sendMessage: () => Promise.resolve(),
+                id: 'gitcasso-test'
+              }
+            };
+            window.browser = window.chrome;
+            
+            // Execute the patched script
+            const script = document.createElement('script');
+            script.textContent = patchedCode;
+            document.head.appendChild(script);
+            
+            console.log('Gitcasso content script loaded and patched for HAR testing');
+          })
+          .catch(error => {
+            console.error('Failed to load and patch content script:', error);
+          });
       </script>
     `
     
