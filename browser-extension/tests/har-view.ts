@@ -2,6 +2,7 @@ import express from 'express'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { PAGES } from './har-index'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -9,6 +10,31 @@ const PORT = 3001
 
 // Store HAR data
 const harCache = new Map<string, any>()
+
+// Create mapping from HAR filename to original URL
+const harToUrlMap = Object.fromEntries(
+  PAGES.map(([key, url]) => [`${key}.har`, url])
+)
+
+// Extract URL parts for location patching
+function getUrlParts(filename: string) {
+  const originalUrl = harToUrlMap[filename]
+  if (!originalUrl) {
+    return null
+  }
+  
+  try {
+    const url = new URL(originalUrl)
+    return {
+      hostname: url.hostname,
+      pathname: url.pathname,
+      href: originalUrl,
+      host: url.host
+    }
+  } catch {
+    return null
+  }
+}
 
 // Check if WXT dev server is running
 async function checkDevServer(): Promise<boolean> {
@@ -152,6 +178,12 @@ app.get('/page/:filename/gitcasso', async (req, res) => {
       return res.status(400).send('Invalid file type')
     }
     
+    // Get original URL parts for location patching
+    const urlParts = getUrlParts(filename)
+    if (!urlParts) {
+      return res.status(400).send('Unknown HAR file - not found in har-index.ts')
+    }
+    
     const harData = await loadHar(filename)
     
     // Find the main HTML response
@@ -173,9 +205,22 @@ app.get('/page/:filename/gitcasso', async (req, res) => {
       `/asset/${filename.replace('.har', '')}`
     )
     
-    // Inject patched content script that bypasses webextension-polyfill
+    // Inject patched content script with location patching
     const contentScriptTag = `
       <script>
+        // Patch window.location before loading content script
+        console.log('Patching window.location to simulate original URL...');
+        
+        // Use history.pushState to change the pathname
+        window.history.pushState({}, '', '${urlParts.pathname}');
+        
+        console.log('Location patched:', {
+          hostname: window.location.hostname,
+          pathname: window.location.pathname,
+          href: window.location.href,
+          host: window.location.host
+        });
+        
         // Fetch and patch the content script to remove webextension-polyfill issues
         fetch('http://localhost:3000/.output/chrome-mv3-dev/content-scripts/content.js')
           .then(response => response.text())
@@ -204,7 +249,7 @@ app.get('/page/:filename/gitcasso', async (req, res) => {
             script.textContent = patchedCode;
             document.head.appendChild(script);
             
-            console.log('Gitcasso content script loaded and patched for HAR testing');
+            console.log('Gitcasso content script loaded with location patching for:', '${urlParts.href}');
           })
           .catch(error => {
             console.error('Failed to load and patch content script:', error);
