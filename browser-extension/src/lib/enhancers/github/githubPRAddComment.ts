@@ -18,7 +18,7 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
 
   tryToEnhance(_textarea: HTMLTextAreaElement): GitHubPRAddCommentSpot | null {
     // Only handle github.com domains TODO: identify GitHub Enterprise somehow
-    if (window.location.hostname !== 'github.com') {
+    if (window.location.hostname !== 'github.com' || _textarea.id !== 'new_comment_field') {
       return null
     }
 

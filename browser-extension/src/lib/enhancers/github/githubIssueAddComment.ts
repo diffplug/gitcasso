@@ -17,7 +17,7 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
   }
 
   tryToEnhance(_textarea: HTMLTextAreaElement): GitHubIssueAddCommentSpot | null {
-    if (window.location.hostname !== 'github.com') {
+    if (window.location.hostname !== 'github.com' || _textarea.id !== ':r2v:') {
       return null
     }
 
@@ -50,7 +50,7 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
       autoResize: true,
       minHeight: '100px',
       padding: 'var(--base-size-16)',
-      placeholder: 'Add your comment here...',
+      placeholder: 'Use Markdown to format your comment',
     })[0]!
   }
 
