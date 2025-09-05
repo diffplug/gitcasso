@@ -9,3 +9,5 @@ export const GITHUB_SPOT_TYPES = [
   'GH_PR_CODE_COMMENT',
   */
 ] as const
+
+export type GitHubSpotType = (typeof GITHUB_SPOT_TYPES)[number]

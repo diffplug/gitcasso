@@ -2,23 +2,21 @@ import OverType, { type OverTypeInstance } from '../../../overtype/overtype'
 import type { CommentEnhancer, CommentSpot } from '../../enhancer'
 import { logger } from '../../logger'
 import { githubHighlighter } from './githubHighlighter'
-import { GITHUB_SPOT_TYPES } from './githubSpotTypes'
+import { GITHUB_SPOT_TYPES, type GitHubSpotType } from './githubSpotTypes'
 
-type GitHubSpotType = (typeof GITHUB_SPOT_TYPES)[number]
-
-interface GitHubAddCommentSpot extends CommentSpot {
+interface GitHubPRAddCommentSpot extends CommentSpot {
   type: GitHubSpotType // Override to narrow from string to specific union
   domain: string
   slug: string // owner/repo
   number: number // issue/PR number, undefined for new issues and PRs
 }
 
-export class GitHubAddCommentEnhancer implements CommentEnhancer<GitHubAddCommentSpot> {
+export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCommentSpot> {
   forSpotTypes(): string[] {
     return [...GITHUB_SPOT_TYPES]
   }
 
-  tryToEnhance(_textarea: HTMLTextAreaElement): GitHubAddCommentSpot | null {
+  tryToEnhance(_textarea: HTMLTextAreaElement): GitHubPRAddCommentSpot | null {
     // Only handle github.com domains TODO: identify GitHub Enterprise somehow
     if (window.location.hostname !== 'github.com') {
       return null
@@ -47,7 +45,7 @@ export class GitHubAddCommentEnhancer implements CommentEnhancer<GitHubAddCommen
     OverType.setCodeHighlighter(githubHighlighter)
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubAddCommentSpot): OverTypeInstance {
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubPRAddCommentSpot): OverTypeInstance {
     const overtypeContainer = this.modifyDOM(textArea)
     return new OverType(overtypeContainer, {
       autoResize: true,
@@ -70,16 +68,16 @@ export class GitHubAddCommentEnhancer implements CommentEnhancer<GitHubAddCommen
     return overtypeContainer.parentElement!.closest('div')!
   }
 
-  tableTitle(spot: GitHubAddCommentSpot): string {
+  tableTitle(spot: GitHubPRAddCommentSpot): string {
     const { slug, number } = spot
     return `${slug} PR #${number}`
   }
 
-  tableIcon(_: GitHubAddCommentSpot): string {
+  tableIcon(_: GitHubPRAddCommentSpot): string {
     return '🔄' // PR icon TODO: icon urls in /public
   }
 
-  buildUrl(spot: GitHubAddCommentSpot): string {
+  buildUrl(spot: GitHubPRAddCommentSpot): string {
     return `https://${spot.domain}/${spot.slug}/pull/${spot.number}`
   }
 }
