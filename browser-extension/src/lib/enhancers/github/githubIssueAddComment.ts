@@ -17,12 +17,11 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
   }
 
   tryToEnhance(textarea: HTMLTextAreaElement): GitHubIssueAddCommentSpot | null {
-    if (
-      document.querySelector('meta[name="hostname"]')?.getAttribute('content') !== 'github.com' ||
-      textarea.id !== ':r2v:'
-    ) {
+    if (document.querySelector('meta[name="hostname"]')?.getAttribute('content') !== 'github.com') {
       return null
     }
+
+    logger.debug('THE ID IS ', textarea.id)
 
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
     logger.debug(`${this.constructor.name} examing url`, window.location.pathname)
