@@ -17,7 +17,7 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
   }
 
   tryToEnhance(_textarea: HTMLTextAreaElement): GitHubIssueAddCommentSpot | null {
-    if (window.location.hostname !== 'github.com' || _textarea.id !== ':r2v:') {
+    if (document.querySelector('meta[name="hostname"]')?.getAttribute('content') !== 'github.com') {
       return null
     }
 
