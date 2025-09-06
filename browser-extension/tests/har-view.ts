@@ -8,31 +8,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
 const PORT = 3001
 
-// Store HAR data
-const harCache = new Map<string, any>()
-
-// Create mapping from HAR filename to original URL
-const harToUrlMap = Object.fromEntries(
-  Object.entries(PAGES).map(([key, url]) => [`${key}.har`, url]),
-)
+// Store HAR json
+const harCache = new Map<keyof typeof PAGES, any>()
 
 // Extract URL parts for location patching
-function getUrlParts(filename: string) {
-  const originalUrl = harToUrlMap[filename]
-  if (!originalUrl) {
-    return null
-  }
-
-  try {
-    const url = new URL(originalUrl)
-    return {
-      host: url.host,
-      hostname: url.hostname,
-      href: originalUrl,
-      pathname: url.pathname,
-    }
-  } catch {
-    return null
+function getUrlParts(key: keyof typeof PAGES) {
+  const originalUrl = PAGES[key]
+  const url = new URL(originalUrl)
+  return {
+    host: url.host,
+    hostname: url.hostname,
+    href: originalUrl,
+    pathname: url.pathname,
   }
 }
 
@@ -50,15 +37,15 @@ async function checkDevServer(): Promise<boolean> {
 }
 
 // Load and cache HAR file
-async function loadHar(filename: string) {
-  if (harCache.has(filename)) {
-    return harCache.get(filename)
+async function loadHar(key: keyof typeof PAGES) {
+  if (harCache.has(key)) {
+    return harCache.get(key)
   }
 
-  const harPath = path.join(__dirname, 'har', filename)
+  const harPath = path.join(__dirname, 'har', `${key}.har`)
   const harContent = await fs.readFile(harPath, 'utf-8')
   const harData = JSON.parse(harContent)
-  harCache.set(filename, harData)
+  harCache.set(key, harData)
   return harData
 }
 
@@ -66,7 +53,7 @@ async function loadHar(filename: string) {
 Object.entries(PAGES).forEach(([key, url]) => {
   const urlObj = new URL(url)
   app.get(urlObj.pathname, (_req, res) => {
-    res.redirect(`/page/${key}.har/gitcasso`)
+    res.redirect(`/page/${key}/gitcasso`)
   })
 })
 
@@ -94,8 +81,8 @@ app.get('/', async (_req, res) => {
         <li>
           <div style="margin-bottom: 10px; font-weight: bold; color: #555;">${basename}</div>
           <div style="display: flex; gap: 10px;">
-            <a href="/page/${file}" style="flex: 1; text-align: center;">🔍 Clean</a>
-            <a href="/page/${file}/gitcasso" style="flex: 1; text-align: center; ${!devServerRunning ? 'opacity: 0.5; pointer-events: none;' : ''}">
+            <a href="/page/${basename}" style="flex: 1; text-align: center;">🔍 Clean</a>
+            <a href="/page/${basename}/gitcasso" style="flex: 1; text-align: center; ${!devServerRunning ? 'opacity: 0.5; pointer-events: none;' : ''}">
               🚀 Gitcasso-enabled
             </a>
           </div>
@@ -147,14 +134,14 @@ app.get('/', async (_req, res) => {
 })
 
 // Serve the main HTML page from HAR
-app.get('/page/:filename', async (req, res) => {
+app.get('/page/:key', async (req, res) => {
   try {
-    const filename = req.params.filename
-    if (!filename.endsWith('.har')) {
-      return res.status(400).send('Invalid file type')
+    const key = req.params.key as keyof typeof PAGES
+    if (!(key in PAGES)) {
+      return res.status(400).send('Invalid key - not found in PAGES')
     }
 
-    const harData = await loadHar(filename)
+    const harData = await loadHar(key)
 
     // Find the main HTML response
     const mainEntry = harData.log.entries.find(
@@ -173,7 +160,7 @@ app.get('/page/:filename', async (req, res) => {
     // Replace external URLs with local asset URLs
     html = html.replace(
       /https:\/\/(github\.com|assets\.github\.com|avatars\.githubusercontent\.com|user-images\.githubusercontent\.com)/g,
-      `/asset/${filename.replace('.har', '')}`,
+      `/asset/${key}`,
     )
 
     return res.send(html)
@@ -184,20 +171,17 @@ app.get('/page/:filename', async (req, res) => {
 })
 
 // Serve the main HTML page from HAR with Gitcasso content script injected
-app.get('/page/:filename/gitcasso', async (req, res) => {
+app.get('/page/:key/gitcasso', async (req, res) => {
   try {
-    const filename = req.params.filename
-    if (!filename.endsWith('.har')) {
-      return res.status(400).send('Invalid file type')
+    const key = req.params.key as keyof typeof PAGES
+    if (!(key in PAGES)) {
+      return res.status(400).send('Invalid key - not found in PAGES')
     }
 
     // Get original URL parts for location patching
-    const urlParts = getUrlParts(filename)
-    if (!urlParts) {
-      return res.status(400).send('Unknown HAR file - not found in har-index.ts')
-    }
+    const urlParts = getUrlParts(key)
 
-    const harData = await loadHar(filename)
+    const harData = await loadHar(key)
 
     // Find the main HTML response
     const mainEntry = harData.log.entries.find(
@@ -216,7 +200,7 @@ app.get('/page/:filename/gitcasso', async (req, res) => {
     // Replace external URLs with local asset URLs
     html = html.replace(
       /https:\/\/(github\.com|assets\.github\.com|avatars\.githubusercontent\.com|user-images\.githubusercontent\.com)/g,
-      `/asset/${filename.replace('.har', '')}`,
+      `/asset/${key}`,
     )
 
     // Inject patched content script with location patching
@@ -286,12 +270,15 @@ app.get('/page/:filename/gitcasso', async (req, res) => {
 })
 
 // Serve assets from HAR file
-app.get('/asset/:harname/*', async (req, res) => {
+app.get('/asset/:key/*', async (req, res) => {
   try {
-    const harname = `${req.params.harname}.har`
+    const key = req.params.key as keyof typeof PAGES
+    if (!(key in PAGES)) {
+      return res.status(400).send('Invalid key - not found in PAGES')
+    }
     const assetPath = (req.params as any)[0] as string
 
-    const harData = await loadHar(harname)
+    const harData = await loadHar(key)
 
     // Find matching asset in HAR
     const assetEntry = harData.log.entries.find((entry: any) => {
