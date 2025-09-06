@@ -15,36 +15,38 @@ const dom = parseHTML(`
 
 // Mock global DOM objects
 Object.assign(globalThis, {
-  window: dom.window,
-  document: dom.document,
   Document: dom.Document,
   DocumentFragment: dom.DocumentFragment,
-  HTMLElement: dom.HTMLElement,
-  HTMLTextAreaElement: dom.HTMLTextAreaElement,
-  HTMLDivElement: dom.HTMLDivElement,
-  HTMLMetaElement: dom.HTMLMetaElement,
+  document: dom.document,
   Element: dom.Element,
+  HTMLDivElement: dom.HTMLDivElement,
+  HTMLElement: dom.HTMLElement,
+  HTMLMetaElement: dom.HTMLMetaElement,
+  HTMLTextAreaElement: dom.HTMLTextAreaElement,
+  location: dom.window.location,
   Node: dom.Node,
   Text: dom.Text,
-  location: dom.window.location
+  window: dom.window,
 })
 
 // Mock querySelector methods properly
 const originalQuerySelector = dom.document.querySelector.bind(dom.document)
 const originalQuerySelectorAll = dom.document.querySelectorAll.bind(dom.document)
 
-dom.document.querySelector = function(selector) {
+dom.document.querySelector = (selector: string) => {
   try {
     return originalQuerySelector(selector)
-  } catch (e) {
+  } catch (_e) {
     return null
   }
 }
 
-dom.document.querySelectorAll = function(selector) {
+dom.document.querySelectorAll = ((selector: string) => {
   try {
     return originalQuerySelectorAll(selector)
-  } catch (e) {
-    return []
+  } catch (_e) {
+    // Return an empty NodeList-like object instead of array
+    const emptyNodeList = document.createDocumentFragment().childNodes
+    return emptyNodeList as unknown as NodeListOf<Element>
   }
-}
+}) as typeof dom.document.querySelectorAll
