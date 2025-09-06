@@ -13,7 +13,7 @@
  * - Injects Gitcasso content script in 'gitcasso' mode with location patching
  * - Location patching uses history.pushState to simulate original URLs
  * - Chrome APIs are mocked for extension testing outside browser context
- * - Content script is fetched from http://localhost:3000 (dev server)
+ * - Extension assets served from `./output/chrome-mv3-dev` via `/chrome-mv3-dev` route
  */
 import { error } from 'node:console'
 import fs from 'node:fs/promises'
@@ -236,6 +236,8 @@ app.get('/asset/:key/*', async (req, res) => {
     return res.status(404).send('Asset not found')
   }
 })
+// Serve extension assets from filesystem
+app.use('/chrome-mv3-dev', express.static(path.join(__dirname, '..', '.output', 'chrome-mv3-dev')))
 
 app.listen(PORT, () => {
   console.log(`HAR Page Viewer running at http://localhost:${PORT}`)
@@ -262,7 +264,7 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
           });
           
           // Fetch and patch the content script to remove webextension-polyfill issues
-          fetch('http://localhost:3000/.output/chrome-mv3-dev/content-scripts/content.js')
+          fetch('/chrome-mv3-dev/content-scripts/content.js')
             .then(response => response.text())
             .then(code => {
               console.log('Fetched content script, patching webextension-polyfill...');
