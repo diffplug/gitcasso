@@ -15,8 +15,9 @@
  * - Chrome APIs are mocked for extension testing outside browser context
  * - Extension assets served from `./output/chrome-mv3-dev` via `/chrome-mv3-dev` route
  */
-import { error } from 'node:console'
+
 import { spawn } from 'node:child_process'
+import { error } from 'node:console'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -244,58 +245,57 @@ app.get('/asset/:key/*', async (req, res) => {
 app.use('/chrome-mv3-dev', express.static(path.join(__dirname, '..', '.output', 'chrome-mv3-dev')))
 
 // Rebuild endpoint
-app.post('/rebuild', async (req, res) => {
+app.post('/rebuild', async (_req, res) => {
   try {
     console.log('Rebuild triggered via API')
-    
+
     // Run npx wxt build --mode development
     const buildProcess = spawn('npx', ['wxt', 'build', '--mode', 'development'], {
       cwd: path.join(__dirname, '..'),
-      stdio: ['pipe', 'pipe', 'pipe']
+      stdio: ['pipe', 'pipe', 'pipe'],
     })
-    
+
     let stdout = ''
     let stderr = ''
-    
+
     buildProcess.stdout.on('data', (data) => {
       stdout += data.toString()
       console.log('[BUILD]', data.toString().trim())
     })
-    
+
     buildProcess.stderr.on('data', (data) => {
       stderr += data.toString()
       console.error('[BUILD ERROR]', data.toString().trim())
     })
-    
+
     buildProcess.on('close', (code) => {
       if (code === 0) {
         console.log('Build completed successfully')
-        res.json({ success: true, message: 'Build completed successfully' })
+        res.json({ message: 'Build completed successfully', success: true })
       } else {
         console.error('Build failed with code:', code)
-        res.status(500).json({ 
-          success: false, 
-          message: 'Build failed', 
-          error: stderr || stdout 
+        res.status(500).json({
+          error: stderr || stdout,
+          message: 'Build failed',
+          success: false,
         })
       }
     })
-    
+
     buildProcess.on('error', (error) => {
       console.error('Failed to start build process:', error)
-      res.status(500).json({ 
-        success: false, 
-        message: 'Failed to start build process', 
-        error: error.message 
+      res.status(500).json({
+        error: error.message,
+        message: 'Failed to start build process',
+        success: false,
       })
     })
-    
   } catch (error) {
     console.error('Rebuild endpoint error:', error)
-    res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error', 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    res.status(500).json({
+      error: error instanceof Error ? error.message : 'Unknown error',
+      message: 'Internal server error',
+      success: false,
     })
   }
 })
