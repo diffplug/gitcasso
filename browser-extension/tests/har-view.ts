@@ -25,19 +25,6 @@ function getUrlParts(key: keyof typeof PAGES) {
   }
 }
 
-// Check if WXT dev server is running
-async function checkDevServer(): Promise<boolean> {
-  try {
-    const response = await fetch('http://localhost:3000/@vite/client', {
-      method: 'HEAD',
-      signal: AbortSignal.timeout(2000),
-    })
-    return response.ok
-  } catch {
-    return false
-  }
-}
-
 // Load and cache HAR file
 async function loadHar(key: keyof typeof PAGES): Promise<Har> {
   if (harCache.has(key)) {
@@ -65,16 +52,6 @@ app.get('/', async (_req, res) => {
     const harDir = path.join(__dirname, 'har')
     const files = await fs.readdir(harDir)
     const harFiles = files.filter((file) => file.endsWith('.har'))
-    const devServerRunning = await checkDevServer()
-
-    const devServerWarning = !devServerRunning
-      ? `
-      <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
-        <strong>⚠️ Warning:</strong> WXT dev server is not running on localhost:3000<br>
-        <small>Gitcasso-enabled links won't work. Run <code>npm run dev</code> to start the server and <strong>then refresh this page</strong>.</small>
-      </div>
-    `
-      : ''
 
     const links = harFiles
       .map((file) => {
@@ -84,9 +61,7 @@ app.get('/', async (_req, res) => {
           <div style="margin-bottom: 10px; font-weight: bold; color: #555;">${basename}</div>
           <div style="display: flex; gap: 10px;">
             <a href="/har/${basename}/clean" style="flex: 1; text-align: center;">🔍 Clean</a>
-            <a href="/har/${basename}/gitcasso" style="flex: 1; text-align: center; ${!devServerRunning ? 'opacity: 0.5; pointer-events: none;' : ''}">
-              🚀 Gitcasso-enabled
-            </a>
+            <a href="/har/${basename}/gitcasso" style="flex: 1; text-align: center;">🚀 Gitcasso</a>
           </div>
         </li>
       `
@@ -124,7 +99,6 @@ app.get('/', async (_req, res) => {
 </head>
 <body>
     <h1>📄 HAR Page Viewer</h1>
-    ${devServerWarning}
     <p>Select a recorded page to view:</p>
     <ul>${links}</ul>
 </body>
