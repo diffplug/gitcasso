@@ -98,7 +98,7 @@ export function generateStyles(options = {}) {
           ? `
       /* Theme Variables */
       ${themeVars}`
-          : ''
+          : ""
       }
     }
     
@@ -822,5 +822,5 @@ export function generateStyles(options = {}) {
     }
 
     ${mobileStyles}
-  `
+  `;
 }
