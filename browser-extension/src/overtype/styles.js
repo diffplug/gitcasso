@@ -3,7 +3,7 @@
  * Embedded in JavaScript to ensure single-file distribution
  */
 
-import { themeToCSSVars } from "./themes.js"
+import { themeToCSSVars } from "./themes.js";
 
 /**
  * Generate the complete CSS for the editor
@@ -19,10 +19,10 @@ export function generateStyles(options = {}) {
     padding = "20px",
     theme = null,
     mobile = {},
-  } = options
+  } = options;
 
   fontFamily = "inherit"
-  fontSize = "var(--text-body-size-medium)"
+  fontSize = "var(--text-body-size-medium)";
 
   // Generate mobile overrides
   const mobileStyles =
@@ -34,16 +34,16 @@ export function generateStyles(options = {}) {
         ${Object.entries(mobile)
           .map(([prop, val]) => {
             const cssProp = prop.replace(/([A-Z])/g, "-$1").toLowerCase()
-            return `${cssProp}: ${val} !important;`
+            return `${cssProp}: ${val} !important;`;
           })
           .join("\n        ")}
       }
     }
   `
-      : ""
+      : "";
 
   // Generate theme variables if provided
-  const themeVars = theme && theme.colors ? themeToCSSVars(theme.colors) : ""
+  const themeVars = theme && theme.colors ? themeToCSSVars(theme.colors) : "";
 
   return `
     /* OverType Editor Styles */
