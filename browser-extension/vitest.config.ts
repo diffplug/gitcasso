@@ -7,6 +7,5 @@ export default defineConfig({
     environment: 'node',
     pool: 'threads',
     globals: true,
-    setupFiles: ['./tests/setup.ts'],
   },
 })
