@@ -9,15 +9,9 @@ describe('github', () => {
   usingHar('gh_pr').it('should identify gh_pr textarea and create proper spot object', async () => {
     const enhancers = new EnhancerRegistry()
     const textareas = document.querySelectorAll('textarea')
-
-    let enhanced: ReturnType<EnhancerRegistry['tryToEnhance']> = null
-    for (const textarea of textareas) {
-      enhanced = enhancers.tryToEnhance(textarea as HTMLTextAreaElement)
-      if (enhanced) break
-    }
-
-    expect(enhanced).toBeTruthy()
-    expect(enhanced?.spot).toMatchInlineSnapshot(`
+    expect(textareas.length).toBe(2)
+    expect(enhancers.tryToEnhance(textareas[0]!)).toBeNull()
+    expect(enhancers.tryToEnhance(textareas[1]!)?.spot).toMatchInlineSnapshot(`
       {
         "domain": "github.com",
         "number": 517,
