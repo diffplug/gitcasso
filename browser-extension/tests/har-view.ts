@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
+import type { Har } from 'har-format'
 import { PAGES } from './har-index'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -9,7 +10,7 @@ const app = express()
 const PORT = 3001
 
 // Store HAR json
-const harCache = new Map<keyof typeof PAGES, any>()
+const harCache = new Map<keyof typeof PAGES, Har>()
 
 // Extract URL parts for location patching
 function getUrlParts(key: keyof typeof PAGES) {
@@ -37,9 +38,9 @@ async function checkDevServer(): Promise<boolean> {
 }
 
 // Load and cache HAR file
-async function loadHar(key: keyof typeof PAGES) {
+async function loadHar(key: keyof typeof PAGES): Promise<Har> {
   if (harCache.has(key)) {
-    return harCache.get(key)
+    return harCache.get(key)!
   }
 
   const harPath = path.join(__dirname, 'har', `${key}.har`)
@@ -53,7 +54,7 @@ async function loadHar(key: keyof typeof PAGES) {
 Object.entries(PAGES).forEach(([key, url]) => {
   const urlObj = new URL(url)
   app.get(urlObj.pathname, (_req, res) => {
-    res.redirect(`/page/${key}/gitcasso`)
+    res.redirect(`/har/${key}/gitcasso`)
   })
 })
 
@@ -81,8 +82,8 @@ app.get('/', async (_req, res) => {
         <li>
           <div style="margin-bottom: 10px; font-weight: bold; color: #555;">${basename}</div>
           <div style="display: flex; gap: 10px;">
-            <a href="/page/${basename}" style="flex: 1; text-align: center;">🔍 Clean</a>
-            <a href="/page/${basename}/gitcasso" style="flex: 1; text-align: center; ${!devServerRunning ? 'opacity: 0.5; pointer-events: none;' : ''}">
+            <a href="/har/${basename}/clean" style="flex: 1; text-align: center;">🔍 Clean</a>
+            <a href="/har/${basename}/gitcasso" style="flex: 1; text-align: center; ${!devServerRunning ? 'opacity: 0.5; pointer-events: none;' : ''}">
               🚀 Gitcasso-enabled
             </a>
           </div>
@@ -134,9 +135,11 @@ app.get('/', async (_req, res) => {
 })
 
 // Serve the main HTML page from HAR
-app.get('/page/:key', async (req, res) => {
+app.get('/har/:key/:mode(clean|gitcasso)', async (req, res) => {
   try {
-    const key = req.params.key as keyof typeof PAGES
+    const key = req.params['key'] as keyof typeof PAGES
+    const mode = req.params['mode'] as 'clean' | 'gitcasso'
+
     if (!(key in PAGES)) {
       return res.status(400).send('Invalid key - not found in PAGES')
     }
@@ -145,7 +148,7 @@ app.get('/page/:key', async (req, res) => {
 
     // Find the main HTML response
     const mainEntry = harData.log.entries.find(
-      (entry: any) =>
+      (entry) =>
         entry.request.url.includes('github.com') &&
         entry.response.content.mimeType?.includes('text/html') &&
         entry.response.content.text,
@@ -155,7 +158,7 @@ app.get('/page/:key', async (req, res) => {
       return res.status(404).send('No HTML content found in HAR file')
     }
 
-    let html = mainEntry.response.content.text
+    let html = mainEntry.response.content.text!
 
     // Replace external URLs with local asset URLs
     html = html.replace(
@@ -163,103 +166,69 @@ app.get('/page/:key', async (req, res) => {
       `/asset/${key}`,
     )
 
-    return res.send(html)
-  } catch (error) {
-    console.error('Error serving page:', error)
-    return res.status(500).send('Error loading page')
-  }
-})
+    // If gitcasso mode, inject content script
+    if (mode === 'gitcasso') {
+      // Get original URL parts for location patching
+      const urlParts = getUrlParts(key)
 
-// Serve the main HTML page from HAR with Gitcasso content script injected
-app.get('/page/:key/gitcasso', async (req, res) => {
-  try {
-    const key = req.params.key as keyof typeof PAGES
-    if (!(key in PAGES)) {
-      return res.status(400).send('Invalid key - not found in PAGES')
-    }
-
-    // Get original URL parts for location patching
-    const urlParts = getUrlParts(key)
-
-    const harData = await loadHar(key)
-
-    // Find the main HTML response
-    const mainEntry = harData.log.entries.find(
-      (entry: any) =>
-        entry.request.url.includes('github.com') &&
-        entry.response.content.mimeType?.includes('text/html') &&
-        entry.response.content.text,
-    )
-
-    if (!mainEntry) {
-      return res.status(404).send('No HTML content found in HAR file')
-    }
-
-    let html = mainEntry.response.content.text
-
-    // Replace external URLs with local asset URLs
-    html = html.replace(
-      /https:\/\/(github\.com|assets\.github\.com|avatars\.githubusercontent\.com|user-images\.githubusercontent\.com)/g,
-      `/asset/${key}`,
-    )
-
-    // Inject patched content script with location patching
-    const contentScriptTag = `
-      <script>
-        // Patch window.location before loading content script
-        console.log('Patching window.location to simulate original URL...');
-        
-        // Use history.pushState to change the pathname
-        window.history.pushState({}, '', '${urlParts.pathname}');
-        
-        console.log('Location patched:', {
-          hostname: window.location.hostname,
-          pathname: window.location.pathname,
-          href: window.location.href,
-          host: window.location.host
-        });
-        
-        // Fetch and patch the content script to remove webextension-polyfill issues
-        fetch('http://localhost:3000/.output/chrome-mv3-dev/content-scripts/content.js')
-          .then(response => response.text())
-          .then(code => {
-            console.log('Fetched content script, patching webextension-polyfill...');
-            
-            // Replace the problematic webextension-polyfill error check
-            const patchedCode = code.replace(
-              /throw new Error\\("This script should only be loaded in a browser extension\\."/g,
-              'console.warn("Webextension-polyfill check bypassed for HAR testing"'
-            );
-            
-            // Mock necessary APIs before executing
-            window.chrome = window.chrome || {
-              runtime: {
-                getURL: (path) => 'chrome-extension://gitcasso-test/' + path,
-                onMessage: { addListener: () => {} },
-                sendMessage: () => Promise.resolve(),
-                id: 'gitcasso-test'
-              }
-            };
-            window.browser = window.chrome;
-            
-            // Execute the patched script
-            const script = document.createElement('script');
-            script.textContent = patchedCode;
-            document.head.appendChild(script);
-            
-            console.log('Gitcasso content script loaded with location patching for:', '${urlParts.href}');
-          })
-          .catch(error => {
-            console.error('Failed to load and patch content script:', error);
+      // Inject patched content script with location patching
+      const contentScriptTag = `
+        <script>
+          // Patch window.location before loading content script
+          console.log('Patching window.location to simulate original URL...');
+          
+          // Use history.pushState to change the pathname
+          window.history.pushState({}, '', '${urlParts.pathname}');
+          
+          console.log('Location patched:', {
+            hostname: window.location.hostname,
+            pathname: window.location.pathname,
+            href: window.location.href,
+            host: window.location.host
           });
-      </script>
-    `
+          
+          // Fetch and patch the content script to remove webextension-polyfill issues
+          fetch('http://localhost:3000/.output/chrome-mv3-dev/content-scripts/content.js')
+            .then(response => response.text())
+            .then(code => {
+              console.log('Fetched content script, patching webextension-polyfill...');
+              
+              // Replace the problematic webextension-polyfill error check
+              const patchedCode = code.replace(
+                /throw new Error\\("This script should only be loaded in a browser extension\\."/g,
+                'console.warn("Webextension-polyfill check bypassed for HAR testing"'
+              );
+              
+              // Mock necessary APIs before executing
+              window.chrome = window.chrome || {
+                runtime: {
+                  getURL: (path) => 'chrome-extension://gitcasso-test/' + path,
+                  onMessage: { addListener: () => {} },
+                  sendMessage: () => Promise.resolve(),
+                  id: 'gitcasso-test'
+                }
+              };
+              window.browser = window.chrome;
+              
+              // Execute the patched script
+              const script = document.createElement('script');
+              script.textContent = patchedCode;
+              document.head.appendChild(script);
+              
+              console.log('Gitcasso content script loaded with location patching for:', '${urlParts.href}');
+            })
+            .catch(error => {
+              console.error('Failed to load and patch content script:', error);
+            });
+        </script>
+      `
 
-    // Insert script before closing body tag, or at the end if no body tag
-    if (html.includes('</body>')) {
-      html = html.replace('</body>', `${contentScriptTag}</body>`)
-    } else {
-      html += contentScriptTag
+      // Insert script before closing body tag, or at the end if no body tag
+      if (html.includes('</body>')) {
+        html = html.replace('</body>', `${contentScriptTag}</body>`)
+      } else {
+        html += contentScriptTag
+      }
     }
 
     return res.send(html)
@@ -281,7 +250,7 @@ app.get('/asset/:key/*', async (req, res) => {
     const harData = await loadHar(key)
 
     // Find matching asset in HAR
-    const assetEntry = harData.log.entries.find((entry: any) => {
+    const assetEntry = harData.log.entries.find((entry) => {
       const url = new URL(entry.request.url)
       return url.pathname === `/${assetPath}` || url.pathname.endsWith(`/${assetPath}`)
     })
@@ -292,13 +261,11 @@ app.get('/asset/:key/*', async (req, res) => {
 
     const content = assetEntry.response.content
     const mimeType = content.mimeType || 'application/octet-stream'
-
     res.set('Content-Type', mimeType)
-
     if (content.encoding === 'base64') {
-      return res.send(Buffer.from(content.text, 'base64'))
+      return res.send(Buffer.from(content.text!, 'base64'))
     } else {
-      return res.send(content.text || '')
+      return res.send(content.text!)
     }
   } catch (error) {
     console.error('Error serving asset:', error)
