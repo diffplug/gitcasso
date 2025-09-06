@@ -10,7 +10,8 @@ export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
 }
 
 export class EnhancerRegistry {
-  private enhancers = new Set<CommentEnhancer<any>>()
+  private enhancers = new Set<CommentEnhancer>()
+  private preparedEnhancers = new Set<CommentEnhancer>()
 
   constructor() {
     // Register all available handlers
@@ -21,12 +22,17 @@ export class EnhancerRegistry {
     this.enhancers.add(handler)
   }
 
-  tryToEnhance(textarea: HTMLTextAreaElement): EnhancedTextarea<any> | null {
+  tryToEnhance(textarea: HTMLTextAreaElement): EnhancedTextarea | null {
     for (const enhancer of this.enhancers) {
       try {
-        const result = enhancer.tryToEnhance(textarea)
-        if (result) {
-          const [overtype, spot] = result
+        const spot = enhancer.tryToEnhance(textarea)
+        if (spot) {
+          // Prepare enhancer on first use
+          if (!this.preparedEnhancers.has(enhancer)) {
+            enhancer.prepareForFirstEnhancement()
+            this.preparedEnhancers.add(enhancer)
+          }
+          const overtype = enhancer.enhance(textarea, spot)
           return { enhancer, overtype, spot, textarea }
         }
       } catch (error) {
@@ -42,7 +48,7 @@ export class EnhancerRegistry {
 }
 
 export class TextareaRegistry {
-  private textareas = new Map<HTMLTextAreaElement, EnhancedTextarea<any>>()
+  private textareas = new Map<HTMLTextAreaElement, EnhancedTextarea>()
 
   register<T extends CommentSpot>(textareaInfo: EnhancedTextarea<T>): void {
     this.textareas.set(textareaInfo.textarea, textareaInfo)
@@ -56,7 +62,7 @@ export class TextareaRegistry {
     }
   }
 
-  get(textarea: HTMLTextAreaElement): EnhancedTextarea<any> | undefined {
+  get(textarea: HTMLTextAreaElement): EnhancedTextarea | undefined {
     return this.textareas.get(textarea)
   }
 }

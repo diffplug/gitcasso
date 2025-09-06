@@ -1,7 +1,7 @@
 import type { OverTypeInstance } from '../overtype/overtype'
 
 /**
- * stores enough info about the location of a draft to:
+ * Stores enough info about the location of a draft to:
  * - display it in a table
  * - reopen the draft in-context
  */
@@ -10,15 +10,23 @@ export interface CommentSpot {
   type: string
 }
 
-/** wraps the textareas of a given platform with Gitcasso's enhancements */
+/** Wraps the textareas of a given platform with Gitcasso's enhancements. */
 export interface CommentEnhancer<Spot extends CommentSpot = CommentSpot> {
-  /** guarantees to only return a type within this list */
+  /** Guarantees to only return a type within this list. */
   forSpotTypes(): string[]
   /**
-   * whenever a new `textarea` is added to any webpage, this method is called.
-   * if we return non-null, then we become the handler for that text area.
+   * Whenever a new `textarea` is added to any webpage, this method is called.
+   * If we return non-null, then we become the handler for that text area.
    */
-  tryToEnhance(textarea: HTMLTextAreaElement): [OverTypeInstance, Spot] | null
+  tryToEnhance(textarea: HTMLTextAreaElement): Spot | null
+  /** This gets called the first time that `tryToEnhance` returns non-null. */
+  prepareForFirstEnhancement(): void
+  /**
+   * If `tryToEnhance` returns non-null, then this gets called.
+   * It is guaranteed that `prepareForFirstEnhancement` has been called
+   * exactly once since pageload before this gets called.
+   */
+  enhance(textarea: HTMLTextAreaElement, spot: Spot): OverTypeInstance
 
   tableIcon(spot: Spot): string
   tableTitle(spot: Spot): string

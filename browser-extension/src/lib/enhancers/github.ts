@@ -29,7 +29,7 @@ export class GitHubAddCommentEnhancer implements CommentEnhancer<GitHubAddCommen
     return [...GITHUB_SPOT_TYPES]
   }
 
-  tryToEnhance(textarea: HTMLTextAreaElement): [OverTypeInstance, GitHubAddCommentSpot] | null {
+  tryToEnhance(_textarea: HTMLTextAreaElement): GitHubAddCommentSpot | null {
     // Only handle github.com domains - check meta tag for testing compatibility
     if (document.querySelector('meta[name="hostname"]')?.getAttribute('content') !== 'github.com') {
       return null
@@ -44,22 +44,22 @@ export class GitHubAddCommentEnhancer implements CommentEnhancer<GitHubAddCommen
     const [, owner, repo, numberStr] = match
     const slug = `${owner}/${repo}`
     const number = parseInt(numberStr!, 10)
-
     const unique_key = `github.com:${slug}:${number}`
-
-    const spot: GitHubAddCommentSpot = {
+    return {
       domain: 'github.com',
       number,
       slug,
       type: 'GH_PR_ADD_COMMENT',
       unique_key,
     }
-    return [this.createOvertypeFor(textarea), spot]
   }
 
-  private createOvertypeFor(ghCommentBox: HTMLTextAreaElement): OverTypeInstance {
+  prepareForFirstEnhancement(): void {
     OverType.setCodeHighlighter(hljsHighlighter)
-    const overtypeContainer = this.modifyDOM(ghCommentBox)
+  }
+
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubAddCommentSpot): OverTypeInstance {
+    const overtypeContainer = this.modifyDOM(textArea)
     return new OverType(overtypeContainer, {
       autoResize: true,
       minHeight: '102px',
