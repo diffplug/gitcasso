@@ -1,3 +1,20 @@
+/**
+ * HAR Page Viewer Test Server
+ *
+ * This Express server serves recorded HAR files as live web pages for testing.
+ * It provides two viewing modes: 'clean' (original page) and 'gitcasso' (with extension injected).
+ *
+ * Key components:
+ * - Loads HAR files from ./har/ directory based on PAGES index in `./har/_har_index.ts`
+ * - Patches URLs in HTML to serve assets locally from HAR data
+ * - Handles asset serving by matching HAR entries to requested paths
+ *
+ * Development notes:
+ * - Injects Gitcasso content script in 'gitcasso' mode with location patching
+ * - Location patching uses history.pushState to simulate original URLs
+ * - Chrome APIs are mocked for extension testing outside browser context
+ * - Content script is fetched from http://localhost:3000 (dev server)
+ */
 import { error } from 'node:console'
 import fs from 'node:fs/promises'
 import path from 'node:path'
