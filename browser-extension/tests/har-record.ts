@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { chromium } from '@playwright/test'
-import { PAGES } from './har-index'
+import { PAGES } from './har/_har-index'
 
 // Convert glob pattern to regex
 function globToRegex(pattern: string): RegExp {

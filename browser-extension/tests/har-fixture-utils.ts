@@ -3,7 +3,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { Har as HarFile } from 'har-format'
 import { parseHTML } from 'linkedom'
-import { PAGES } from './har-index'
+import { PAGES } from './har/_har-index'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 

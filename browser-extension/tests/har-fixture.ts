@@ -21,8 +21,8 @@ vi.mock('../src/overtype/overtype', () => {
 })
 
 import { describe as baseDescribe, test as baseTest, expect } from 'vitest'
-import type { PAGES } from './har-index'
-import { cleanupDOM, setupHarDOM } from './test-utils'
+import type { PAGES } from './har/_har-index'
+import { cleanupDOM, setupHarDOM } from './har-fixture-utils'
 
 export const describe = baseDescribe
 
