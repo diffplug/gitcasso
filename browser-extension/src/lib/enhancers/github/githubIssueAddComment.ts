@@ -1,0 +1,72 @@
+import OverType, { type OverTypeInstance } from '../../../overtype/overtype'
+import type { CommentEnhancer, CommentSpot } from '../../enhancer'
+import { logger } from '../../logger'
+import { modifyDOM } from '../modifyDOM'
+import { githubHighlighter } from './githubHighlighter'
+
+interface GitHubIssueAddCommentSpot extends CommentSpot {
+  type: 'GH_ISSUE_ADD_COMMENT'
+  domain: string
+  slug: string // owner/repo
+  number: number // issue number, undefined for new issues
+}
+
+export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssueAddCommentSpot> {
+  forSpotTypes(): string[] {
+    return ['GH_ISSUE_ADD_COMMENT']
+  }
+
+  tryToEnhance(textarea: HTMLTextAreaElement): GitHubIssueAddCommentSpot | null {
+    if (
+      document.querySelector('meta[name="hostname"]')?.getAttribute('content') !== 'github.com' ||
+      textarea.id !== ':r2v:'
+    ) {
+      return null
+    }
+
+    // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
+    logger.debug(`${this.constructor.name} examing url`, window.location.pathname)
+
+    const match = window.location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/issues\/(\d+))/)
+    logger.debug(`${this.constructor.name} found match`, window.location.pathname)
+    if (!match) return null
+    const [, owner, repo, numberStr] = match
+    const slug = `${owner}/${repo}`
+    const number = parseInt(numberStr!, 10)
+    const unique_key = `github.com:${slug}:${number}`
+    return {
+      domain: 'github.com',
+      number,
+      slug,
+      type: 'GH_ISSUE_ADD_COMMENT',
+      unique_key,
+    }
+  }
+
+  prepareForFirstEnhancement(): void {
+    OverType.setCodeHighlighter(githubHighlighter)
+  }
+
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueAddCommentSpot): OverTypeInstance {
+    const overtypeContainer = modifyDOM(textArea)
+    return new OverType(overtypeContainer, {
+      autoResize: true,
+      minHeight: '100px',
+      padding: 'var(--base-size-16)',
+      placeholder: 'Use Markdown to format your comment',
+    })[0]!
+  }
+
+  tableTitle(spot: GitHubIssueAddCommentSpot): string {
+    const { slug, number } = spot
+    return `${slug} Issue #${number}`
+  }
+
+  tableIcon(_: GitHubIssueAddCommentSpot): string {
+    return '🔄' // PR icon TODO: icon urls in /public
+  }
+
+  buildUrl(spot: GitHubIssueAddCommentSpot): string {
+    return `https://${spot.domain}/${spot.slug}/issue/${spot.number}`
+  }
+}

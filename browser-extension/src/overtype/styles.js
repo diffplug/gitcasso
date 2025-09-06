@@ -54,7 +54,9 @@ export function generateStyles(options = {}) {
     }
     
     /* Middle-ground CSS Reset - Prevent parent styles from leaking in */
-    .overtype-container * {
+    .overtype-container .overtype-wrapper,
+    .overtype-container .overtype-input,
+    .overtype-container .overtype-preview {
       /* Box model - these commonly leak */
       /* margin: 0 !important; */
       padding: 0 !important;
