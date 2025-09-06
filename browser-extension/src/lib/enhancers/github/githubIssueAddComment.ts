@@ -4,28 +4,27 @@ import { logger } from '../../logger'
 import { modifyDOM } from '../modifyDOM'
 import { githubHighlighter } from './githubHighlighter'
 
-interface GitHubPRAddCommentSpot extends CommentSpot {
-  type: 'GH_PR_ADD_COMMENT' // Override to narrow from string to specific union
+interface GitHubIssueAddCommentSpot extends CommentSpot {
+  type: 'GH_ISSUE_ADD_COMMENT'
   domain: string
   slug: string // owner/repo
-  number: number // issue/PR number, undefined for new issues and PRs
+  number: number // issue number, undefined for new issues
 }
 
-export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCommentSpot> {
+export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssueAddCommentSpot> {
   forSpotTypes(): string[] {
-    return ['GH_PR_ADD_COMMENT']
+    return ['GH_ISSUE_ADD_COMMENT']
   }
 
-  tryToEnhance(_textarea: HTMLTextAreaElement): GitHubPRAddCommentSpot | null {
-    // Only handle github.com domains TODO: identify GitHub Enterprise somehow
-    if (window.location.hostname !== 'github.com' || _textarea.id !== 'new_comment_field') {
+  tryToEnhance(_textarea: HTMLTextAreaElement): GitHubIssueAddCommentSpot | null {
+    if (window.location.hostname !== 'github.com' || _textarea.id !== ':r2v:') {
       return null
     }
 
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
     logger.debug(`${this.constructor.name} examing url`, window.location.pathname)
 
-    const match = window.location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/pull\/(\d+))/)
+    const match = window.location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/issues\/(\d+))/)
     logger.debug(`${this.constructor.name} found match`, window.location.pathname)
     if (!match) return null
     const [, owner, repo, numberStr] = match
@@ -36,7 +35,7 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
       domain: 'github.com',
       number,
       slug,
-      type: 'GH_PR_ADD_COMMENT',
+      type: 'GH_ISSUE_ADD_COMMENT',
       unique_key,
     }
   }
@@ -45,26 +44,26 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     OverType.setCodeHighlighter(githubHighlighter)
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubPRAddCommentSpot): OverTypeInstance {
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueAddCommentSpot): OverTypeInstance {
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
       autoResize: true,
-      minHeight: '102px',
-      padding: 'var(--base-size-8)',
-      placeholder: 'Add your comment here...',
+      minHeight: '100px',
+      padding: 'var(--base-size-16)',
+      placeholder: 'Use Markdown to format your comment',
     })[0]!
   }
 
-  tableTitle(spot: GitHubPRAddCommentSpot): string {
+  tableTitle(spot: GitHubIssueAddCommentSpot): string {
     const { slug, number } = spot
-    return `${slug} PR #${number}`
+    return `${slug} Issue #${number}`
   }
 
-  tableIcon(_: GitHubPRAddCommentSpot): string {
+  tableIcon(_: GitHubIssueAddCommentSpot): string {
     return '🔄' // PR icon TODO: icon urls in /public
   }
 
-  buildUrl(spot: GitHubPRAddCommentSpot): string {
-    return `https://${spot.domain}/${spot.slug}/pull/${spot.number}`
+  buildUrl(spot: GitHubIssueAddCommentSpot): string {
+    return `https://${spot.domain}/${spot.slug}/issue/${spot.number}`
   }
 }
