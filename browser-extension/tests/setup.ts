@@ -28,25 +28,3 @@ Object.assign(globalThis, {
   Text: dom.Text,
   window: dom.window,
 })
-
-// Mock querySelector methods properly
-const originalQuerySelector = dom.document.querySelector.bind(dom.document)
-const originalQuerySelectorAll = dom.document.querySelectorAll.bind(dom.document)
-
-dom.document.querySelector = (selector: string) => {
-  try {
-    return originalQuerySelector(selector)
-  } catch (_e) {
-    return null
-  }
-}
-
-dom.document.querySelectorAll = ((selector: string) => {
-  try {
-    return originalQuerySelectorAll(selector)
-  } catch (_e) {
-    // Return an empty NodeList-like object instead of array
-    const emptyNodeList = document.createDocumentFragment().childNodes
-    return emptyNodeList as unknown as NodeListOf<Element>
-  }
-}) as typeof dom.document.querySelectorAll

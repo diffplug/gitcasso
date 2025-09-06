@@ -7,7 +7,6 @@ import { EnhancerRegistry } from '../../../src/lib/registries'
 import { PAGES } from '../../har-index'
 
 vi.stubGlobal('defineContentScript', vi.fn())
-
 vi.mock('../../../src/overtype/overtype', () => {
   const mockConstructor = vi.fn().mockImplementation(() => [
     {
@@ -28,17 +27,12 @@ vi.mock('../../../src/overtype/overtype', () => {
 })
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
 async function loadHtmlFromHar(key: keyof typeof PAGES): Promise<string> {
   const url = PAGES[key]
   const harPath = path.join(__dirname, '../../har', `${key}.har`)
   const harContent = await fs.readFile(harPath, 'utf-8')
   const harData = JSON.parse(harContent)
-
   const mainEntry = harData.log.entries.find((entry: any) => entry.request.url === url)
-  if (!mainEntry) {
-    throw new Error(`No HTML content found in HAR file: ${key}.har`)
-  }
   return mainEntry.response.content.text
 }
 
