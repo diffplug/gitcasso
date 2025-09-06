@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 import { EnhancerRegistry } from '../../../src/lib/registries'
-import { describe, expect, it } from '../../test-fixtures'
+import { describe, expect, usingHar } from '../../test-fixtures'
 
 vi.stubGlobal('defineContentScript', vi.fn())
 vi.mock('../../../src/overtype/overtype', () => {
@@ -23,10 +23,7 @@ vi.mock('../../../src/overtype/overtype', () => {
 })
 
 describe('github', () => {
-  it('should identify gh_pr textarea and create proper spot object', async ({ harDOM }) => {
-    // Setup DOM from HAR snapshot
-    await harDOM('gh_pr')
-
+  usingHar('gh_pr').it('should identify gh_pr textarea and create proper spot object', async () => {
     const enhancers = new EnhancerRegistry()
     const textareas = document.querySelectorAll('textarea')
 
