@@ -14,6 +14,7 @@
  * - Location patching uses history.pushState to simulate original URLs
  * - Chrome APIs are mocked for extension testing outside browser context
  * - Extension assets served from `./output/chrome-mv3-dev` via `/chrome-mv3-dev` route
+ * - Floating rebuild button in gitcasso mode triggers `npx wxt build --mode development` and then refresh
  */
 
 import { spawn } from 'node:child_process'
