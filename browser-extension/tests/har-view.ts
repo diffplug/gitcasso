@@ -1,10 +1,10 @@
+import { error } from 'node:console'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
 import type { Har } from 'har-format'
 import { PAGES } from './har-index'
-import { error } from 'node:console'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -147,24 +147,26 @@ app.get('/har/:key/:mode(clean|gitcasso)', async (req, res) => {
     // Find the main HTML response
     const harData = await loadHar(key)
     const originalUrl = PAGES[key]
-    const mainEntry = harData.log.entries.find(
-      (entry) =>
-        entry.request.url === originalUrl &&
-        entry.response.content.mimeType?.includes('text/html') &&
-        entry.response.content.text,
-    ) || harData.log.entries.find(
-      (entry) =>
-        entry.response.status === 200 &&
-        entry.response.content.mimeType?.includes('text/html') &&
-        entry.response.content.text,
-    )
+    const mainEntry =
+      harData.log.entries.find(
+        (entry) =>
+          entry.request.url === originalUrl &&
+          entry.response.content.mimeType?.includes('text/html') &&
+          entry.response.content.text,
+      ) ||
+      harData.log.entries.find(
+        (entry) =>
+          entry.response.status === 200 &&
+          entry.response.content.mimeType?.includes('text/html') &&
+          entry.response.content.text,
+      )
     if (!mainEntry) {
       return res.status(404).send('No HTML content found in HAR file')
     }
 
     // Extract all domains from HAR entries for dynamic replacement
     const domains = new Set<string>()
-    harData.log.entries.forEach(entry => {
+    harData.log.entries.forEach((entry) => {
       try {
         const url = new URL(entry.request.url)
         domains.add(url.hostname)
@@ -175,7 +177,7 @@ app.get('/har/:key/:mode(clean|gitcasso)', async (req, res) => {
 
     // Replace external URLs with local asset URLs
     let html = mainEntry.response.content.text!
-    domains.forEach(domain => {
+    domains.forEach((domain) => {
       const escapedDomain = domain.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
       const regex = new RegExp(`https?://${escapedDomain}`, 'g')
       html = html.replace(regex, `/asset/${key}`)
@@ -306,4 +308,3 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
   }
   return html.replace('</body>', `${contentScriptTag}</body>`)
 }
-
