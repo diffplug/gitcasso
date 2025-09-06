@@ -1,3 +1,25 @@
+import { vi } from 'vitest'
+
+// Mock the OverType editor component
+vi.mock('../src/overtype/overtype', () => {
+  const mockConstructor = vi.fn().mockImplementation(() => [
+    {
+      container: document.createElement('div'),
+      destroy: vi.fn(),
+      focus: vi.fn(),
+      getValue: vi.fn(() => ''),
+      preview: document.createElement('div'),
+      setValue: vi.fn(),
+      textarea: document.createElement('textarea'),
+      wrapper: document.createElement('div'),
+    },
+  ])
+  ;(mockConstructor as any).setCodeHighlighter = vi.fn()
+  return {
+    default: mockConstructor,
+  }
+})
+
 import { describe as baseDescribe, test as baseTest, expect } from 'vitest'
 import type { PAGES } from './har-index'
 import { cleanupDOM, setupHarDOM } from './test-utils'

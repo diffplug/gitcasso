@@ -1,9 +1,9 @@
-import { setupCommonMocks } from '../../mock-setup'
+import { describe, expect, usingHar } from '../../fixture-har'
 
-setupCommonMocks()
+// must import fixture **first** for mocks, the `expect` keeps biome from changing sort-order
+expect
 
 import { EnhancerRegistry } from '../../../src/lib/registries'
-import { describe, expect, usingHar } from '../../test-fixtures'
 
 describe('github', () => {
   usingHar('gh_pr').it('should identify gh_pr textarea and create proper spot object', async () => {
