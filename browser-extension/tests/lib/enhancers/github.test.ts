@@ -1,22 +1,37 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { EnhancerRegistry } from '../../../src/lib/registries'
 import { PAGES } from '../../har-index'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { parseHTML } from 'linkedom'
 
-// Mock WXT's defineContentScript global
 vi.stubGlobal('defineContentScript', vi.fn())
+
+vi.mock('../../../src/overtype/overtype', () => {
+  const mockConstructor = vi.fn().mockImplementation(() => [{
+    container: document.createElement('div'),
+    wrapper: document.createElement('div'),
+    textarea: document.createElement('textarea'),
+    preview: document.createElement('div'),
+    getValue: vi.fn(() => ''),
+    setValue: vi.fn(),
+    focus: vi.fn(),
+    destroy: vi.fn()
+  }])
+  mockConstructor.setCodeHighlighter = vi.fn()
+  return {
+    default: mockConstructor
+  }
+})
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// Helper function to load and extract HTML from HAR files
-async function loadHarHtml(key: string): Promise<string> {
+async function loadHtmlFromHar(key: string): Promise<string> {
   const harPath = path.join(__dirname, '../../har', `${key}.har`)
   const harContent = await fs.readFile(harPath, 'utf-8')
   const harData = JSON.parse(harContent)
 
-  // Find the main HTML response (same logic as har-view.ts)
   const mainEntry = harData.log.entries.find((entry: any) => 
     entry.request.url.includes('github.com') && 
     entry.response.content.mimeType?.includes('text/html') &&
@@ -27,66 +42,48 @@ async function loadHarHtml(key: string): Promise<string> {
     throw new Error(`No HTML content found in HAR file: ${key}.har`)
   }
 
-  return mainEntry.response.content.text
+  let html = mainEntry.response.content.text
+  
+  // Check if content is base64 encoded
+  if (mainEntry.response.content.encoding === 'base64') {
+    html = Buffer.from(html, 'base64').toString('utf-8')
+  }
+
+  return html
 }
 
 describe('github', () => {
-  beforeEach(() => {
-    // Reset DOM between tests
-    document.body.innerHTML = ''
+  it('should identify gh_pr textarea and create proper spot object', async () => {
+    const html = await loadHtmlFromHar('gh_pr')
     
-    // Mock console methods to avoid noise
-    vi.spyOn(console, 'warn').mockImplementation(() => {})
-  })
-
-  // Helper to setup DOM environment with location mocking
-  function setupDOMEnvironment(url: string, html: string) {
-    // Set up the HTML content
-    document.body.innerHTML = html
+    // Parse HTML with linkedom
+    const dom = parseHTML(html)
     
-    // Mock window.location.pathname for GitHub enhancer
-    Object.defineProperty(window.location, 'pathname', {
-      value: new URL(url).pathname,
-      configurable: true
+    // Replace global document with parsed one
+    Object.assign(globalThis, {
+      document: dom.document,
+      window: {
+        ...dom.window,
+        location: new URL(PAGES.gh_pr)
+      }
     })
     
-    // Add GitHub hostname meta tag (for the enhancer's new hostname check)
     const meta = document.createElement('meta')
     meta.name = 'hostname'
     meta.content = 'github.com'
     document.head.appendChild(meta)
-  }
-
-  it('should identify gh_pr textarea and create proper spot object', async () => {
+    
     const enhancers = new EnhancerRegistry()
-    const url = PAGES.gh_pr
-    
-    // Load the HTML from HAR file
-    const html = await loadHarHtml('gh_pr')
-    
-    // Setup DOM environment with proper location
-    setupDOMEnvironment(url, html)
-    
-    // Get all textarea elements from the page
     const textareas = document.querySelectorAll('textarea')
     
-    // Try to enhance each textarea - should find at least one GitHub textarea
-    let enhancedCount = 0
-    let lastEnhancedResult: any = null
-    
+    let enhanced: any = null
     for (const textarea of textareas) {
-      const enhancedTextarea = enhancers.tryToEnhance(textarea as HTMLTextAreaElement)
-      if (enhancedTextarea) {
-        enhancedCount++
-        lastEnhancedResult = enhancedTextarea
-      }
+      enhanced = enhancers.tryToEnhance(textarea as HTMLTextAreaElement)
+      if (enhanced) break
     }
     
-    expect(enhancedCount).toBeGreaterThan(0)
-    expect(lastEnhancedResult).toBeTruthy()
-    
-    // Snapshot test on the spot object structure
-    expect(lastEnhancedResult.spot).toMatchInlineSnapshot(`
+    expect(enhanced).toBeTruthy()
+    expect(enhanced.spot).toMatchInlineSnapshot(`
       {
         "domain": "github.com",
         "number": 517,
@@ -95,20 +92,5 @@ describe('github', () => {
         "unique_key": "github.com:diffplug/selfie:517",
       }
     `)
-    
-    // Verify specific fields based on the URL
-    const urlObj = new URL(url)
-    const match = urlObj.pathname.match(/^\/([^/]+)\/([^/]+)\/(?:pull|issues)\/(\d+)/)
-    expect(match).toBeTruthy() // Ensure URL pattern matches
-    
-    const [, owner, repo, numberStr] = match!
-    
-    expect(owner).toBeDefined()
-    expect(repo).toBeDefined()
-    expect(numberStr).toBeDefined()
-    
-    expect(lastEnhancedResult.spot.slug).toBe(`${owner}/${repo}`)
-    expect(lastEnhancedResult.spot.number).toBe(parseInt(numberStr!, 10))
-    expect(lastEnhancedResult.spot.unique_key).toBe(`github.com:${owner}/${repo}:${numberStr}`)
   })
 })
