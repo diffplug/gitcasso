@@ -21,7 +21,7 @@ export function generateStyles(options = {}) {
     mobile = {},
   } = options;
 
-  fontFamily = "inherit"
+  fontFamily = "inherit";
   fontSize = "var(--text-body-size-medium)";
 
   // Generate mobile overrides
@@ -33,7 +33,7 @@ export function generateStyles(options = {}) {
       .overtype-wrapper .overtype-preview {
         ${Object.entries(mobile)
           .map(([prop, val]) => {
-            const cssProp = prop.replace(/([A-Z])/g, "-$1").toLowerCase()
+            const cssProp = prop.replace(/([A-Z])/g, "-$1").toLowerCase();
             return `${cssProp}: ${val} !important;`;
           })
           .join("\n        ")}
