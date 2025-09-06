@@ -4,7 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
 import type { Har } from 'har-format'
-import { PAGES } from './har-index'
+import { PAGES } from './har/_har-index'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -138,7 +138,9 @@ app.get('/', async (_req, res) => {
 // Serve the main HTML page from HAR
 app.get('/har/:key/:mode(clean|gitcasso)', async (req, res) => {
   try {
+    // biome-ignore lint/complexity/useLiteralKeys: type comes from path string
     const key = req.params['key'] as keyof typeof PAGES
+    // biome-ignore lint/complexity/useLiteralKeys: type comes from path string
     const mode = req.params['mode'] as 'clean' | 'gitcasso'
     if (!(key in PAGES)) {
       return res.status(400).send('Invalid key - not found in PAGES')

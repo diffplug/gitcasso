@@ -1,4 +1,4 @@
-import { describe, expect, usingHar } from '../../fixture-har'
+import { describe, expect, usingHar } from '../../har-fixture'
 
 // must import fixture **first** for mocks, the `expect` keeps biome from changing sort-order
 expect
