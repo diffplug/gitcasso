@@ -64,14 +64,10 @@ async function loadHar(filename: string) {
 
 // Add redirect routes for each PAGES URL to handle refreshes
 Object.entries(PAGES).forEach(([key, url]) => {
-  try {
-    const urlObj = new URL(url)
-    app.get(urlObj.pathname, (_req, res) => {
-      res.redirect(`/page/${key}.har/gitcasso`)
-    })
-  } catch (error) {
-    console.warn(`Could not create redirect route for ${key}: ${url}`)
-  }
+  const urlObj = new URL(url)
+  app.get(urlObj.pathname, (_req, res) => {
+    res.redirect(`/page/${key}.har/gitcasso`)
+  })
 })
 
 // List available HAR files
