@@ -29,30 +29,17 @@ vi.mock('../../../src/overtype/overtype', () => {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-async function loadHtmlFromHar(key: string): Promise<string> {
+async function loadHtmlFromHar(key: keyof typeof PAGES): Promise<string> {
+  const url = PAGES[key]
   const harPath = path.join(__dirname, '../../har', `${key}.har`)
   const harContent = await fs.readFile(harPath, 'utf-8')
   const harData = JSON.parse(harContent)
 
-  const mainEntry = harData.log.entries.find(
-    (entry: any) =>
-      entry.request.url.includes('github.com') &&
-      entry.response.content.mimeType?.includes('text/html') &&
-      entry.response.content.text,
-  )
-
+  const mainEntry = harData.log.entries.find((entry: any) => entry.request.url === url)
   if (!mainEntry) {
     throw new Error(`No HTML content found in HAR file: ${key}.har`)
   }
-
-  let html = mainEntry.response.content.text
-
-  // Check if content is base64 encoded
-  if (mainEntry.response.content.encoding === 'base64') {
-    html = Buffer.from(html, 'base64').toString('utf-8')
-  }
-
-  return html
+  return mainEntry.response.content.text
 }
 
 describe('github', () => {
