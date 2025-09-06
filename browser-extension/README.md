@@ -18,6 +18,7 @@
 - `npm run biome:fix` - fixes most of what `biome check` finds
 - `npm run compile` - typechecking
 - `npm test` - vitest
+- `npm test -- -u` updates all the snapshots
 
 ### Deployment
 - `npm run build` - build for mv3 for most browsers
