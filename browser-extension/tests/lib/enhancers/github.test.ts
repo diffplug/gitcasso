@@ -68,11 +68,6 @@ describe('github', () => {
       }
     })
     
-    const meta = document.createElement('meta')
-    meta.name = 'hostname'
-    meta.content = 'github.com'
-    document.head.appendChild(meta)
-    
     const enhancers = new EnhancerRegistry()
     const textareas = document.querySelectorAll('textarea')
     
