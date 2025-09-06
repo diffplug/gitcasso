@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import express from 'express'
 import type { Har } from 'har-format'
 import { PAGES } from './har-index'
+import { error } from 'node:console'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -139,40 +140,83 @@ app.get('/har/:key/:mode(clean|gitcasso)', async (req, res) => {
   try {
     const key = req.params['key'] as keyof typeof PAGES
     const mode = req.params['mode'] as 'clean' | 'gitcasso'
-
     if (!(key in PAGES)) {
       return res.status(400).send('Invalid key - not found in PAGES')
     }
 
-    const harData = await loadHar(key)
-
     // Find the main HTML response
+    const harData = await loadHar(key)
     const mainEntry = harData.log.entries.find(
       (entry) =>
         entry.request.url.includes('github.com') &&
         entry.response.content.mimeType?.includes('text/html') &&
         entry.response.content.text,
     )
-
     if (!mainEntry) {
       return res.status(404).send('No HTML content found in HAR file')
     }
 
-    let html = mainEntry.response.content.text!
-
     // Replace external URLs with local asset URLs
+    let html = mainEntry.response.content.text!
     html = html.replace(
       /https:\/\/(github\.com|assets\.github\.com|avatars\.githubusercontent\.com|user-images\.githubusercontent\.com)/g,
       `/asset/${key}`,
     )
-
-    // If gitcasso mode, inject content script
     if (mode === 'gitcasso') {
-      // Get original URL parts for location patching
-      const urlParts = getUrlParts(key)
+      html = injectGitcassoScript(key, html)
+    }
+    return res.send(html)
+  } catch (error) {
+    console.error('Error serving page:', error)
+    return res.status(500).send('Error loading page')
+  }
+})
 
-      // Inject patched content script with location patching
-      const contentScriptTag = `
+// Serve assets from HAR file
+app.get('/asset/:key/*', async (req, res) => {
+  try {
+    const key = req.params.key as keyof typeof PAGES
+    if (!(key in PAGES)) {
+      return res.status(400).send('Invalid key - not found in PAGES')
+    }
+    const assetPath = (req.params as any)[0] as string
+
+    const harData = await loadHar(key)
+
+    // Find matching asset in HAR
+    const assetEntry = harData.log.entries.find((entry) => {
+      const url = new URL(entry.request.url)
+      return url.pathname === `/${assetPath}` || url.pathname.endsWith(`/${assetPath}`)
+    })
+
+    if (!assetEntry) {
+      return res.status(404).send('Asset not found')
+    }
+
+    const content = assetEntry.response.content
+    const mimeType = content.mimeType || 'application/octet-stream'
+    res.set('Content-Type', mimeType)
+    if (content.encoding === 'base64') {
+      return res.send(Buffer.from(content.text!, 'base64'))
+    } else {
+      return res.send(content.text!)
+    }
+  } catch (error) {
+    console.error('Error serving asset:', error)
+    return res.status(404).send('Asset not found')
+  }
+})
+
+app.listen(PORT, () => {
+  console.log(`HAR Page Viewer running at http://localhost:${PORT}`)
+  console.log('Click the links to view recorded pages')
+})
+
+function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
+  const urlParts = getUrlParts(key)
+
+  // Inject patched content script with location patching
+  const contentScriptTag = `
         <script>
           // Patch window.location before loading content script
           console.log('Patching window.location to simulate original URL...');
@@ -222,58 +266,9 @@ app.get('/har/:key/:mode(clean|gitcasso)', async (req, res) => {
             });
         </script>
       `
-
-      // Insert script before closing body tag, or at the end if no body tag
-      if (html.includes('</body>')) {
-        html = html.replace('</body>', `${contentScriptTag}</body>`)
-      } else {
-        html += contentScriptTag
-      }
-    }
-
-    return res.send(html)
-  } catch (error) {
-    console.error('Error serving page:', error)
-    return res.status(500).send('Error loading page')
+  if (!html.includes('</body>')) {
+    throw error('No closing body tag, nowhere to put the content script!')
   }
-})
+  return html.replace('</body>', `${contentScriptTag}</body>`)
+}
 
-// Serve assets from HAR file
-app.get('/asset/:key/*', async (req, res) => {
-  try {
-    const key = req.params.key as keyof typeof PAGES
-    if (!(key in PAGES)) {
-      return res.status(400).send('Invalid key - not found in PAGES')
-    }
-    const assetPath = (req.params as any)[0] as string
-
-    const harData = await loadHar(key)
-
-    // Find matching asset in HAR
-    const assetEntry = harData.log.entries.find((entry) => {
-      const url = new URL(entry.request.url)
-      return url.pathname === `/${assetPath}` || url.pathname.endsWith(`/${assetPath}`)
-    })
-
-    if (!assetEntry) {
-      return res.status(404).send('Asset not found')
-    }
-
-    const content = assetEntry.response.content
-    const mimeType = content.mimeType || 'application/octet-stream'
-    res.set('Content-Type', mimeType)
-    if (content.encoding === 'base64') {
-      return res.send(Buffer.from(content.text!, 'base64'))
-    } else {
-      return res.send(content.text!)
-    }
-  } catch (error) {
-    console.error('Error serving asset:', error)
-    return res.status(404).send('Asset not found')
-  }
-})
-
-app.listen(PORT, () => {
-  console.log(`HAR Page Viewer running at http://localhost:${PORT}`)
-  console.log('Click the links to view recorded GitHub pages')
-})
