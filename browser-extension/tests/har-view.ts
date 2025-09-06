@@ -146,9 +146,15 @@ app.get('/har/:key/:mode(clean|gitcasso)', async (req, res) => {
 
     // Find the main HTML response
     const harData = await loadHar(key)
+    const originalUrl = PAGES[key]
     const mainEntry = harData.log.entries.find(
       (entry) =>
-        entry.request.url.includes('github.com') &&
+        entry.request.url === originalUrl &&
+        entry.response.content.mimeType?.includes('text/html') &&
+        entry.response.content.text,
+    ) || harData.log.entries.find(
+      (entry) =>
+        entry.response.status === 200 &&
         entry.response.content.mimeType?.includes('text/html') &&
         entry.response.content.text,
     )
@@ -156,12 +162,24 @@ app.get('/har/:key/:mode(clean|gitcasso)', async (req, res) => {
       return res.status(404).send('No HTML content found in HAR file')
     }
 
+    // Extract all domains from HAR entries for dynamic replacement
+    const domains = new Set<string>()
+    harData.log.entries.forEach(entry => {
+      try {
+        const url = new URL(entry.request.url)
+        domains.add(url.hostname)
+      } catch {
+        // Skip invalid URLs
+      }
+    })
+
     // Replace external URLs with local asset URLs
     let html = mainEntry.response.content.text!
-    html = html.replace(
-      /https:\/\/(github\.com|assets\.github\.com|avatars\.githubusercontent\.com|user-images\.githubusercontent\.com)/g,
-      `/asset/${key}`,
-    )
+    domains.forEach(domain => {
+      const escapedDomain = domain.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      const regex = new RegExp(`https?://${escapedDomain}`, 'g')
+      html = html.replace(regex, `/asset/${key}`)
+    })
     if (mode === 'gitcasso') {
       html = injectGitcassoScript(key, html)
     }
@@ -183,10 +201,27 @@ app.get('/asset/:key/*', async (req, res) => {
 
     const harData = await loadHar(key)
 
-    // Find matching asset in HAR
+    // Find matching asset in HAR by full URL comparison
     const assetEntry = harData.log.entries.find((entry) => {
-      const url = new URL(entry.request.url)
-      return url.pathname === `/${assetPath}` || url.pathname.endsWith(`/${assetPath}`)
+      try {
+        const url = new URL(entry.request.url)
+        // First try exact path match
+        if (url.pathname === `/${assetPath}`) {
+          return true
+        }
+        // Then try path ending match (for nested paths)
+        if (url.pathname.endsWith(`/${assetPath}`)) {
+          return true
+        }
+        // Handle query parameters - check if path without query matches
+        const pathWithoutQuery = url.pathname + url.search
+        if (pathWithoutQuery === `/${assetPath}` || pathWithoutQuery.endsWith(`/${assetPath}`)) {
+          return true
+        }
+        return false
+      } catch {
+        return false
+      }
     })
 
     if (!assetEntry) {
