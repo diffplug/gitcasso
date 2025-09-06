@@ -21,8 +21,6 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
       return null
     }
 
-    logger.debug('THE ID IS ', textarea.id)
-
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
     logger.debug(`${this.constructor.name} examing url`, window.location.pathname)
 
