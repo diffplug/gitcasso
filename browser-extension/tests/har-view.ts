@@ -1,3 +1,23 @@
+/**
+ * HAR Page Viewer Test Server
+ *
+ * This Express server serves recorded HAR files as live web pages for testing.
+ * It provides two viewing modes: 'clean' (original page) and 'gitcasso' (with extension injected).
+ *
+ * Key components:
+ * - Loads HAR files from ./har/ directory based on PAGES index in `./har/_har_index.ts`
+ * - Patches URLs in HTML to serve assets locally from HAR data
+ * - Handles asset serving by matching HAR entries to requested paths
+ *
+ * Development notes:
+ * - Injects Gitcasso content script in 'gitcasso' mode with location patching
+ * - Location patching uses history.pushState to simulate original URLs
+ * - Chrome APIs are mocked for extension testing outside browser context
+ * - Extension assets served from `./output/chrome-mv3-dev` via `/chrome-mv3-dev` route
+ * - Floating rebuild button in gitcasso mode triggers `npx wxt build --mode development` and then refresh
+ */
+
+import { spawn } from 'node:child_process'
 import { error } from 'node:console'
 import fs from 'node:fs/promises'
 import path from 'node:path'
@@ -9,6 +29,9 @@ import { PAGES } from './har/_har-index'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
 const PORT = 3001
+
+// Middleware to parse JSON bodies
+app.use(express.json())
 
 // Store HAR json
 const harCache = new Map<keyof typeof PAGES, Har>()
@@ -22,19 +45,6 @@ function getUrlParts(key: keyof typeof PAGES) {
     hostname: url.hostname,
     href: originalUrl,
     pathname: url.pathname,
-  }
-}
-
-// Check if WXT dev server is running
-async function checkDevServer(): Promise<boolean> {
-  try {
-    const response = await fetch('http://localhost:3000/@vite/client', {
-      method: 'HEAD',
-      signal: AbortSignal.timeout(2000),
-    })
-    return response.ok
-  } catch {
-    return false
   }
 }
 
@@ -65,16 +75,6 @@ app.get('/', async (_req, res) => {
     const harDir = path.join(__dirname, 'har')
     const files = await fs.readdir(harDir)
     const harFiles = files.filter((file) => file.endsWith('.har'))
-    const devServerRunning = await checkDevServer()
-
-    const devServerWarning = !devServerRunning
-      ? `
-      <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 15px; margin-bottom: 20px;">
-        <strong>⚠️ Warning:</strong> WXT dev server is not running on localhost:3000<br>
-        <small>Gitcasso-enabled links won't work. Run <code>npm run dev</code> to start the server and <strong>then refresh this page</strong>.</small>
-      </div>
-    `
-      : ''
 
     const links = harFiles
       .map((file) => {
@@ -84,9 +84,7 @@ app.get('/', async (_req, res) => {
           <div style="margin-bottom: 10px; font-weight: bold; color: #555;">${basename}</div>
           <div style="display: flex; gap: 10px;">
             <a href="/har/${basename}/clean" style="flex: 1; text-align: center;">🔍 Clean</a>
-            <a href="/har/${basename}/gitcasso" style="flex: 1; text-align: center; ${!devServerRunning ? 'opacity: 0.5; pointer-events: none;' : ''}">
-              🚀 Gitcasso-enabled
-            </a>
+            <a href="/har/${basename}/gitcasso" style="flex: 1; text-align: center;">🚀 Gitcasso</a>
           </div>
         </li>
       `
@@ -124,7 +122,6 @@ app.get('/', async (_req, res) => {
 </head>
 <body>
     <h1>📄 HAR Page Viewer</h1>
-    ${devServerWarning}
     <p>Select a recorded page to view:</p>
     <ul>${links}</ul>
 </body>
@@ -245,6 +242,64 @@ app.get('/asset/:key/*', async (req, res) => {
     return res.status(404).send('Asset not found')
   }
 })
+// Serve extension assets from filesystem
+app.use('/chrome-mv3-dev', express.static(path.join(__dirname, '..', '.output', 'chrome-mv3-dev')))
+
+// Rebuild endpoint
+app.post('/rebuild', async (_req, res) => {
+  try {
+    console.log('Rebuild triggered via API')
+
+    // Run npx wxt build --mode development
+    const buildProcess = spawn('npx', ['wxt', 'build', '--mode', 'development'], {
+      cwd: path.join(__dirname, '..'),
+      stdio: ['pipe', 'pipe', 'pipe'],
+    })
+
+    let stdout = ''
+    let stderr = ''
+
+    buildProcess.stdout.on('data', (data) => {
+      stdout += data.toString()
+      console.log('[BUILD]', data.toString().trim())
+    })
+
+    buildProcess.stderr.on('data', (data) => {
+      stderr += data.toString()
+      console.error('[BUILD ERROR]', data.toString().trim())
+    })
+
+    buildProcess.on('close', (code) => {
+      if (code === 0) {
+        console.log('Build completed successfully')
+        res.json({ message: 'Build completed successfully', success: true })
+      } else {
+        console.error('Build failed with code:', code)
+        res.status(500).json({
+          error: stderr || stdout,
+          message: 'Build failed',
+          success: false,
+        })
+      }
+    })
+
+    buildProcess.on('error', (error) => {
+      console.error('Failed to start build process:', error)
+      res.status(500).json({
+        error: error.message,
+        message: 'Failed to start build process',
+        success: false,
+      })
+    })
+  } catch (error) {
+    console.error('Rebuild endpoint error:', error)
+    res.status(500).json({
+      error: error instanceof Error ? error.message : 'Unknown error',
+      message: 'Internal server error',
+      success: false,
+    })
+  }
+})
 
 app.listen(PORT, () => {
   console.log(`HAR Page Viewer running at http://localhost:${PORT}`)
@@ -271,7 +326,7 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
           });
           
           // Fetch and patch the content script to remove webextension-polyfill issues
-          fetch('http://localhost:3000/.output/chrome-mv3-dev/content-scripts/content.js')
+          fetch('/chrome-mv3-dev/content-scripts/content.js')
             .then(response => response.text())
             .then(code => {
               console.log('Fetched content script, patching webextension-polyfill...');
@@ -303,6 +358,90 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
             .catch(error => {
               console.error('Failed to load and patch content script:', error);
             });
+          
+          // Create floating rebuild button
+          const rebuildButton = document.createElement('div');
+          rebuildButton.id = 'gitcasso-rebuild-btn';
+          rebuildButton.innerHTML = '🔄';
+          rebuildButton.title = 'Rebuild Extension';
+          rebuildButton.style.cssText = \`
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #007acc;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 999999;
+            user-select: none;
+            transition: all 0.2s ease;
+            font-family: system-ui, -apple-system, sans-serif;
+          \`;
+          
+          rebuildButton.addEventListener('mouseenter', () => {
+            rebuildButton.style.transform = 'scale(1.1)';
+            rebuildButton.style.backgroundColor = '#005a9e';
+          });
+          
+          rebuildButton.addEventListener('mouseleave', () => {
+            rebuildButton.style.transform = 'scale(1)';
+            rebuildButton.style.backgroundColor = '#007acc';
+          });
+          
+          rebuildButton.addEventListener('click', async () => {
+            try {
+              rebuildButton.innerHTML = '⏳';
+              rebuildButton.style.backgroundColor = '#ffa500';
+              rebuildButton.title = 'Rebuilding...';
+              
+              const response = await fetch('/rebuild', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+              });
+              
+              const result = await response.json();
+              
+              if (result.success) {
+                rebuildButton.innerHTML = '✅';
+                rebuildButton.style.backgroundColor = '#28a745';
+                rebuildButton.title = 'Build successful! Reloading...';
+                
+                setTimeout(() => {
+                  location.reload(true);
+                }, 1000);
+              } else {
+                rebuildButton.innerHTML = '❌';
+                rebuildButton.style.backgroundColor = '#dc3545';
+                rebuildButton.title = 'Build failed: ' + (result.error || result.message);
+                
+                setTimeout(() => {
+                  rebuildButton.innerHTML = '🔄';
+                  rebuildButton.style.backgroundColor = '#007acc';
+                  rebuildButton.title = 'Rebuild Extension';
+                }, 3000);
+              }
+            } catch (error) {
+              console.error('Rebuild failed:', error);
+              rebuildButton.innerHTML = '❌';
+              rebuildButton.style.backgroundColor = '#dc3545';
+              rebuildButton.title = 'Network error: ' + error.message;
+              
+              setTimeout(() => {
+                rebuildButton.innerHTML = '🔄';
+                rebuildButton.style.backgroundColor = '#007acc';
+                rebuildButton.title = 'Rebuild Extension';
+              }, 3000);
+            }
+          });
+          
+          document.body.appendChild(rebuildButton);
         </script>
       `
   if (!html.includes('</body>')) {

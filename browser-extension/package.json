@@ -37,6 +37,7 @@
   "scripts": {
     "biome": "biome check .",
     "biome:fix": "biome check --write .",
+    "biome:fix:unsafe": "biome check --write --unsafe .",
     "wxt:build": "wxt build",
     "wxt:build:firefox": "wxt build -b firefox",
     "compile": "tsc --noEmit",
