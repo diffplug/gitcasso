@@ -19,6 +19,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
       - run: npm ci
+      - run: npm run postinstall --workspace=gitcasso
       - run: npm run build --workspace=overtype
       - run: npm run biome
         working-directory: browser-extension
