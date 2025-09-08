@@ -1,17 +1,10 @@
 {
   "name": "gitcasso-workspace",
   "private": true,
-  "workspaces": [
-    "browser-extension",
-    "packages/*"
-  ],
   "scripts": {
-    "build:overtype": "npm run build --workspace=overtype",
-    "build:browser-extension": "npm run compile --workspace=gitcasso",
-    "build": "npm run build:overtype && npm run build:browser-extension",
-    "postinstall": "npm run build:overtype"
-  },
-  "devDependencies": {
-    "npm": "^10.0.0"
+    "build:overtype": "pnpm --filter=overtype run build",
+    "build:browser-extension": "pnpm --filter=gitcasso run compile",
+    "build": "pnpm run build:overtype && pnpm run build:browser-extension",
+    "postinstall": "pnpm run build:overtype"
   }
 }
