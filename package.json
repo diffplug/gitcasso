@@ -5,6 +5,7 @@
     "build:overtype": "pnpm --filter=overtype run build",
     "build:browser-extension": "pnpm --filter=gitcasso run compile",
     "build": "pnpm run build:overtype && pnpm run build:browser-extension",
+    "rebuild:dev": "pnpm run build:overtype && pnpm --filter=gitcasso exec wxt build --mode development",
     "postinstall": "pnpm run build:overtype"
   }
 }

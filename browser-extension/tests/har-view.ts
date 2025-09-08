@@ -250,9 +250,9 @@ app.post('/rebuild', async (_req, res) => {
   try {
     console.log('Rebuild triggered via API')
 
-    // Run npx wxt build --mode development
-    const buildProcess = spawn('npx', ['wxt', 'build', '--mode', 'development'], {
-      cwd: path.join(__dirname, '..'),
+    // Run pnpm run rebuild:dev
+    const buildProcess = spawn('pnpm', ['run', 'rebuild:dev'], {
+      cwd: path.join(__dirname, '..', '..'),
       stdio: ['pipe', 'pipe', 'pipe'],
     })
 
