@@ -18,7 +18,8 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
           cache-dependency-path: package-lock.json
-      - run: npm ci
+      - run: npm ci --ignore-scripts
+      - run: npm install @rollup/rollup-linux-x64-gnu
       - run: npm run postinstall --workspace=gitcasso
       - run: npm run build --workspace=overtype
       - run: npm run biome
