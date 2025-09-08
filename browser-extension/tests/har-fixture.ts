@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
 
 // Mock the OverType editor component
-vi.mock('../src/overtype/overtype', () => {
+vi.mock('overtype', () => {
   const mockConstructor = vi.fn().mockImplementation(() => [
     {
       container: document.createElement('div'),

@@ -1,5 +1,5 @@
 import hljs from 'highlight.js'
-import OverType from '../overtype/overtype'
+import OverType from 'overtype'
 
 export function githubPrNewCommentContentScript() {
   if (window.location.hostname !== 'github.com') {
