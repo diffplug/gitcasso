@@ -3,7 +3,6 @@
   "dependencies": {
     "@wxt-dev/webextension-polyfill": "^1.0.0",
     "highlight.js": "^11.11.1",
-    "markdown-actions": "^1.1.2",
     "overtype": "workspace:*",
     "webextension-polyfill": "^0.12.0"
   },
