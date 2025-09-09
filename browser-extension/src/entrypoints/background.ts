@@ -46,6 +46,24 @@ export function handleCommentEvent(message: CommentEvent, sender: any): void {
   }
 }
 
+export function handlePopupMessage(message: any, sender: any, sendResponse: (response: any) => void): void {
+  if (message.type === 'GET_OPEN_SPOTS') {
+    const spots: CommentState[] = []
+    for (const [, commentState] of openSpots) {
+      spots.push(commentState)
+    }
+    sendResponse({ spots })
+  }
+}
+
 export default defineBackground(() => {
-  browser.runtime.onMessage.addListener(handleCommentEvent)
+  browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'GET_OPEN_SPOTS') {
+      handlePopupMessage(message, sender, sendResponse)
+      return true
+    } else {
+      handleCommentEvent(message, sender)
+      return false
+    }
+  })
 })
