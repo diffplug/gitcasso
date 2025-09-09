@@ -2,58 +2,57 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { handleCommentEvent, states } from '../src/entrypoints/background'
 import type { CommentEvent, CommentSpot } from '../src/lib/enhancer'
 
+const mockSender = {
+  tab: {
+    id: 123,
+    windowId: 456,
+  },
+}
+const mockSpot = {
+  type: 'TEST_SPOT',
+  unique_key: 'test-key',
+}
 describe('Background Event Handler', () => {
-  let mockSender: any
-  let mockSpot: CommentSpot
-
   beforeEach(() => {
-    // Clear the shared states map before each test
     states.clear()
-
-    mockSender = {
-      tab: {
-        id: 123,
-        windowId: 456,
-      },
-    }
-
-    mockSpot = {
-      type: 'TEST_SPOT',
-      unique_key: 'test-key',
-    }
   })
-
   describe('ENHANCED Event', () => {
     it('should create new comment state when textarea is enhanced', () => {
-      const message: CommentEvent = {
-        spot: mockSpot,
-        type: 'ENHANCED',
-      }
-
-      handleCommentEvent(message, mockSender)
-
-      const expectedKey = {
-        spot: mockSpot,
-        tab: { tabId: 123, windowId: 456 },
-      }
-
-      const state = states.get(expectedKey)
-      expect(state).toBeDefined()
-      expect(state?.tab).toEqual({ tabId: 123, windowId: 456 })
-      expect(state?.spot).toEqual(mockSpot)
-      expect(state?.drafts).toEqual([])
+      handleCommentEvent(
+        {
+          spot: mockSpot,
+          type: 'ENHANCED',
+        },
+        mockSender,
+      )
+      expect(Array.from(states)).toMatchInlineSnapshot(`
+        [
+          [
+            "{"spot":{"type":"TEST_SPOT","unique_key":"test-key"},"tab":{"tabId":123,"windowId":456}}",
+            {
+              "drafts": [],
+              "spot": {
+                "type": "TEST_SPOT",
+                "unique_key": "test-key",
+              },
+              "tab": {
+                "tabId": 123,
+                "windowId": 456,
+              },
+            },
+          ],
+        ]
+      `)
     })
-
     it('should not handle ENHANCED event without tab info', () => {
-      const message: CommentEvent = {
-        spot: mockSpot,
-        type: 'ENHANCED',
-      }
-
       const senderWithoutTab = { tab: null }
-
-      handleCommentEvent(message, senderWithoutTab)
-
+      handleCommentEvent(
+        {
+          spot: mockSpot,
+          type: 'ENHANCED',
+        },
+        senderWithoutTab,
+      )
       expect(states.size).toBe(0)
     })
   })
@@ -65,7 +64,6 @@ describe('Background Event Handler', () => {
         spot: mockSpot,
         type: 'ENHANCED',
       }
-
       handleCommentEvent(enhanceMessage, mockSender)
       expect(states.size).toBe(1)
 
@@ -74,9 +72,7 @@ describe('Background Event Handler', () => {
         spot: mockSpot,
         type: 'DESTROYED',
       }
-
       handleCommentEvent(destroyMessage, mockSender)
-
       expect(states.size).toBe(0)
     })
 
@@ -85,10 +81,8 @@ describe('Background Event Handler', () => {
         spot: mockSpot,
         type: 'DESTROYED',
       }
-
       // Should not throw error
       handleCommentEvent(message, mockSender)
-
       expect(states.size).toBe(0)
     })
   })
@@ -99,9 +93,7 @@ describe('Background Event Handler', () => {
         spot: mockSpot,
         type: 'LOST_FOCUS',
       }
-
       handleCommentEvent(message, mockSender)
-
       expect(states.size).toBe(0)
     })
   })
@@ -110,13 +102,10 @@ describe('Background Event Handler', () => {
     it('should handle multiple enhanced textareas from different tabs', () => {
       const spot1: CommentSpot = { type: 'SPOT1', unique_key: 'key1' }
       const spot2: CommentSpot = { type: 'SPOT2', unique_key: 'key2' }
-
       const sender1 = { tab: { id: 123, windowId: 456 } }
       const sender2 = { tab: { id: 789, windowId: 456 } }
-
       handleCommentEvent({ spot: spot1, type: 'ENHANCED' }, sender1)
       handleCommentEvent({ spot: spot2, type: 'ENHANCED' }, sender2)
-
       expect(states.size).toBe(2)
     })
 
