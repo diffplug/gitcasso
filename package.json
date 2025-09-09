@@ -3,9 +3,10 @@
   "private": true,
   "scripts": {
     "build:overtype": "pnpm --filter=overtype run build",
-    "build:browser-extension": "pnpm --filter=gitcasso run compile",
-    "build": "pnpm run build:overtype && pnpm run build:browser-extension",
-    "rebuild:dev": "pnpm run build:overtype && pnpm --filter=gitcasso exec wxt build --mode development",
+    "typecheck": "pnpm --filter=gitcasso run typecheck",
+    "build": "pnpm run build:overtype && pnpm --filter=gitcasso run build",
+    "build:dev": "pnpm run build:overtype && pnpm --filter=gitcasso run build:dev",
+    "har:view": "pnpm --filter=gitcasso run har:view",
     "postinstall": "pnpm run build:overtype"
   }
 }

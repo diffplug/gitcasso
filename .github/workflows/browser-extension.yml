@@ -25,5 +25,5 @@ jobs:
         working-directory: browser-extension
       - run: pnpm test
         working-directory: browser-extension
-      - run: pnpm run compile
+      - run: pnpm run typecheck
         working-directory: browser-extension

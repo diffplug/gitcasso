@@ -251,7 +251,7 @@ app.post('/rebuild', async (_req, res) => {
     console.log('Rebuild triggered via API')
 
     // Run pnpm run rebuild:dev
-    const buildProcess = spawn('pnpm', ['run', 'rebuild:dev'], {
+    const buildProcess = spawn('pnpm', ['run', 'build:dev'], {
       cwd: path.join(__dirname, '..', '..'),
       stdio: ['pipe', 'pipe', 'pipe'],
     })
