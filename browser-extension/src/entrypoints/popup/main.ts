@@ -5,11 +5,9 @@ import { logger } from '../../lib/logger'
 
 // Test basic DOM access
 try {
-  const app = document.getElementById('app')
+  const app = document.getElementById('app')!!
   logger.debug('Found app element:', app)
-  if (app) {
-    app.innerHTML = '<div>Script is running...</div>'
-  }
+  app.innerHTML = '<div>Script is running...</div>'
 } catch (error) {
   logger.error('Error accessing DOM:', error)
 }
@@ -28,9 +26,14 @@ async function getOpenSpots(): Promise<CommentState[]> {
   }
 }
 
-async function switchToTab(tabId: number, windowId: number): Promise<void> {
-  await browser.windows.update(windowId, { focused: true })
-  await browser.tabs.update(tabId, { active: true })
+function switchToTab(tabId: number, windowId: number): void {
+  // Send message to background script to handle tab switching
+  // This avoids the popup context being destroyed before completion
+  browser.runtime.sendMessage({
+    type: 'SWITCH_TO_TAB',
+    tabId,
+    windowId
+  })
   window.close()
 }
 
@@ -40,23 +43,18 @@ function createSpotElement(commentState: CommentState): HTMLElement {
 
   logger.debug('Creating spot element for:', commentState.spot)
   const enhancer = enhancers.enhancerFor(commentState.spot)
-  logger.debug('Found enhancer:', enhancer)
+  if (!enhancer) {
+    logger.error('No enhancer found for:', commentState.spot)
+    logger.error('Only have enhancers for:', enhancers.byType)
+  }
 
   const title = document.createElement('div')
   title.className = 'spot-title'
-
-  if (enhancer) {
-    title.textContent = enhancer.tableTitle(commentState.spot)
-  } else {
-    title.textContent = `${commentState.spot.type} (${commentState.spot.unique_key})`
-  }
-
+  title.textContent = enhancer.tableTitle(commentState.spot)
   item.appendChild(title)
-
   item.addEventListener('click', () => {
     switchToTab(commentState.tab.tabId, commentState.tab.windowId)
   })
-
   return item
 }
 

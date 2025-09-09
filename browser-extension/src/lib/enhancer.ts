@@ -43,5 +43,4 @@ export interface CommentEnhancer<Spot extends CommentSpot = CommentSpot> {
 
   tableIcon(spot: Spot): string
   tableTitle(spot: Spot): string
-  buildUrl(spot: Spot): string
 }

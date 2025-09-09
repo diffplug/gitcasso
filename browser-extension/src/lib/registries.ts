@@ -13,7 +13,7 @@ export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
 export class EnhancerRegistry {
   private enhancers = new Set<CommentEnhancer>()
   private preparedEnhancers = new Set<CommentEnhancer>()
-  private byType = new Map<string, CommentEnhancer>()
+  byType = new Map<string, CommentEnhancer>()
 
   constructor() {
     // Register all available handlers
@@ -23,7 +23,7 @@ export class EnhancerRegistry {
 
   private register<T extends CommentSpot>(enhancer: CommentEnhancer<T>): void {
     this.enhancers.add(enhancer)
-    for (const spotType in enhancer.forSpotTypes()) {
+    for (const spotType of enhancer.forSpotTypes()) {
       this.byType.set(spotType, enhancer)
     }
   }
