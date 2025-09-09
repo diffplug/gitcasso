@@ -26,7 +26,6 @@ describe('Background Event Handler', () => {
   describe('ENHANCED Event', () => {
     it('should create new comment state when textarea is enhanced', () => {
       const message: CommentEvent = {
-        draft: undefined,
         spot: mockSpot,
         type: 'ENHANCED',
       }
@@ -47,7 +46,6 @@ describe('Background Event Handler', () => {
 
     it('should not handle ENHANCED event without tab info', () => {
       const message: CommentEvent = {
-        draft: undefined,
         spot: mockSpot,
         type: 'ENHANCED',
       }
@@ -64,7 +62,6 @@ describe('Background Event Handler', () => {
     it('should remove comment state when textarea is destroyed', () => {
       // First create a state using the actual handler
       const enhanceMessage: CommentEvent = {
-        draft: undefined,
         spot: mockSpot,
         type: 'ENHANCED',
       }
@@ -74,7 +71,6 @@ describe('Background Event Handler', () => {
 
       // Then destroy it
       const destroyMessage: CommentEvent = {
-        draft: undefined,
         spot: mockSpot,
         type: 'DESTROYED',
       }
@@ -86,7 +82,6 @@ describe('Background Event Handler', () => {
 
     it('should handle DESTROYED event for non-existent state gracefully', () => {
       const message: CommentEvent = {
-        draft: undefined,
         spot: mockSpot,
         type: 'DESTROYED',
       }
@@ -101,7 +96,6 @@ describe('Background Event Handler', () => {
   describe('Invalid Events', () => {
     it('should ignore events with unsupported type', () => {
       const message: CommentEvent = {
-        draft: undefined,
         spot: mockSpot,
         type: 'LOST_FOCUS',
       }
@@ -120,15 +114,14 @@ describe('Background Event Handler', () => {
       const sender1 = { tab: { id: 123, windowId: 456 } }
       const sender2 = { tab: { id: 789, windowId: 456 } }
 
-      handleCommentEvent({ draft: undefined, spot: spot1, type: 'ENHANCED' }, sender1)
-      handleCommentEvent({ draft: undefined, spot: spot2, type: 'ENHANCED' }, sender2)
+      handleCommentEvent({ spot: spot1, type: 'ENHANCED' }, sender1)
+      handleCommentEvent({ spot: spot2, type: 'ENHANCED' }, sender2)
 
       expect(states.size).toBe(2)
     })
 
     it('should handle same spot from same tab (overwrite)', () => {
       const message: CommentEvent = {
-        draft: undefined,
         spot: mockSpot,
         type: 'ENHANCED',
       }

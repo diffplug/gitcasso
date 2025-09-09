@@ -9,7 +9,6 @@ const enhancedTextareas = new TextareaRegistry()
 
 function sendEventToBackground(type: 'ENHANCED' | 'DESTROYED', spot: CommentSpot): void {
   const message: CommentEvent = {
-    draft: undefined,
     spot,
     type,
   }
