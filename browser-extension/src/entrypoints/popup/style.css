@@ -6,20 +6,3 @@ body {
   line-height: 1.4;
   margin: 0;
 }
-
-.header {
-  text-align: center;
-  margin-bottom: 15px;
-}
-
-.logo {
-  font-size: 18px;
-  font-weight: bold;
-  color: #0066cc;
-  margin-bottom: 8px;
-}
-
-.subtitle {
-  color: #666;
-  font-size: 12px;
-}
