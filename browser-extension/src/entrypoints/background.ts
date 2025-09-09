@@ -1,4 +1,4 @@
-import type { BackgroundMessage, CommentDraft, CommentSpot } from '../lib/enhancer'
+import type { CommentDraft, CommentEvent, CommentSpot } from '../lib/enhancer'
 import { JsonMap } from '../lib/jsonmap'
 
 interface Tab {
@@ -15,29 +15,32 @@ interface CommentState {
   drafts: [number, CommentDraft][]
 }
 
-const _states = new JsonMap<TabAndSpot, CommentState>()
-
-browser.runtime.onMessage.addListener((message: BackgroundMessage, sender) => {
-  if (message.action === 'COMMENT_EVENT' && sender.tab?.id && sender.tab?.windowId) {
+const states = new JsonMap<TabAndSpot, CommentState>()
+browser.runtime.onMessage.addListener((message: CommentEvent, sender) => {
+  if (
+    (message.type === 'ENHANCED' || message.type === 'DESTROYED') &&
+    sender.tab?.id &&
+    sender.tab?.windowId
+  ) {
     const tab: Tab = {
       tabId: sender.tab.id,
       windowId: sender.tab.windowId,
     }
 
     const tabAndSpot: TabAndSpot = {
-      spot: message.event.spot,
+      spot: message.spot,
       tab,
     }
 
-    if (message.event.type === 'ENHANCED') {
+    if (message.type === 'ENHANCED') {
       const commentState: CommentState = {
         drafts: [],
-        spot: message.event.spot,
+        spot: message.spot,
         tab,
       }
-      _states.set(tabAndSpot, commentState)
-    } else if (message.event.type === 'DESTROYED') {
-      _states.delete(tabAndSpot)
+      states.set(tabAndSpot, commentState)
+    } else if (message.type === 'DESTROYED') {
+      states.delete(tabAndSpot)
     }
   }
 })

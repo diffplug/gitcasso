@@ -1,5 +1,5 @@
 import { CONFIG, type ModeType } from '../lib/config'
-import type { BackgroundMessage, CommentSpot } from '../lib/enhancer'
+import type { CommentEvent, CommentSpot } from '../lib/enhancer'
 import { logger } from '../lib/logger'
 import { EnhancerRegistry, TextareaRegistry } from '../lib/registries'
 import { githubPrNewCommentContentScript } from '../playgrounds/github-playground'
@@ -8,9 +8,10 @@ const enhancers = new EnhancerRegistry()
 const enhancedTextareas = new TextareaRegistry()
 
 function sendEventToBackground(type: 'ENHANCED' | 'DESTROYED', spot: CommentSpot): void {
-  const message: BackgroundMessage = {
-    action: 'COMMENT_EVENT',
-    event: { spot, type },
+  const message: CommentEvent = {
+    draft: undefined,
+    spot,
+    type,
   }
   browser.runtime.sendMessage(message).catch((error) => {
     logger.debug('Failed to send event to background:', error)
