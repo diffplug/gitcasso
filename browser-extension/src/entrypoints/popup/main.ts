@@ -1,6 +1,7 @@
 import './style.css'
 import type { CommentState } from '../background'
 import { EnhancerRegistry } from '../../lib/registries'
+import { logger } from '../../lib/logger'
 
 const enhancers = new EnhancerRegistry()
 
@@ -38,8 +39,11 @@ function createSpotElement(commentState: CommentState): HTMLElement {
 }
 
 async function renderOpenSpots(): Promise<void> {
+  logger.debug('renderOpenSpots')
   const app = document.getElementById('app')!
+  logger.debug('waiting on getOpenSpots')
   const spots = await getOpenSpots()
+  logger.debug('got', spots)
 
   if (spots.length === 0) {
     app.innerHTML = '<div class="no-spots">No open comment spots</div>'
