@@ -1,4 +1,4 @@
-import type { OverTypeInstance } from '../overtype/overtype'
+import type { OverTypeInstance } from 'overtype'
 import type { CommentEnhancer, CommentSpot } from './enhancer'
 import { GitHubIssueAddCommentEnhancer } from './enhancers/github/githubIssueAddComment'
 import { GitHubPRAddCommentEnhancer } from './enhancers/github/githubPRAddComment'

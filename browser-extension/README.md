@@ -4,8 +4,8 @@
 
 ### Hotreload development
 
-- `npm install`
-- `npm run dev`
+- `pnpm install`
+- `pnpm run dev`
 - open [`chrome://extensions`](chrome://extensions)
 - toggle **Developer mode** (top-right)
 - click "Load unpacked" (far left)
@@ -14,15 +14,15 @@
 - click the puzzle icon next to the url bar, then pin the Gitcasso icon
 
 ### Testing and quality
-- `npm run biome` - runs `biome check` (lint & formatting)
-- `npm run biome:fix` - fixes most of what `biome check` finds
-- `npm run compile` - typechecking
-- `npm test` - vitest
-- `npm test -- -u` updates all the snapshots
+- `pnpm run biome` - runs `biome check` (lint & formatting)
+- `pnpm run biome:fix` - fixes most of what `biome check` finds
+- `pnpm run compile` - typechecking
+- `pnpm test` - vitest
+- `pnpm test -- -u` updates all the snapshots
 
 ### Deployment
-- `npm run build` - build for mv3 for most browsers
-- `npm run build:firefox` - build mv2 specifically for Firefox
+- `pnpm run build` - build for mv3 for most browsers
+- `pnpm run build:firefox` - build mv2 specifically for Firefox
 
 ## How it works
 
@@ -48,7 +48,7 @@ When the `textarea` gets removed from the page, the `TextareaRegistry` is notifi
 
 In `tests/har` there are various `.har` files. These are complete recordings of a single page load.
 
-- `npm run har:view` and you can see the recordings, with or without our browser extension.
+- `pnpm run har:view` and you can see the recordings, with or without our browser extension.
 
 ### Recording new HAR files
 
@@ -56,7 +56,7 @@ In `tests/har` there are various `.har` files. These are complete recordings of 
 - `npx playwright codegen https://github.com/login --save-storage=playwright/.auth/gh.json` will store new auth tokens
   - login manually, then close the browser
   - ***these cookies are very sensitive! we only run this script using a test account that has no permissions or memberships to anything, recommend you do the same!***
-- `npm run har:record` this records new snapshots using those auth tokens (it needs args, run it with no args for docs)
+- `pnpm run har:record` this records new snapshots using those auth tokens (it needs args, run it with no args for docs)
   - DO NOT COMMIT AND PUSH NEW OR CHANGED `har` files!
   - we try to sanitize these (see `har-record.ts` for details) but there may be important PII in them
   - if you need new HAR files for something, let us know and we will generate them ourselves using a dummy account

@@ -11,16 +11,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v5
         with:
           node-version-file: '.nvmrc'
-          cache: 'npm'
-          cache-dependency-path: browser-extension/package-lock.json
-      - run: npm ci
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run biome
         working-directory: browser-extension
-      - run: npm run biome
+      - run: pnpm test
         working-directory: browser-extension
-      - run: npm test
-        working-directory: browser-extension
-      - run: npm run compile
+      - run: pnpm run typecheck
         working-directory: browser-extension

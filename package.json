@@ -1,0 +1,12 @@
+{
+  "name": "gitcasso-workspace",
+  "private": true,
+  "scripts": {
+    "build:overtype": "pnpm --filter=overtype run build",
+    "typecheck": "pnpm --filter=gitcasso run typecheck",
+    "build": "pnpm run build:overtype && pnpm --filter=gitcasso run build",
+    "build:dev": "pnpm run build:overtype && pnpm --filter=gitcasso run build:dev",
+    "har:view": "pnpm --filter=gitcasso run har:view",
+    "postinstall": "pnpm run build:overtype"
+  }
+}

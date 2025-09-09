@@ -1,5 +1,5 @@
 import hljs from 'highlight.js'
-import OverType from '../overtype/overtype'
+import OverType from 'overtype'
 
 export function githubPrNewCommentContentScript() {
   if (window.location.hostname !== 'github.com') {
@@ -31,7 +31,7 @@ function modifyDOM(overtypeInput: HTMLTextAreaElement): HTMLElement {
   return overtypeContainer.parentElement!.closest('div')!
 }
 
-function hljsHighlighter(code: string, language: string) {
+function hljsHighlighter(code: string, language?: string) {
   try {
     if (language && hljs.getLanguage(language)) {
       const result = hljs.highlight(code, { language })
