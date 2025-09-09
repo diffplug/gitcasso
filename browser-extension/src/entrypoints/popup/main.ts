@@ -1,11 +1,16 @@
 import './style.css'
-import type { CommentState } from '../background'
-import { EnhancerRegistry } from '../../lib/registries'
 import { logger } from '../../lib/logger'
+import type {
+  GetOpenSpotsMessage,
+  GetOpenSpotsResponse,
+  SwitchToTabMessage,
+} from '../../lib/messages'
+import { EnhancerRegistry } from '../../lib/registries'
+import type { CommentState } from '../background'
 
 // Test basic DOM access
 try {
-  const app = document.getElementById('app')!!
+  const app = document.getElementById('app')!
   logger.debug('Found app element:', app)
   app.innerHTML = '<div>Script is running...</div>'
 } catch (error) {
@@ -17,7 +22,8 @@ const enhancers = new EnhancerRegistry()
 async function getOpenSpots(): Promise<CommentState[]> {
   logger.debug('Sending message to background script...')
   try {
-    const response = await browser.runtime.sendMessage({ type: 'GET_OPEN_SPOTS' })
+    const message: GetOpenSpotsMessage = { type: 'GET_OPEN_SPOTS' }
+    const response = (await browser.runtime.sendMessage(message)) as GetOpenSpotsResponse
     logger.debug('Received response:', response)
     return response.spots || []
   } catch (error) {
@@ -29,11 +35,12 @@ async function getOpenSpots(): Promise<CommentState[]> {
 function switchToTab(tabId: number, windowId: number): void {
   // Send message to background script to handle tab switching
   // This avoids the popup context being destroyed before completion
-  browser.runtime.sendMessage({
-    type: 'SWITCH_TO_TAB',
+  const message: SwitchToTabMessage = {
     tabId,
-    windowId
-  })
+    type: 'SWITCH_TO_TAB',
+    windowId,
+  }
+  browser.runtime.sendMessage(message)
   window.close()
 }
 
@@ -76,14 +83,14 @@ async function renderOpenSpots(): Promise<void> {
   const list = document.createElement('div')
   list.className = 'spots-list'
 
-  spots.forEach(spot => {
+  spots.forEach((spot) => {
     list.appendChild(createSpotElement(spot))
   })
 
   app.appendChild(list)
 }
 
-renderOpenSpots().catch(error => {
+renderOpenSpots().catch((error) => {
   logger.error('Error in renderOpenSpots:', error)
   const app = document.getElementById('app')!
   app.innerHTML = `<div class="no-spots">Error loading spots: ${error.message}</div>`
