@@ -10,7 +10,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": [".*", "src/**", "tests/**", "!src/overtype", "!src/playgrounds"]
+    "includes": [".*", "browser-extension/src/**", "browser-extension/tests/**"]
   },
   "formatter": {
     "enabled": true,

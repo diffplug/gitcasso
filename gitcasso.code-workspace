@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"editor.formatOnSave": false,
+		"biome.lspBin": "./browser-extension/node_modules/.bin/biome",
+		"[typescript]": {
+			"editor.formatOnSave": true,
+			"editor.defaultFormatter": "biomejs.biome"
+		},
+		"[typescriptreact]": {
+			"editor.formatOnSave": true,
+			"editor.defaultFormatter": "biomejs.biome"
+		}
+	}
+}
