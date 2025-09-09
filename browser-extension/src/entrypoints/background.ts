@@ -16,31 +16,34 @@ interface CommentState {
 }
 
 const states = new JsonMap<TabAndSpot, CommentState>()
-browser.runtime.onMessage.addListener((message: CommentEvent, sender) => {
-  if (
-    (message.type === 'ENHANCED' || message.type === 'DESTROYED') &&
-    sender.tab?.id &&
-    sender.tab?.windowId
-  ) {
-    const tab: Tab = {
-      tabId: sender.tab.id,
-      windowId: sender.tab.windowId,
-    }
 
-    const tabAndSpot: TabAndSpot = {
-      spot: message.spot,
-      tab,
-    }
+export default defineBackground(() => {
+  browser.runtime.onMessage.addListener((message: CommentEvent, sender) => {
+    if (
+      (message.type === 'ENHANCED' || message.type === 'DESTROYED') &&
+      sender.tab?.id &&
+      sender.tab?.windowId
+    ) {
+      const tab: Tab = {
+        tabId: sender.tab.id,
+        windowId: sender.tab.windowId,
+      }
 
-    if (message.type === 'ENHANCED') {
-      const commentState: CommentState = {
-        drafts: [],
+      const tabAndSpot: TabAndSpot = {
         spot: message.spot,
         tab,
       }
-      states.set(tabAndSpot, commentState)
-    } else if (message.type === 'DESTROYED') {
-      states.delete(tabAndSpot)
+
+      if (message.type === 'ENHANCED') {
+        const commentState: CommentState = {
+          drafts: [],
+          spot: message.spot,
+          tab,
+        }
+        states.set(tabAndSpot, commentState)
+      } else if (message.type === 'DESTROYED') {
+        states.delete(tabAndSpot)
+      }
     }
-  }
+  })
 })
