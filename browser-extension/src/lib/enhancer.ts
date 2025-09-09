@@ -1,4 +1,4 @@
-import type { OverTypeInstance } from '../overtype/overtype'
+import type { OverTypeInstance } from 'overtype'
 
 /**
  * Stores enough info about the location of a draft to:

@@ -91,11 +91,11 @@ async function sanitize(filename: string) {
     for (const [name] of Object.entries(PAGES)) {
       console.log(`  ${name}`)
     }
-    console.log('\nUsage: npm run har:record <pattern>')
+    console.log('\nUsage: pnpm run har:record <pattern>')
     console.log('Examples:')
-    console.log('  npm run har:record "*"              # Record all')
-    console.log('  npm run har:record "github_*"       # Record all github_*')
-    console.log('  npm run har:record "github_issue"   # Record specific target')
+    console.log('  pnpm run har:record "*"              # Record all')
+    console.log('  pnpm run har:record "github_*"       # Record all github_*')
+    console.log('  pnpm run har:record "github_issue"   # Record specific target')
     return
   }
 

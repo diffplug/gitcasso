@@ -1,6 +1,6 @@
 import hljs from 'highlight.js'
 
-export function githubHighlighter(code: string, language: string) {
+export function githubHighlighter(code: string, language?: string) {
   try {
     if (language && hljs.getLanguage(language)) {
       const result = hljs.highlight(code, { language })

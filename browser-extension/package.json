@@ -3,7 +3,7 @@
   "dependencies": {
     "@wxt-dev/webextension-polyfill": "^1.0.0",
     "highlight.js": "^11.11.1",
-    "markdown-actions": "^1.1.2",
+    "overtype": "workspace:*",
     "webextension-polyfill": "^0.12.0"
   },
   "description": "Syntax highlighting and autosave for comments on GitHub (and other other markdown-friendly websites).",
@@ -38,17 +38,16 @@
     "biome": "biome check .",
     "biome:fix": "biome check --write .",
     "biome:fix:unsafe": "biome check --write --unsafe .",
-    "wxt:build": "wxt build",
-    "wxt:build:firefox": "wxt build -b firefox",
-    "compile": "tsc --noEmit",
+    "build": "wxt build",
+    "build:dev": "wxt build --mode development",
+    "build:firefox": "wxt build -b firefox",
+    "typecheck": "tsc --noEmit",
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
     "postinstall": "wxt prepare",
     "test": "vitest run",
     "har:record": "tsx tests/har-record.ts",
-    "har:view": "tsx tests/har-view.ts",
-    "zip": "wxt zip",
-    "zip:firefox": "wxt zip -b firefox"
+    "har:view": "tsx tests/har-view.ts"
   },
   "type": "module",
   "version": "0.0.1"

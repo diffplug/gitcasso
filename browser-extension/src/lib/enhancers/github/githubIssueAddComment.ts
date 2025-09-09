@@ -1,4 +1,4 @@
-import OverType, { type OverTypeInstance } from '../../../overtype/overtype'
+import OverType, { type OverTypeInstance } from 'overtype'
 import type { CommentEnhancer, CommentSpot } from '../../enhancer'
 import { logger } from '../../logger'
 import { modifyDOM } from '../modifyDOM'
