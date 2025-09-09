@@ -27,24 +27,8 @@ export class JsonMap<K, V> {
     return this.map.size
   }
 
-  *values(): IterableIterator<V> {
-    yield* this.map.values()
-  }
-
-  *entries(): IterableIterator<[K, V]> {
-    for (const [stringKey, value] of this.map.entries()) {
-      yield [JSON.parse(stringKey) as K, value]
-    }
-  }
-
-  *keys(): IterableIterator<K> {
-    for (const stringKey of this.map.keys()) {
-      yield JSON.parse(stringKey) as K
-    }
-  }
-
-  [Symbol.iterator](): IterableIterator<[K, V]> {
-    return this.entries()
+  [Symbol.iterator](): IterableIterator<[string, V]> {
+    return this.map.entries()
   }
 }
 
