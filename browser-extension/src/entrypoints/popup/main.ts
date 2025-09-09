@@ -3,14 +3,29 @@ import type { CommentState } from '../background'
 import { EnhancerRegistry } from '../../lib/registries'
 import { logger } from '../../lib/logger'
 
+// Test basic DOM access
+try {
+  const app = document.getElementById('app')
+  logger.debug('Found app element:', app)
+  if (app) {
+    app.innerHTML = '<div>Script is running...</div>'
+  }
+} catch (error) {
+  logger.error('Error accessing DOM:', error)
+}
+
 const enhancers = new EnhancerRegistry()
 
 async function getOpenSpots(): Promise<CommentState[]> {
-  return new Promise((resolve) => {
-    browser.runtime.sendMessage({ type: 'GET_OPEN_SPOTS' }, (response) => {
-      resolve(response.spots || [])
-    })
-  })
+  logger.debug('Sending message to background script...')
+  try {
+    const response = await browser.runtime.sendMessage({ type: 'GET_OPEN_SPOTS' })
+    logger.debug('Received response:', response)
+    return response.spots || []
+  } catch (error) {
+    logger.error('Error sending message to background:', error)
+    return []
+  }
 }
 
 async function switchToTab(tabId: number, windowId: number): Promise<void> {
@@ -23,11 +38,18 @@ function createSpotElement(commentState: CommentState): HTMLElement {
   const item = document.createElement('div')
   item.className = 'spot-item'
 
+  logger.debug('Creating spot element for:', commentState.spot)
+  const enhancer = enhancers.enhancerFor(commentState.spot)
+  logger.debug('Found enhancer:', enhancer)
+
   const title = document.createElement('div')
   title.className = 'spot-title'
 
-  const enhancer = enhancers.enhancerFor(commentState.spot)
-  title.textContent = enhancer.tableTitle(commentState.spot)
+  if (enhancer) {
+    title.textContent = enhancer.tableTitle(commentState.spot)
+  } else {
+    title.textContent = `${commentState.spot.type} (${commentState.spot.unique_key})`
+  }
 
   item.appendChild(title)
 
@@ -39,11 +61,10 @@ function createSpotElement(commentState: CommentState): HTMLElement {
 }
 
 async function renderOpenSpots(): Promise<void> {
-  logger.debug('renderOpenSpots')
+  logger.debug('renderOpenSpots called')
   const app = document.getElementById('app')!
-  logger.debug('waiting on getOpenSpots')
   const spots = await getOpenSpots()
-  logger.debug('got', spots)
+  logger.debug('Got spots:', spots)
 
   if (spots.length === 0) {
     app.innerHTML = '<div class="no-spots">No open comment spots</div>'
@@ -64,4 +85,8 @@ async function renderOpenSpots(): Promise<void> {
   app.appendChild(list)
 }
 
-renderOpenSpots()
+renderOpenSpots().catch(error => {
+  logger.error('Error in renderOpenSpots:', error)
+  const app = document.getElementById('app')!
+  app.innerHTML = `<div class="no-spots">Error loading spots: ${error.message}</div>`
+})
