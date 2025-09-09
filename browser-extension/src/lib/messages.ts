@@ -1,5 +1,9 @@
 import type { CommentDraft, CommentEvent, CommentSpot } from './enhancer'
 
+// Message handler response types
+export const CLOSE_MESSAGE_PORT = false as const // No response will be sent
+export const KEEP_PORT_OPEN = true as const // Response will be sent (possibly async)
+
 // Content -> Background messages (already well-typed as CommentEvent)
 export type ContentToBackgroundMessage = CommentEvent
 
