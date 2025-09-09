@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { handleCommentEvent, states } from '../src/entrypoints/background'
+import { handleCommentEvent, openSpots } from '../src/entrypoints/background'
 import type { CommentEvent, CommentSpot } from '../src/lib/enhancer'
 
 const mockSender = {
@@ -14,7 +14,7 @@ const mockSpot = {
 }
 describe('Background Event Handler', () => {
   beforeEach(() => {
-    states.clear()
+    openSpots.clear()
   })
   describe('ENHANCED Event', () => {
     it('should create new comment state when textarea is enhanced', () => {
@@ -25,7 +25,7 @@ describe('Background Event Handler', () => {
         },
         mockSender,
       )
-      expect(Array.from(states)).toMatchInlineSnapshot(`
+      expect(Array.from(openSpots)).toMatchInlineSnapshot(`
         [
           [
             "{"spot":{"type":"TEST_SPOT","unique_key":"test-key"},"tab":{"tabId":123,"windowId":456}}",
@@ -53,7 +53,7 @@ describe('Background Event Handler', () => {
         },
         senderWithoutTab,
       )
-      expect(states.size).toBe(0)
+      expect(openSpots.size).toBe(0)
     })
   })
 
@@ -65,7 +65,7 @@ describe('Background Event Handler', () => {
         type: 'ENHANCED',
       }
       handleCommentEvent(enhanceMessage, mockSender)
-      expect(states.size).toBe(1)
+      expect(openSpots.size).toBe(1)
 
       // Then destroy it
       const destroyMessage: CommentEvent = {
@@ -73,7 +73,7 @@ describe('Background Event Handler', () => {
         type: 'DESTROYED',
       }
       handleCommentEvent(destroyMessage, mockSender)
-      expect(states.size).toBe(0)
+      expect(openSpots.size).toBe(0)
     })
 
     it('should handle DESTROYED event for non-existent state gracefully', () => {
@@ -83,7 +83,7 @@ describe('Background Event Handler', () => {
       }
       // Should not throw error
       handleCommentEvent(message, mockSender)
-      expect(states.size).toBe(0)
+      expect(openSpots.size).toBe(0)
     })
   })
 
@@ -94,7 +94,7 @@ describe('Background Event Handler', () => {
         type: 'LOST_FOCUS',
       }
       handleCommentEvent(message, mockSender)
-      expect(states.size).toBe(0)
+      expect(openSpots.size).toBe(0)
     })
   })
 
@@ -106,7 +106,7 @@ describe('Background Event Handler', () => {
       const sender2 = { tab: { id: 789, windowId: 456 } }
       handleCommentEvent({ spot: spot1, type: 'ENHANCED' }, sender1)
       handleCommentEvent({ spot: spot2, type: 'ENHANCED' }, sender2)
-      expect(states.size).toBe(2)
+      expect(openSpots.size).toBe(2)
     })
 
     it('should handle same spot from same tab (overwrite)', () => {
@@ -120,7 +120,7 @@ describe('Background Event Handler', () => {
       handleCommentEvent(message, mockSender)
 
       // Should still be 1 entry (overwritten)
-      expect(states.size).toBe(1)
+      expect(openSpots.size).toBe(1)
     })
   })
 })

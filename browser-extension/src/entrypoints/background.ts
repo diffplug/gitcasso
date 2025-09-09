@@ -15,7 +15,7 @@ export interface CommentState {
   drafts: [number, CommentDraft][]
 }
 
-export const states = new JsonMap<TabAndSpot, CommentState>()
+export const openSpots = new JsonMap<TabAndSpot, CommentState>()
 
 export function handleCommentEvent(message: CommentEvent, sender: any): void {
   if (
@@ -39,9 +39,9 @@ export function handleCommentEvent(message: CommentEvent, sender: any): void {
         spot: message.spot,
         tab,
       }
-      states.set(tabAndSpot, commentState)
+      openSpots.set(tabAndSpot, commentState)
     } else if (message.type === 'DESTROYED') {
-      states.delete(tabAndSpot)
+      openSpots.delete(tabAndSpot)
     }
   }
 }
