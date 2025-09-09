@@ -23,6 +23,14 @@ export interface CommentEvent {
   draft: CommentDraft | undefined
 }
 
+export interface BackgroundMessage {
+  action: 'COMMENT_EVENT'
+  event: {
+    type: Extract<CommentEventType, 'ENHANCED' | 'DESTROYED'>
+    spot: CommentSpot
+  }
+}
+
 /** Wraps the textareas of a given platform with Gitcasso's enhancements. */
 export interface CommentEnhancer<Spot extends CommentSpot = CommentSpot> {
   /** Guarantees to only return a type within this list. */
