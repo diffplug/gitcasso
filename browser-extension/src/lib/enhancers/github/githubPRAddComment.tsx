@@ -1,4 +1,5 @@
 import OverType, { type OverTypeInstance } from 'overtype'
+import type React from 'react'
 import type { CommentEnhancer, CommentSpot } from '../../enhancer'
 import { logger } from '../../logger'
 import { modifyDOM } from '../modifyDOM'
@@ -58,9 +59,14 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     })[0]!
   }
 
-  tableTitle(spot: GitHubPRAddCommentSpot): string {
+  tableTitle(spot: GitHubPRAddCommentSpot): React.ReactNode {
     const { slug, number } = spot
-    return `${slug} PR #${number}`
+    return (
+      <span>
+        <span className='font-mono text-sm text-muted-foreground'>{slug}</span>
+        <span className='ml-2 font-medium'>PR #{number}</span>
+      </span>
+    )
   }
 
   tableIcon(_: GitHubPRAddCommentSpot): string {

@@ -1,4 +1,5 @@
 import type { OverTypeInstance } from 'overtype'
+import type { ReactNode } from 'react'
 
 /**
  * Stores enough info about the location of a draft to:
@@ -42,5 +43,5 @@ export interface CommentEnhancer<Spot extends CommentSpot = CommentSpot> {
   enhance(textarea: HTMLTextAreaElement, spot: Spot): OverTypeInstance
 
   tableIcon(spot: Spot): string
-  tableTitle(spot: Spot): string
+  tableTitle(spot: Spot): ReactNode
 }

@@ -1,6 +1,19 @@
 import { defineConfig } from 'wxt'
+import react from '@vitejs/plugin-react'
+import path from 'path'
 
 export default defineConfig({
+  vite: () => ({
+    plugins: [react()],
+    css: {
+      postcss: path.resolve('./postcss.config.cjs')
+    },
+    resolve: {
+      alias: {
+        '@': path.resolve('./src')
+      }
+    }
+  }),
   manifest: {
     description:
       'Syntax highlighting and autosave for comments on GitHub (and other other markdown-friendly websites).',
