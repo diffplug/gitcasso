@@ -28,7 +28,7 @@ describe('Background Event Handler', () => {
       expect(Array.from(openSpots)).toMatchInlineSnapshot(`
         [
           [
-            "{"spot":{"type":"TEST_SPOT","unique_key":"test-key"},"tab":{"tabId":123,"windowId":456}}",
+            "test-key",
             {
               "drafts": [],
               "spot": {

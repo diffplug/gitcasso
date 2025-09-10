@@ -1,5 +1,4 @@
 import type { CommentDraft, CommentEvent, CommentSpot } from '../lib/enhancer'
-import { JsonMap } from '../lib/jsonmap'
 import type { GetOpenSpotsResponse, ToBackgroundMessage } from '../lib/messages'
 import {
   CLOSE_MESSAGE_PORT,
@@ -13,17 +12,13 @@ export interface Tab {
   tabId: number
   windowId: number
 }
-export interface TabAndSpot {
-  tab: Tab
-  spot: CommentSpot
-}
 export interface CommentState {
   tab: Tab
   spot: CommentSpot
   drafts: [number, CommentDraft][]
 }
 
-export const openSpots = new JsonMap<TabAndSpot, CommentState>()
+export const openSpots = new Map<string, CommentState>()
 
 export function handleCommentEvent(message: CommentEvent, sender: any): boolean {
   if (
@@ -31,23 +26,19 @@ export function handleCommentEvent(message: CommentEvent, sender: any): boolean 
     sender.tab?.id &&
     sender.tab?.windowId
   ) {
-    const tab: Tab = {
-      tabId: sender.tab.id,
-      windowId: sender.tab.windowId,
-    }
-    const tabAndSpot: TabAndSpot = {
-      spot: message.spot,
-      tab,
-    }
     if (message.type === 'ENHANCED') {
+      const tab: Tab = {
+        tabId: sender.tab.id,
+        windowId: sender.tab.windowId,
+      }
       const commentState: CommentState = {
         drafts: [],
         spot: message.spot,
         tab,
       }
-      openSpots.set(tabAndSpot, commentState)
+      openSpots.set(message.spot.unique_key, commentState)
     } else if (message.type === 'DESTROYED') {
-      openSpots.delete(tabAndSpot)
+      openSpots.delete(message.spot.unique_key)
     } else {
       throw new Error(`Unhandled comment event type: ${message.type}`)
     }
