@@ -1,12 +1,12 @@
-import type { CommentDraft, CommentEvent, CommentSpot } from '../lib/enhancer'
-import type { GetOpenSpotsResponse, ToBackgroundMessage } from '../lib/messages'
+import type { CommentDraft, CommentEvent, CommentSpot } from '@/lib/enhancer'
+import type { GetOpenSpotsResponse, ToBackgroundMessage } from '@/lib/messages'
 import {
   CLOSE_MESSAGE_PORT,
   isContentToBackgroundMessage,
   isGetOpenSpotsMessage,
   isSwitchToTabMessage,
   KEEP_PORT_OPEN,
-} from '../lib/messages'
+} from '@/lib/messages'
 
 export interface Tab {
   tabId: number
