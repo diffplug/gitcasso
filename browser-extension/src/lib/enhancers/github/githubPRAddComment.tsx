@@ -1,7 +1,7 @@
 import OverType, { type OverTypeInstance } from 'overtype'
 import type React from 'react'
-import type { CommentEnhancer, CommentSpot } from '../../enhancer'
-import { logger } from '../../logger'
+import type { CommentEnhancer, CommentSpot } from '@/lib/enhancer'
+import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
 import { githubHighlighter } from './githubHighlighter'
 

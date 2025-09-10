@@ -1,8 +1,8 @@
-import { CONFIG, type ModeType } from '../lib/config'
-import type { CommentEvent, CommentSpot } from '../lib/enhancer'
-import { logger } from '../lib/logger'
-import { EnhancerRegistry, TextareaRegistry } from '../lib/registries'
-import { githubPrNewCommentContentScript } from '../playgrounds/github-playground'
+import { CONFIG, type ModeType } from '@/lib/config'
+import type { CommentEvent, CommentSpot } from '@/lib/enhancer'
+import { logger } from '@/lib/logger'
+import { EnhancerRegistry, TextareaRegistry } from '@/lib/registries'
+import { githubPrNewCommentContentScript } from '@/playgrounds/github-playground'
 
 const enhancers = new EnhancerRegistry()
 const enhancedTextareas = new TextareaRegistry()

@@ -9,15 +9,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { cn } from '@/lib/utils'
-import { logger } from '@/lib/logger'
-import type {
-  GetOpenSpotsMessage,
-  GetOpenSpotsResponse,
-  SwitchToTabMessage,
-} from '@/lib/messages'
-import { EnhancerRegistry } from '@/lib/registries'
 import type { CommentState } from '@/entrypoints/background'
+import { logger } from '@/lib/logger'
+import type { GetOpenSpotsMessage, GetOpenSpotsResponse, SwitchToTabMessage } from '@/lib/messages'
+import { EnhancerRegistry } from '@/lib/registries'
+import { cn } from '@/lib/utils'
 
 const enhancers = new EnhancerRegistry()
 
