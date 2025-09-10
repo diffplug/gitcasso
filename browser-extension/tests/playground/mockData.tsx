@@ -2,7 +2,6 @@ import type { CommentState } from '@/entrypoints/background'
 import type { CommentSpot } from '@/lib/enhancer'
 import type { GitHubIssueAddCommentSpot } from '@/lib/enhancers/github/githubIssueAddComment'
 import type { GitHubPRAddCommentSpot } from '@/lib/enhancers/github/githubPRAddComment'
-import { EnhancerRegistry } from '@/lib/registries'
 
 const gh_pr: GitHubPRAddCommentSpot = {
   domain: 'github.com',
@@ -39,5 +38,3 @@ export const sampleSpots: CommentState[] = spots.map((spot) => {
   }
   return state
 })
-
-export const enhancerRegistry = new EnhancerRegistry()
