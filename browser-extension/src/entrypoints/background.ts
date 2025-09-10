@@ -27,14 +27,13 @@ export function handleCommentEvent(message: CommentEvent, sender: any): boolean 
     sender.tab?.windowId
   ) {
     if (message.type === 'ENHANCED') {
-      const tab: Tab = {
-        tabId: sender.tab.id,
-        windowId: sender.tab.windowId,
-      }
       const commentState: CommentState = {
         drafts: [],
         spot: message.spot,
-        tab,
+        tab: {
+          tabId: sender.tab.id,
+          windowId: sender.tab.windowId,
+        },
       }
       openSpots.set(message.spot.unique_key, commentState)
     } else if (message.type === 'DESTROYED') {
@@ -52,10 +51,7 @@ export function handlePopupMessage(
   sendResponse: (response: any) => void,
 ): typeof CLOSE_MESSAGE_PORT | typeof KEEP_PORT_OPEN {
   if (isGetOpenSpotsMessage(message)) {
-    const spots: CommentState[] = []
-    for (const [, commentState] of openSpots) {
-      spots.push(commentState)
-    }
+    const spots: CommentState[] = Array.from(openSpots.values())
     const response: GetOpenSpotsResponse = { spots }
     sendResponse(response)
     return KEEP_PORT_OPEN
