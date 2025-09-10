@@ -4,27 +4,27 @@ import { logger } from '../../logger'
 import { modifyDOM } from '../modifyDOM'
 import { githubHighlighter } from './githubHighlighter'
 
-interface GitHubIssueAddCommentSpot extends CommentSpot {
+interface GitHubIssueNewCommentSpot extends CommentSpot {
   type: 'GH_ISSUE_NEW_COMMENT'
   domain: string
   slug: string // owner/repo
 }
 
-export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssueAddCommentSpot> {
+export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssueNewCommentSpot> {
   forSpotTypes(): string[] {
     return ['GH_ISSUE_NEW_COMMENT']
   }
 
-  tryToEnhance(_textarea: HTMLTextAreaElement): GitHubIssueAddCommentSpot | null {
+  tryToEnhance(_textarea: HTMLTextAreaElement): GitHubIssueNewCommentSpot | null {
     if (document.querySelector('meta[name="hostname"]')?.getAttribute('content') !== 'github.com') {
       return null
     }
 
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
-    logger.info(`${this.constructor.name} examing url`, window.location.pathname)
+    logger.debug(`${this.constructor.name} examing url`, window.location.pathname)
 
     const match = window.location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/issues\/new)/)
-    logger.info(`${this.constructor.name} found match`, window.location.pathname)
+    logger.debug(`${this.constructor.name} found match`, window.location.pathname)
 
     if (!match) return null
     const [, owner, repo] = match
@@ -42,7 +42,7 @@ export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssu
     OverType.setCodeHighlighter(githubHighlighter)
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueAddCommentSpot): OverTypeInstance {
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueNewCommentSpot): OverTypeInstance {
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
       autoResize: true,
@@ -52,16 +52,16 @@ export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssu
     })[0]!
   }
 
-  tableTitle(spot: GitHubIssueAddCommentSpot): string {
+  tableTitle(spot: GitHubIssueNewCommentSpot): string {
     const { slug } = spot
     return `${slug} New Issue`
   }
 
-  tableIcon(_: GitHubIssueAddCommentSpot): string {
+  tableIcon(_: GitHubIssueNewCommentSpot): string {
     return '🔄' // PR icon TODO: icon urls in /public
   }
 
-  buildUrl(spot: GitHubIssueAddCommentSpot): string {
+  buildUrl(spot: GitHubIssueNewCommentSpot): string {
     return `https://${spot.domain}/${spot.slug}/issue/new`
   }
 }

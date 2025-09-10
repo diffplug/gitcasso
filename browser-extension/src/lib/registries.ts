@@ -3,6 +3,7 @@ import type { CommentEnhancer, CommentSpot } from './enhancer'
 import { GitHubIssueAddCommentEnhancer } from './enhancers/github/githubIssueAddComment'
 import { GitHubIssueNewCommentEnhancer } from './enhancers/github/githubIssueNewComment'
 import { GitHubPRAddCommentEnhancer } from './enhancers/github/githubPRAddComment'
+import { GitHubPRNewCommentEnhancer } from './enhancers/github/githubPRNewComment'
 
 export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
   textarea: HTMLTextAreaElement
@@ -19,8 +20,9 @@ export class EnhancerRegistry {
   constructor() {
     // Register all available handlers
     this.register(new GitHubIssueAddCommentEnhancer())
-    this.register(new GitHubPRAddCommentEnhancer())
     this.register(new GitHubIssueNewCommentEnhancer())
+    this.register(new GitHubPRAddCommentEnhancer())
+    this.register(new GitHubPRNewCommentEnhancer())
   }
 
   private register<T extends CommentSpot>(enhancer: CommentEnhancer<T>): void {
