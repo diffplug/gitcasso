@@ -5,7 +5,7 @@ import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
 import { githubHighlighter } from './githubHighlighter'
 
-interface GitHubPRAddCommentSpot extends CommentSpot {
+export interface GitHubPRAddCommentSpot extends CommentSpot {
   type: 'GH_PR_ADD_COMMENT' // Override to narrow from string to specific union
   domain: string
   slug: string // owner/repo

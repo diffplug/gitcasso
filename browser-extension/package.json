@@ -59,6 +59,7 @@
     "dev:firefox": "wxt -b firefox",
     "postinstall": "wxt prepare",
     "test": "vitest run",
+    "playground": "vite --config vite.playground.config.ts",
     "har:record": "tsx tests/har-record.ts",
     "har:view": "tsx tests/har-view.ts"
   },

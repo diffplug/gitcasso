@@ -11,7 +11,8 @@ describe('github', () => {
     const textareas = document.querySelectorAll('textarea')
     expect(textareas.length).toBe(2)
     expect(enhancers.tryToEnhance(textareas[0]!)).toBeNull()
-    expect(enhancers.tryToEnhance(textareas[1]!)?.spot).toMatchInlineSnapshot(`
+    const enhancedTextarea = enhancers.tryToEnhance(textareas[1]!)
+    expect(enhancedTextarea?.spot).toMatchInlineSnapshot(`
       {
         "domain": "github.com",
         "number": 517,
@@ -20,12 +21,28 @@ describe('github', () => {
         "unique_key": "github.com:diffplug/selfie:517",
       }
     `)
+    expect(enhancedTextarea?.enhancer.tableRow(enhancedTextarea.spot)).toMatchInlineSnapshot(`
+      <span>
+        <span
+          className="font-mono text-sm text-muted-foreground"
+        >
+          diffplug/selfie
+        </span>
+        <span
+          className="ml-2 font-medium"
+        >
+          PR #
+          517
+        </span>
+      </span>
+    `)
   })
   usingHar('gh_issue').it('should create the correct spot object', async () => {
     const enhancers = new EnhancerRegistry()
     const textareas = document.querySelectorAll('textarea')
     expect(textareas.length).toBe(1)
-    expect(enhancers.tryToEnhance(textareas[0]!)?.spot).toMatchInlineSnapshot(`
+    const enhancedTextarea = enhancers.tryToEnhance(textareas[0]!)
+    expect(enhancedTextarea?.spot).toMatchInlineSnapshot(`
       {
         "domain": "github.com",
         "number": 523,
@@ -33,6 +50,22 @@ describe('github', () => {
         "type": "GH_ISSUE_ADD_COMMENT",
         "unique_key": "github.com:diffplug/selfie:523",
       }
+    `)
+    // Test the tableRow method
+    expect(enhancedTextarea?.enhancer.tableRow(enhancedTextarea.spot)).toMatchInlineSnapshot(`
+      <span>
+        <span
+          className="font-mono text-sm text-muted-foreground"
+        >
+          diffplug/selfie
+        </span>
+        <span
+          className="ml-2 font-medium"
+        >
+          Issue #
+          523
+        </span>
+      </span>
     `)
   })
 })

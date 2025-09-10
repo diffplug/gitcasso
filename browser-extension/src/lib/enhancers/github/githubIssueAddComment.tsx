@@ -5,7 +5,7 @@ import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
 import { githubHighlighter } from './githubHighlighter'
 
-interface GitHubIssueAddCommentSpot extends CommentSpot {
+export interface GitHubIssueAddCommentSpot extends CommentSpot {
   type: 'GH_ISSUE_ADD_COMMENT'
   domain: string
   slug: string // owner/repo
