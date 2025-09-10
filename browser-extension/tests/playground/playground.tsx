@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client'
 import './style.css'
-import { TablePlayground } from './TablePlayground'
+import { PopupPlayground } from './PopupPlayground'
 
 const root = createRoot(document.getElementById('root')!)
 root.render(
@@ -13,14 +13,16 @@ root.render(
         </p>
       </div>
 
-      <TablePlayground />
+      <PopupPlayground />
 
       <div className='bg-slate-50 p-4 rounded-lg border border-slate-200 mt-6'>
         <h3 className='font-medium text-slate-900 mb-2'>Development Notes</h3>
         <ul className='text-sm text-slate-600 space-y-1'>
-          <li>• Hot reload is active - changes to components update instantly</li>
-          <li>• Uses real enhancers from the browser extension</li>
-          <li>• Click rows to test interaction behavior</li>
+          <li>Hot reload is active - changes to components update instantly</li>
+          <li>Uses real enhancers from the browser extension</li>
+          <li>
+            Sample data comes from <code>playgroundData.tsx</code>
+          </li>
         </ul>
       </div>
     </div>

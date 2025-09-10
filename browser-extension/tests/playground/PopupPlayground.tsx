@@ -1,9 +1,9 @@
 import { SpotTable } from '@/components/SpotTable'
 import type { CommentState } from '@/entrypoints/background'
 import { EnhancerRegistry } from '@/lib/registries'
-import { sampleSpots } from './mockData'
+import { sampleSpots } from './playgroundData'
 
-export function TablePlayground() {
+export function PopupPlayground() {
   const handleSpotClick = (spot: CommentState) => {
     alert(`Clicked: ${spot.spot.type}\nTab: ${spot.tab.tabId}`)
   }
