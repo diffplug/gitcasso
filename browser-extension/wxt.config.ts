@@ -1,13 +1,11 @@
 import { defineConfig } from 'wxt'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
 export default defineConfig({
   vite: () => ({
-    plugins: [react()],
-    css: {
-      postcss: path.resolve('./postcss.config.cjs')
-    },
+    plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
         '@': path.resolve('./src')
