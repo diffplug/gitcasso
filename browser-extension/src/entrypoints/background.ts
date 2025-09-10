@@ -2,10 +2,10 @@ import type { CommentDraft, CommentEvent, CommentSpot } from '../lib/enhancer'
 import { JsonMap } from '../lib/jsonmap'
 import type { GetOpenSpotsResponse, ToBackgroundMessage } from '../lib/messages'
 import {
+  CLOSE_MESSAGE_PORT,
   isContentToBackgroundMessage,
   isGetOpenSpotsMessage,
   isSwitchToTabMessage,
-  CLOSE_MESSAGE_PORT,
   KEEP_PORT_OPEN,
 } from '../lib/messages'
 
