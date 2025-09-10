@@ -34,7 +34,31 @@ This is a [WXT](https://wxt.dev/)-based browser extension that
 ### Entry points
 
 - `src/entrypoints/content.ts` - injected into every webpage
+- `src/entrypoints/background.ts` - service worker that manages state and handles messages
 - `src/entrypoints/popup` - html/css/ts which opens when the extension's button gets clicked
+
+```mermaid
+graph TD
+    Content[Content Script<br/>content.ts] 
+    Background[Background Script<br/>background.ts]
+    Popup[Popup Script<br/>popup/main.ts]
+    
+    Content -->|ENHANCED/DESTROYED<br/>CommentEvent| Background
+    Popup -->|GET_OPEN_SPOTS<br/>SWITCH_TO_TAB| Background
+    Background -->|GetOpenSpotsResponse<br/>spots array| Popup
+    
+    Background -.->|manages| Storage[Comment State Storage<br/>openSpots JsonMap]
+    Content -.->|enhances| TextArea[textarea elements<br/>on web pages]
+    Popup -.->|displays| UI[Extension UI<br/>list of comment spots]
+    
+    classDef entrypoint fill:#e1f5fe
+    classDef storage fill:#f3e5f5
+    classDef ui fill:#e8f5e8
+    
+    class Content,Background,Popup entrypoint
+    class Storage storage
+    class TextArea,UI ui
+```
 
 ### Architecture
 
