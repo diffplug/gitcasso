@@ -1,6 +1,7 @@
 import type { OverTypeInstance } from 'overtype'
 import type { CommentEnhancer, CommentSpot } from './enhancer'
 import { GitHubIssueAddCommentEnhancer } from './enhancers/github/githubIssueAddComment'
+import { GitHubIssueNewCommentEnhancer } from './enhancers/github/githubIssueNewComment'
 import { GitHubPRAddCommentEnhancer } from './enhancers/github/githubPRAddComment'
 
 export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
@@ -19,6 +20,7 @@ export class EnhancerRegistry {
     // Register all available handlers
     this.register(new GitHubIssueAddCommentEnhancer())
     this.register(new GitHubPRAddCommentEnhancer())
+    this.register(new GitHubIssueNewCommentEnhancer())
   }
 
   private register<T extends CommentSpot>(enhancer: CommentEnhancer<T>): void {
