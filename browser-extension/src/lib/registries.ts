@@ -13,6 +13,7 @@ export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
 export class EnhancerRegistry {
   private enhancers = new Set<CommentEnhancer>()
   private preparedEnhancers = new Set<CommentEnhancer>()
+  byType = new Map<string, CommentEnhancer>()
 
   constructor() {
     // Register all available handlers
@@ -20,8 +21,15 @@ export class EnhancerRegistry {
     this.register(new GitHubPRAddCommentEnhancer())
   }
 
-  private register<T extends CommentSpot>(handler: CommentEnhancer<T>): void {
-    this.enhancers.add(handler)
+  private register<T extends CommentSpot>(enhancer: CommentEnhancer<T>): void {
+    this.enhancers.add(enhancer)
+    for (const spotType of enhancer.forSpotTypes()) {
+      this.byType.set(spotType, enhancer)
+    }
+  }
+
+  enhancerFor<T extends CommentSpot>(spot: T): CommentEnhancer<T> {
+    return this.byType.get(spot.type)! as CommentEnhancer<T>
   }
 
   tryToEnhance(textarea: HTMLTextAreaElement): EnhancedTextarea | null {
@@ -51,15 +59,26 @@ export class EnhancerRegistry {
 
 export class TextareaRegistry {
   private textareas = new Map<HTMLTextAreaElement, EnhancedTextarea>()
+  private onEnhanced?: (spot: CommentSpot) => void
+  private onDestroyed?: (spot: CommentSpot) => void
+
+  setEventHandlers(
+    onEnhanced: (spot: CommentSpot) => void,
+    onDestroyed: (spot: CommentSpot) => void,
+  ): void {
+    this.onEnhanced = onEnhanced
+    this.onDestroyed = onDestroyed
+  }
 
   register<T extends CommentSpot>(textareaInfo: EnhancedTextarea<T>): void {
     this.textareas.set(textareaInfo.textarea, textareaInfo)
-    // TODO: register as a draft in progress with the global list
+    this.onEnhanced?.(textareaInfo.spot)
   }
 
   unregisterDueToModification(textarea: HTMLTextAreaElement): void {
-    if (this.textareas.has(textarea)) {
-      // TODO: register as abandoned or maybe submitted with the global list
+    const textareaInfo = this.textareas.get(textarea)
+    if (textareaInfo) {
+      this.onDestroyed?.(textareaInfo.spot)
       this.textareas.delete(textarea)
     }
   }
