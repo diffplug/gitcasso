@@ -31,17 +31,26 @@ This is a [WXT](https://wxt.dev/)-based browser extension that
 - finds `textarea` components and decorates them with [overtype](https://overtype.dev/) and [highlight.js](https://highlightjs.org/)
 - stores unposted comment drafts, and makes them easy to find via the extension popup
 
+### Tech Stack
+
+- **Framework**: [WXT](https://wxt.dev/) for browser extension development
+- **UI**: React with TypeScript JSX
+- **Styling**: Tailwind CSS v4 (with first-party Vite plugin)
+- **Components**: shadcn/ui for table components
+- **Editor Enhancement**: [Overtype](https://overtype.dev/) with syntax highlighting
+- **Build**: Vite with React plugin
+
 ### Entry points
 
 - `src/entrypoints/content.ts` - injected into every webpage
 - `src/entrypoints/background.ts` - service worker that manages state and handles messages
-- `src/entrypoints/popup` - html/css/ts which opens when the extension's button gets clicked
+- `src/entrypoints/popup` - React-based popup (html/css/tsx) with shadcn/ui table components
 
 ```mermaid
 graph TD
     Content[Content Script<br/>content.ts] 
     Background[Background Script<br/>background.ts]
-    Popup[Popup Script<br/>popup/main.ts]
+    Popup[Popup Script<br/>popup/main.tsx]
     
     Content -->|ENHANCED/DESTROYED<br/>CommentEvent| Background
     Popup -->|GET_OPEN_SPOTS<br/>SWITCH_TO_TAB| Background
@@ -62,11 +71,11 @@ graph TD
 
 ### Architecture
 
-Every time a `textarea` shows up on a page, on initial load or later on, it gets passed to a list of `CommentEnhancer`s. Each one gets a turn to say "I can enhance this box!". They show that they can enhance it by returning a [`CommentSpot`, `Overtype`].
+Every time a `textarea` shows up on a page, on initial load or later on, it gets passed to a list of `CommentEnhancer`s. Each one gets a turn to say "I can enhance this box!". They show that they can enhance it by returning something non-null in the method `tryToEnhance(textarea: HTMLTextAreaElement): Spot | null`. Later on, that same `Spot` data will be used by the `tableRow(spot: Spot): ReactNode` method to create React components for rich formatting in the popup table.
 
-Those values get bundled up with the `HTMLTextAreaElement` itself into an `EnhancedTextarea`, which gets added to the `TextareaRegistry`. At some interval, draft edits will get saved by the browser extension (TODO).
+Those `Spot` values get bundled up with the `HTMLTextAreaElement` itself into an `EnhancedTextarea`, which gets added to the `TextareaRegistry`. At some interval, draft edits get saved by the browser extension.
 
-When the `textarea` gets removed from the page, the `TextareaRegistry` is notified so that the `CommentSpot` can be marked as abandoned or submitted as appropriate (TODO).
+When the `textarea` gets removed from the page, the `TextareaRegistry` is notified so that the `CommentSpot` can be marked as abandoned or submitted as appropriate.
 
 ## Testing
 
