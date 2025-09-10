@@ -68,9 +68,8 @@ function SpotRow({ commentState, onClick }: SpotRowProps) {
     >
       <TableCell className='p-3'>
         <div className='flex items-center gap-2'>
-          <span className='text-lg'>{enhancer.tableIcon(commentState.spot)}</span>
           <div className='font-medium text-sm text-foreground overflow-hidden text-ellipsis whitespace-nowrap'>
-            {enhancer.tableTitle(commentState.spot)}
+            {enhancer.tableRow(commentState.spot)}
           </div>
         </div>
       </TableCell>

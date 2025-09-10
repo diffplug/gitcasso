@@ -59,7 +59,7 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     })[0]!
   }
 
-  tableTitle(spot: GitHubPRAddCommentSpot): React.ReactNode {
+  tableRow(spot: GitHubPRAddCommentSpot): React.ReactNode {
     const { slug, number } = spot
     return (
       <span>
@@ -67,13 +67,5 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
         <span className='ml-2 font-medium'>PR #{number}</span>
       </span>
     )
-  }
-
-  tableIcon(_: GitHubPRAddCommentSpot): string {
-    return '🔄' // PR icon TODO: icon urls in /public
-  }
-
-  buildUrl(spot: GitHubPRAddCommentSpot): string {
-    return `https://${spot.domain}/${spot.slug}/pull/${spot.number}`
   }
 }

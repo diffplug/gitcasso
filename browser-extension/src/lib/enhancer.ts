@@ -41,7 +41,6 @@ export interface CommentEnhancer<Spot extends CommentSpot = CommentSpot> {
    * exactly once since pageload before this gets called.
    */
   enhance(textarea: HTMLTextAreaElement, spot: Spot): OverTypeInstance
-
-  tableIcon(spot: Spot): string
-  tableTitle(spot: Spot): ReactNode
+  /** Returns a ReactNode which will be displayed in the table row. */
+  tableRow(spot: Spot): ReactNode
 }

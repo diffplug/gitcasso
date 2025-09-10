@@ -55,7 +55,7 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
     })[0]!
   }
 
-  tableTitle(spot: GitHubIssueAddCommentSpot): React.ReactNode {
+  tableRow(spot: GitHubIssueAddCommentSpot): React.ReactNode {
     const { slug, number } = spot
     return (
       <span>
@@ -63,13 +63,5 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
         <span className='ml-2 font-medium'>Issue #{number}</span>
       </span>
     )
-  }
-
-  tableIcon(_: GitHubIssueAddCommentSpot): string {
-    return '🔄' // PR icon TODO: icon urls in /public
-  }
-
-  buildUrl(spot: GitHubIssueAddCommentSpot): string {
-    return `https://${spot.domain}/${spot.slug}/issue/${spot.number}`
   }
 }
