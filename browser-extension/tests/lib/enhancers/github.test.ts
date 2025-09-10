@@ -6,7 +6,7 @@ expect
 import { EnhancerRegistry } from '../../../src/lib/registries'
 
 describe('github', () => {
-  usingHar('gh_pr').it('should create the correct spot object for gh_pr', async () => {
+  usingHar('gh_pr').it('should create the correct spot object', async () => {
     const enhancers = new EnhancerRegistry()
     const textareas = document.querySelectorAll('textarea')
     expect(textareas.length).toBe(2)
@@ -21,7 +21,7 @@ describe('github', () => {
       }
     `)
   })
-  usingHar('gh_new_pr').it('should create the correct spot object for gh_new_pr', async () => {
+  usingHar('gh_new_pr').it('should create the correct spot object', async () => {
     const enhancers = new EnhancerRegistry()
     const textareas = document.querySelectorAll('textarea')
     expect(textareas.length).toBe(2)
@@ -34,7 +34,7 @@ describe('github', () => {
           }
         `)
   })
-  usingHar('gh_issue').it('should create the correct spot object for gh_issue', async () => {
+  usingHar('gh_issue').it('should create the correct spot object', async () => {
     const enhancers = new EnhancerRegistry()
     const textareas = document.querySelectorAll('textarea')
     expect(textareas.length).toBe(1)
@@ -48,9 +48,7 @@ describe('github', () => {
       }
     `)
   })
-  usingHar(
-    'gh_new_issue',
-  ).it('should create the correct spot object for gh_new_issue', async () => {
+  usingHar('gh_new_issue').it('should create the correct spot object', async () => {
     const enhancers = new EnhancerRegistry()
     const textareas = document.querySelectorAll('textarea')
     expect(textareas.length).toBe(1)
