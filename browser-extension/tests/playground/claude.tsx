@@ -1,4 +1,6 @@
 import {
+  ArrowDown,
+  ArrowUp,
   AtSign,
   CheckCircle2,
   Circle,
@@ -326,15 +328,6 @@ export const ClaudePrototype = () => {
             <span className='text-sm'>Private only</span>
           </label>
 
-          {/* Sort */}
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className='px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-          >
-            <option value='edited-newest'>Edited (newest)</option>
-            <option value='edited-oldest'>Edited (oldest)</option>
-          </select>
 
           {/* Search */}
           <div className='relative flex-1 max-w-xs'>
@@ -399,7 +392,18 @@ export const ClaudePrototype = () => {
                 scope='col'
                 className='px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
               >
-                Edited
+                <button
+                  type='button'
+                  onClick={() => setSortBy(sortBy === 'edited-newest' ? 'edited-oldest' : 'edited-newest')}
+                  className='flex items-center gap-1 hover:text-gray-700'
+                >
+                  Edited
+                  {sortBy === 'edited-newest' ? (
+                    <ArrowDown className='w-3 h-3' />
+                  ) : (
+                    <ArrowUp className='w-3 h-3' />
+                  )}
+                </button>
               </th>
               <th
                 scope='col'
