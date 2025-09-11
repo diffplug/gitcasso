@@ -48,7 +48,6 @@ const generateMockDrafts = () => [
     kind: 'Comment',
     lastEdit: Date.now() - 1000 * 60 * 60 * 2,
     linkCount: 1,
-    platform: 'Reddit',
     private: false,
     repoSlug: 'r/programming',
     state: { type: 'post' },
@@ -137,7 +136,6 @@ const timeAgo = (date: Date | number) => {
 export const ClaudePrototype = () => {
   const [drafts] = useState(generateMockDrafts())
   const [selectedIds, setSelectedIds] = useState(new Set())
-  const [platformFilter, setPlatformFilter] = useState('All')
   const [typeFilter, setTypeFilter] = useState('All')
   const [hasCodeFilter, setHasCodeFilter] = useState(false)
   const [privateOnlyFilter, setPrivateOnlyFilter] = useState(false)
@@ -146,9 +144,6 @@ export const ClaudePrototype = () => {
 
   const filteredDrafts = useMemo(() => {
     let filtered = [...drafts]
-    if (platformFilter !== 'All') {
-      filtered = filtered.filter((d) => d.platform === platformFilter)
-    }
     if (typeFilter !== 'All') {
       filtered = filtered.filter((d) => d.kind === typeFilter)
     }
@@ -178,7 +173,7 @@ export const ClaudePrototype = () => {
         break
     }
     return filtered
-  }, [drafts, platformFilter, typeFilter, hasCodeFilter, privateOnlyFilter, searchQuery, sortBy])
+  }, [drafts, typeFilter, hasCodeFilter, privateOnlyFilter, searchQuery, sortBy])
 
   const toggleSelection = (id: string) => {
     const newSelected = new Set(selectedIds)
@@ -269,7 +264,6 @@ export const ClaudePrototype = () => {
   if (
     filteredDrafts.length === 0 &&
     (searchQuery ||
-      platformFilter !== 'All' ||
       typeFilter !== 'All' ||
       hasCodeFilter ||
       privateOnlyFilter)
@@ -279,17 +273,6 @@ export const ClaudePrototype = () => {
         <div className='p-6 border-b'>
           {/* Keep the header controls visible */}
           <div className='flex flex-wrap gap-3 items-center'>
-            {/* Platform filter */}
-            <select
-              value={platformFilter}
-              onChange={(e) => setPlatformFilter(e.target.value)}
-              className='px-3 py-1.5 border border-gray-300 rounded-md text-sm'
-            >
-              <option>All</option>
-              <option>GitHub</option>
-              <option>Reddit</option>
-            </select>
-
             {/* Type filter */}
             <select
               value={typeFilter}
@@ -322,7 +305,6 @@ export const ClaudePrototype = () => {
           <button
             type='button'
             onClick={() => {
-              setPlatformFilter('All')
               setTypeFilter('All')
               setHasCodeFilter(false)
               setPrivateOnlyFilter(false)
@@ -342,17 +324,6 @@ export const ClaudePrototype = () => {
       {/* Header controls */}
       <div className='p-6 border-b'>
         <div className='flex flex-wrap gap-3 items-center'>
-          {/* Platform filter */}
-          <select
-            value={platformFilter}
-            onChange={(e) => setPlatformFilter(e.target.value)}
-            className='px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-          >
-            <option>All</option>
-            <option>GitHub</option>
-            <option>Reddit</option>
-          </select>
-
           {/* Type filter */}
           <select
             value={typeFilter}
