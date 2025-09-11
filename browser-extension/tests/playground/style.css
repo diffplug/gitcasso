@@ -16,7 +16,7 @@ body {
 
 /* Popup simulator frame */
 .popup-frame {
-  width: 311px;
+  width: var(--popup-width);
   padding: 15px;
   font-size: 14px;
   line-height: 1.4;
