@@ -447,14 +447,6 @@ export const ClaudePrototype = () => {
                       >
                         {draft.repoSlug}
                       </a>
-                      <span className='inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs border border-gray-300'>
-                        {draft.private ? (
-                          <Lock className='w-3 h-3' />
-                        ) : (
-                          <Globe className='w-3 h-3' />
-                        )}
-                        {draft.private ? 'Private' : 'Public'}
-                      </span>
                       <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-gray-100 border border-gray-300'>
                         {getKindIcon(draft.kind)}
                         {draft.kind}
