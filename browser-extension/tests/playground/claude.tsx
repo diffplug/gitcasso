@@ -2,18 +2,12 @@ import {
   ArrowDown,
   ArrowUp,
   Image,
-  CheckCircle2,
-  Circle,
   Code,
   ExternalLink,
   Filter,
-  GitCommit,
-  GitPullRequest,
   Link,
-  MessageSquare,
   Search,
   Trash2,
-  XCircle,
 } from 'lucide-react'
 import { IssueOpenedIcon, GitPullRequestIcon } from '@primer/octicons-react'
 import { useMemo, useState } from 'react'
@@ -79,7 +73,7 @@ const generateMockDrafts = () => [
     hasCode: false,
     hasImage: true,
     id: '4',
-    kind: 'Review',
+    kind: 'PR',
     lastEdit: Date.now() - 1000 * 60 * 60 * 24,
     linkCount: 3,
     number: 9012,
@@ -184,36 +178,6 @@ export const ClaudePrototype = () => {
       setSelectedIds(new Set())
     } else {
       setSelectedIds(new Set(filteredDrafts.map((d) => d.id)))
-    }
-  }
-
-  const getStateIcon = (state: { type: string }) => {
-    switch (state.type) {
-      case 'open':
-        return <Circle className='w-3 h-3 text-sky-500' />
-      case 'merged':
-        return <CheckCircle2 className='w-3 h-3 text-emerald-500' />
-      case 'closed':
-        return <XCircle className='w-3 h-3 text-rose-500' />
-      case 'post':
-        return <MessageSquare className='w-3 h-3 text-slate-500' />
-      default:
-        return null
-    }
-  }
-
-  const getKindIcon = (kind: string) => {
-    switch (kind) {
-      case 'PR':
-        return <GitPullRequest className='w-3 h-3' />
-      case 'Issue':
-        return <Circle className='w-3 h-3' />
-      case 'Review':
-        return <GitCommit className='w-3 h-3' />
-      case 'Comment':
-        return <MessageSquare className='w-3 h-3' />
-      default:
-        return null
     }
   }
 
@@ -451,11 +415,6 @@ export const ClaudePrototype = () => {
                       >
                         #{draft.number} {draft.repoSlug}
                       </a>
-                      <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-gray-100 border border-gray-300'>
-                        {getKindIcon(draft.kind)}
-                        {draft.kind}
-                      </span>
-                      {getStateIcon(draft.state)}
                     </div>
 
                     {/* Title + snippet */}
