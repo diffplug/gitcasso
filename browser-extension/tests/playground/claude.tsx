@@ -305,31 +305,8 @@ export const ClaudePrototype = () => {
   return (
     <div className='min-h-screen bg-white'>
       {/* Header controls */}
-      <div className='p-6 border-b'>
+      <div className='p-3 border-b'>
         <div className='flex flex-wrap gap-3 items-center'>
-          {/* Toggle filters */}
-          <label className='flex items-center gap-2 cursor-pointer'>
-            <input
-              type='checkbox'
-              checked={hasCodeFilter}
-              onChange={(e) => setHasCodeFilter(e.target.checked)}
-              className='rounded'
-            />
-            <span className='text-sm'>Has code</span>
-          </label>
-
-          <label className='flex items-center gap-2 cursor-pointer'>
-            <input
-              type='checkbox'
-              checked={privateOnlyFilter}
-              onChange={(e) => setPrivateOnlyFilter(e.target.checked)}
-              className='rounded'
-            />
-            <span className='text-sm'>Private only</span>
-          </label>
-
-
-          {/* Search */}
           <div className='relative flex-1 max-w-xs'>
             <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400' />
             <input
@@ -340,6 +317,24 @@ export const ClaudePrototype = () => {
               className='w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>
+          <label className='flex items-center gap-2 cursor-pointer'>
+            <input
+              type='checkbox'
+              checked={hasCodeFilter}
+              onChange={(e) => setHasCodeFilter(e.target.checked)}
+              className='rounded'
+            />
+            <span className='text-sm'>Has code</span>
+          </label>
+          <label className='flex items-center gap-2 cursor-pointer'>
+            <input
+              type='checkbox'
+              checked={privateOnlyFilter}
+              onChange={(e) => setPrivateOnlyFilter(e.target.checked)}
+              className='rounded'
+            />
+            <span className='text-sm'>Private only</span>
+          </label>
         </div>
 
         {/* Bulk actions bar */}
@@ -397,7 +392,7 @@ export const ClaudePrototype = () => {
                   onClick={() => setSortBy(sortBy === 'edited-newest' ? 'edited-oldest' : 'edited-newest')}
                   className='flex items-center gap-1 hover:text-gray-700'
                 >
-                  Edited
+                  EDITED
                   {sortBy === 'edited-newest' ? (
                     <ArrowDown className='w-3 h-3' />
                   ) : (
