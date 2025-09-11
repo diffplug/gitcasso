@@ -144,31 +144,20 @@ export const ClaudePrototype = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('edited-newest')
 
-  // Filter and sort drafts
   const filteredDrafts = useMemo(() => {
     let filtered = [...drafts]
-
-    // Platform filter
     if (platformFilter !== 'All') {
       filtered = filtered.filter((d) => d.platform === platformFilter)
     }
-
-    // Type filter
     if (typeFilter !== 'All') {
       filtered = filtered.filter((d) => d.kind === typeFilter)
     }
-
-    // Has code filter
     if (hasCodeFilter) {
       filtered = filtered.filter((d) => d.hasCode)
     }
-
-    // Private only filter
     if (privateOnlyFilter) {
       filtered = filtered.filter((d) => d.private)
     }
-
-    // Search
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter(
@@ -179,7 +168,6 @@ export const ClaudePrototype = () => {
           d.number?.toString().includes(query),
       )
     }
-
     // Sort
     switch (sortBy) {
       case 'edited-newest':
@@ -188,11 +176,7 @@ export const ClaudePrototype = () => {
       case 'edited-oldest':
         filtered.sort((a, b) => a.lastEdit - b.lastEdit)
         break
-      case 'title-asc':
-        filtered.sort((a, b) => a.title.localeCompare(b.title))
-        break
     }
-
     return filtered
   }, [drafts, platformFilter, typeFilter, hasCodeFilter, privateOnlyFilter, searchQuery, sortBy])
 
@@ -411,7 +395,6 @@ export const ClaudePrototype = () => {
           >
             <option value='edited-newest'>Edited (newest)</option>
             <option value='edited-oldest'>Edited (oldest)</option>
-            <option value='title-asc'>Title (A→Z)</option>
           </select>
 
           {/* Search */}
