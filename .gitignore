@@ -18,6 +18,8 @@ dist/
 Thumbs.db
 
 # playright
+.playwright-mcp/
+browser-extension/dist-playground/
 browser-extension/playwright-report/
 browser-extension/playwright/
 browser-extension/test-results/
