@@ -134,7 +134,7 @@ const timeAgo = (date: Date | number) => {
   return 'just now'
 }
 
-const DraftsTable = () => {
+export const ClaudePrototype = () => {
   const [drafts] = useState(generateMockDrafts())
   const [selectedIds, setSelectedIds] = useState(new Set())
   const [platformFilter, setPlatformFilter] = useState('All')
@@ -593,5 +593,3 @@ const DraftsTable = () => {
     </div>
   )
 }
-
-export default DraftsTable

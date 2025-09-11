@@ -1,27 +1,54 @@
 import { createRoot } from 'react-dom/client'
+import { useState } from 'react'
 import '@/entrypoints/popup/style.css'
 import './style.css'
-import { PopupPlayground } from './PopupPlayground'
+import { Replica } from './replica'
+import { ClaudePrototype } from "./claude"
 
-const root = createRoot(document.getElementById('root')!)
-root.render(
-  <div className='min-h-screen bg-slate-100'>
-    <div className='container px-6 py-8'>
-      <div className='bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-6'>
-        <h1 className='text-2xl font-bold text-slate-900 mb-2'>Popup Simulator</h1>
-      </div>
+type Mode = 'Replica' | 'ClaudePrototype'
 
-      <div className='popup-frame'>
-        <PopupPlayground />
-      </div>
+const App = () => {
+  const [activeComponent, setActiveComponent] = useState<Mode>('Replica')
 
-      <div className='bg-slate-50 p-4 rounded-lg border border-slate-200 mt-6 max-w-2xl mx-auto'>
-        <h3 className='font-medium text-slate-900 mb-2'>Development Notes</h3>
-        <ul className='text-sm text-slate-600 space-y-1'>
-          <li>The popup frame above matches the exact browser extension popup.</li>
-          <li>Hot reload is active for instant updates</li>
-        </ul>
+  return (
+    <div className='min-h-screen bg-slate-100'>
+      <div className='container px-6 py-8'>
+        <div className='bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-6'>
+          <h1 className='text-2xl font-bold text-slate-900 mb-2'>Popup Simulator</h1>
+          <ul className='text-sm text-slate-600 space-y-1'>
+            <li>The popup frame is meant to exactly match the browser extension popup.</li>
+            <li>Hot reload is active for instant updates</li>
+          </ul>
+          <div className='flex gap-2 mt-4'>
+            <button
+              onClick={() => setActiveComponent('Replica')}
+              className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeComponent === 'Replica'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+            >
+              Replica
+            </button>
+            <button
+              onClick={() => setActiveComponent('ClaudePrototype')}
+              className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeComponent === 'ClaudePrototype'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+            >
+              ClaudePrototype
+            </button>
+          </div>
+        </div>
+
+        <div className='popup-frame'>
+          {activeComponent === 'Replica' && <Replica />}
+          {activeComponent === 'ClaudePrototype' && <ClaudePrototype />}
+        </div>
       </div>
     </div>
-  </div>,
-)
+  )
+}
+
+const root = createRoot(document.getElementById('root')!)
+root.render(<App />)
