@@ -1,7 +1,7 @@
 import {
   ArrowDown,
   ArrowUp,
-  AtSign,
+  Image,
   CheckCircle2,
   Circle,
   Code,
@@ -25,7 +25,7 @@ const generateMockDrafts = () => [
     content:
       'This PR addresses the memory leak issue reported in #1233. The problem was caused by event listeners not being properly disposed...',
     hasCode: true,
-    hasMention: true,
+    hasImage: true,
     id: '1',
     kind: 'PR',
     lastEdit: Date.now() - 1000 * 60 * 30,
@@ -43,7 +43,7 @@ const generateMockDrafts = () => [
     content:
       "I've been using GitLens for years and it's absolutely essential for my workflow. The inline blame annotations are incredibly helpful when...",
     hasCode: false,
-    hasMention: false,
+    hasImage: false,
     id: '2',
     kind: 'Comment',
     lastEdit: Date.now() - 1000 * 60 * 60 * 2,
@@ -59,7 +59,7 @@ const generateMockDrafts = () => [
     content:
       "When using useEffect with async functions, the cleanup function doesn't seem to be called correctly in certain edge cases...",
     hasCode: true,
-    hasMention: false,
+    hasImage: false,
     id: '3',
     kind: 'Issue',
     lastEdit: Date.now() - 1000 * 60 * 60 * 5,
@@ -77,7 +77,7 @@ const generateMockDrafts = () => [
     content:
       'LGTM! Just a few minor suggestions about the examples in the routing section. Consider adding more context about...',
     hasCode: false,
-    hasMention: true,
+    hasImage: true,
     id: '4',
     kind: 'Review',
     lastEdit: Date.now() - 1000 * 60 * 60 * 24,
@@ -95,7 +95,7 @@ const generateMockDrafts = () => [
     content:
       'This PR implements ESM support in worker threads as discussed in the last TSC meeting. The implementation follows...',
     hasCode: true,
-    hasMention: true,
+    hasImage: true,
     id: '5',
     kind: 'PR',
     lastEdit: Date.now() - 1000 * 60 * 60 * 48,
@@ -466,22 +466,22 @@ export const ClaudePrototype = () => {
 
                     {/* Signals row (hidden on small screens) */}
                     <div className='hidden sm:flex items-center gap-2'>
-                      {draft.hasCode && (
-                        <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-700'>
-                          <Code className='w-3 h-3' />
-                          code
-                        </span>
-                      )}
-                      {draft.hasMention && (
-                        <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-purple-50 text-purple-700'>
-                          <AtSign className='w-3 h-3' />
-                          mention
-                        </span>
-                      )}
                       {draft.linkCount > 0 && (
-                        <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-green-50 text-green-700'>
+                        <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-700'>
                           <Link className='w-3 h-3' />
                           {draft.linkCount}
+                        </span>
+                      )}
+                      {draft.hasImage && (
+                        <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-purple-50 text-purple-700'>
+                          <Image className='w-3 h-3' />
+                          image
+                        </span>
+                      )}
+                      {draft.hasCode && (
+                        <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-pink-50 text-pink-700'>
+                          <Code className='w-3 h-3' />
+                          code
                         </span>
                       )}
                       <span className='text-xs text-gray-500'>{draft.charCount} chars</span>
