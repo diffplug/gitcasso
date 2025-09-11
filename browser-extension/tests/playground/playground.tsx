@@ -6,7 +6,7 @@ import { PopupPlayground } from './PopupPlayground'
 const root = createRoot(document.getElementById('root')!)
 root.render(
   <div className='min-h-screen bg-slate-100'>
-    <div className='container mx-auto px-6 py-8'>
+    <div className='container px-6 py-8'>
       <div className='bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-6'>
         <h1 className='text-2xl font-bold text-slate-900 mb-2'>Popup Simulator</h1>
         <p className='text-slate-600'>
