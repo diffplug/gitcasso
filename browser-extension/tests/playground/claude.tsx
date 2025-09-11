@@ -9,14 +9,13 @@ import {
   Filter,
   GitCommit,
   GitPullRequest,
-  Globe,
   Link,
-  Lock,
   MessageSquare,
   Search,
   Trash2,
   XCircle,
 } from 'lucide-react'
+import { IssueOpenedIcon, GitPullRequestIcon } from '@primer/octicons-react'
 import { useMemo, useState } from 'react'
 
 // Mock data generator
@@ -438,14 +437,19 @@ export const ClaudePrototype = () => {
                     {/* Context line */}
                     <div className='flex items-center gap-1.5 text-xs text-gray-600'>
                       <span className='w-4 h-4 flex items-center justify-center'>
-                        {draft.platform === 'GitHub' ? '🐙' : '🔗'}
+                        {draft.platform === 'GitHub' ? (
+                          draft.kind === 'PR' ? (
+                            <GitPullRequestIcon size={16} />
+                          ) : draft.kind === 'Issue' ? (
+                            <IssueOpenedIcon size={16} />
+                          ) : '🐙'
+                        ) : '🔗'}
                       </span>
                       <a
                         href={draft.url}
                         className='hover:underline truncate max-w-[28ch]'
-                        title={draft.repoSlug}
                       >
-                        {draft.repoSlug}
+                        #{draft.number} {draft.repoSlug}
                       </a>
                       <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-gray-100 border border-gray-300'>
                         {getKindIcon(draft.kind)}
