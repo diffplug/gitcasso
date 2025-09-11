@@ -7,20 +7,25 @@ export function PopupPlayground() {
   const handleSpotClick = (spot: CommentState) => {
     alert(`Clicked: ${spot.spot.type}\nTab: ${spot.tab.tabId}`)
   }
+
   const enhancers = new EnhancerRegistry()
+
   return (
-    <SpotTable
-      spots={sampleSpots}
-      enhancerRegistry={enhancers}
-      onSpotClick={handleSpotClick}
-      title='Comment Spots'
-      description='Click on any row to simulate tab switching'
-      headerText='Spot Details'
-      className='bg-white rounded-lg shadow-sm border border-slate-200'
-      headerClassName='p-4 font-medium text-slate-700'
-      rowClassName='cursor-pointer transition-colors hover:bg-slate-50 border-b border-slate-200'
-      cellClassName='p-4'
-      showHeader={true}
-    />
+    <div className='w-full'>
+      <h2 className='mb-4 text-lg font-semibold text-foreground'>Open Comment Spots</h2>
+
+      <div className='border rounded-md'>
+        <SpotTable
+          spots={sampleSpots}
+          enhancerRegistry={enhancers}
+          onSpotClick={handleSpotClick}
+          headerClassName='p-3 font-medium text-muted-foreground'
+          rowClassName='transition-colors hover:bg-muted/50 border-b border-border/40'
+          cellClassName='p-3'
+          emptyStateMessage='No open comment spots'
+          showHeader={true}
+        />
+      </div>
+    </div>
   )
 }
