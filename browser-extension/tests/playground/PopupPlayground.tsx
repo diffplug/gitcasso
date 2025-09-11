@@ -1,4 +1,5 @@
 import { SpotTable } from '@/components/SpotTable'
+import DraftsTable from "./claude"
 import type { CommentState } from '@/entrypoints/background'
 import { EnhancerRegistry } from '@/lib/registries'
 import { sampleSpots } from './playgroundData'
@@ -12,9 +13,10 @@ export function PopupPlayground() {
 
   return (
     <div className='w-full'>
-      <h2 className='mb-4 text-lg font-semibold text-foreground'>Open Comment Spots</h2>
-
+      <DraftsTable></DraftsTable>
+      {/* <h2 className='mb-4 text-lg font-semibold text-foreground'>Open Comment Spots</h2>
       <div className='border rounded-md'>
+        DraftsTable
         <SpotTable
           spots={sampleSpots}
           enhancerRegistry={enhancers}
@@ -25,7 +27,7 @@ export function PopupPlayground() {
           emptyStateMessage='No open comment spots'
           showHeader={true}
         />
-      </div>
+      </div> */}
     </div>
   )
 }
