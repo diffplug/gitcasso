@@ -437,18 +437,23 @@ export const ClaudePrototype = () => {
                         href={draft.url}
                         className='hover:underline truncate max-w-[28ch]'
                       >
-                        #{draft.number} {draft.repoSlug}
+                        {draft.repoSlug.startsWith('r/') ? draft.repoSlug :
+                          `#${draft.number} ${draft.repoSlug}`
+                        }
                       </a>
                     </div>
 
                     {/* Title + snippet */}
                     <div className='text-sm truncate'>
                       <span className='font-medium'>{draft.title}</span>
-                      <span className='text-gray-500'> — {draft.content.substring(0, 60)}…</span>
+                    </div>
+                    <div className='text-sm truncate'>
+                      <span className='text-gray-500'>{draft.content.substring(0, 60)}…</span>
                     </div>
 
                     {/* Signals row (hidden on small screens) */}
                     <div className='hidden sm:flex items-center gap-2'>
+
                       {draft.linkCount > 0 && (
                         <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-700'>
                           <Link className='w-3 h-3' />
