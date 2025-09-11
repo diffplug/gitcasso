@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import '@/entrypoints/popup/style.css'
 import './style.css'
+import './tailwind-fix.css'
 import { PopupPlayground } from './PopupPlayground'
 
 const root = createRoot(document.getElementById('root')!)
