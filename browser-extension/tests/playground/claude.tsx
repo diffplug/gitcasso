@@ -370,14 +370,14 @@ export const ClaudePrototype = () => {
                     <button
                       type='button'
                       onClick={() => setShowFilters(!showFilters)}
-                      className='p-1.5 hover:bg-gray-100 rounded'
+                      className={`p-1.5 hover:bg-gray-100 rounded ${showFilters ? 'bg-gray-100' : ''}`}
                       title='Filter options'
                     >
                       <Filter className='w-4 h-4 text-gray-600' />
                     </button>
                   </div>
                   {showFilters && (
-                    <div className='absolute top-full left-0 mt-1 p-3 bg-white border border-gray-300 rounded-md shadow-lg z-10 min-w-48'>
+                    <div className='absolute top-full right-0 mt-1 p-3 bg-white border border-gray-300 rounded-md shadow-lg z-10 min-w-48'>
                       <div className='space-y-2'>
                         <label className='flex items-center gap-2 cursor-pointer'>
                           <input
