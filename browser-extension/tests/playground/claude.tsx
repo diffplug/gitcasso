@@ -272,9 +272,9 @@ export const ClaudePrototype = () => {
       <div className='p-3 border-b'>
         <div className='flex flex-wrap gap-3 items-center'></div>
 
-        {/* Bulk actions bar */}
+        {/* Bulk actions bar - floating popup */}
         {selectedIds.size > 0 && (
-          <div className='mt-3 p-3 bg-blue-50 rounded-md flex items-center gap-3'>
+          <div className='fixed bottom-6 left-1/2 transform -translate-x-1/2 p-3 bg-blue-50 rounded-md shadow-lg border border-blue-200 flex items-center gap-3 z-50'>
             <span className='text-sm font-medium'>{selectedIds.size} selected</span>
             <button type='button' className='text-sm text-blue-600 hover:underline'>
               Copy
