@@ -28,6 +28,7 @@ const App = () => {
             {Object.entries(MODES).map(([mode, config]) => (
               <button
                 key={mode}
+                type='button'
                 onClick={() => setActiveComponent(mode as Mode)}
                 className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
                   activeComponent === mode
