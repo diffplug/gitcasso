@@ -307,16 +307,6 @@ export const ClaudePrototype = () => {
       {/* Header controls */}
       <div className='p-3 border-b'>
         <div className='flex flex-wrap gap-3 items-center'>
-          <div className='relative flex-1 max-w-xs'>
-            <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400' />
-            <input
-              type='text'
-              placeholder='Search drafts...'
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className='w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-            />
-          </div>
           <label className='flex items-center gap-2 cursor-pointer'>
             <input
               type='checkbox'
@@ -381,7 +371,16 @@ export const ClaudePrototype = () => {
                 scope='col'
                 className='px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
               >
-                Draft
+                <div className='relative'>
+                  <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400' />
+                  <input
+                    type='text'
+                    placeholder='Search drafts...'
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className='w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                  />
+                </div>
               </th>
               <th
                 scope='col'
