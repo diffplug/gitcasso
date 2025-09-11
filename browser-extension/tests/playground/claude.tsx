@@ -435,120 +435,128 @@ export const ClaudePrototype = () => {
             </tr>
           </thead>
           <tbody className='divide-y divide-gray-200'>
-            {filteredDrafts.map((draft) => (
-              <tr key={draft.id} className='hover:bg-gray-50'>
-                <td className='px-3 py-3'>
-                  <input
-                    type='checkbox'
-                    checked={selectedIds.has(draft.id)}
-                    onChange={() => toggleSelection(draft.id)}
-                    className='rounded'
-                  />
-                </td>
-                <td className='px-3 py-3'>
-                  <div className='space-y-1'>
-                    {/* Context line */}
-                    <div className='flex items-center justify-between gap-1.5 text-xs text-gray-600'>
-                      <div className='flex items-center gap-1.5 min-w-0 flex-1'>
-                        <span className='w-4 h-4 flex items-center justify-center flex-shrink-0'>
-                          {draft.type === 'PR' && <GitPullRequestIcon size={16} />}
-                          {draft.type === 'ISSUE' && <IssueOpenedIcon size={16} />}
-                          {draft.type === 'REDDIT' && (
-                            <img
-                              src='https://styles.redditmedia.com/t5_2fwo/styles/communityIcon_1bqa1ibfp8q11.png?width=128&frame=1&auto=webp&s=400b33e7080aa4996c405a96b3872a12f0e3b68d'
-                              alt='Reddit'
-                              className='w-4 h-4 rounded-full'
-                            />
-                          )}
-                        </span>
-                        {}
-                        {isGitHubDraft(draft) && (
-                          <>
-                            <a href={'TODO'} className='hover:underline'>
-                              #{draft.number}
-                            </a>{' '}
-                            <a href='TODO' className='hover:underline truncate'>
-                              {draft.repoSlug}
-                            </a>
-                          </>
-                        )}
-                        {isRedditDraft(draft) && (
-                          <a href={'TODO'} className='hover:underline truncate'>
-                            r/{draft.subreddit}
-                          </a>
-                        )}
-                      </div>
-                      <div className='flex items-center gap-1 flex-shrink-0'>
-                        {draft.linkCount > 0 && (
-                          <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-700'>
-                            <Link className='w-3 h-3' />
-                            {draft.linkCount}
-                          </span>
-                        )}
-                        {draft.imageCount > 0 && (
-                          <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-purple-50 text-purple-700'>
-                            <Image className='w-3 h-3' />
-                            {draft.imageCount}
-                          </span>
-                        )}
-                        {draft.codeCount > 0 && (
-                          <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-pink-50 text-pink-700'>
-                            <Code className='w-3 h-3' />
-                            {draft.codeCount}
-                          </span>
-                        )}
-                        <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-gray-50 text-gray-700'>
-                          <TextSelect className='w-3 h-3' />
-                          {draft.charCount}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Title */}
-                    <div className='text-sm truncate'>
-                      <span className='font-medium'>{draft.title}</span>
-                    </div>
-                    {/* Draft */}
-                    <div className='text-sm truncate'>
-                      <span className='text-gray-500'>{draft.content.substring(0, 60)}…</span>
-                    </div>
-                  </div>
-                </td>
-                <td className='px-3 py-3 text-sm text-gray-500'>
-                  <div className='flex flex-col items-center gap-1'>
-                    <span
-                      title={new Date(draft.lastEdit).toLocaleString()}
-                      className='whitespace-nowrap'
-                    >
-                      {timeAgo(new Date(draft.lastEdit))}
-                    </span>
-                    <div className='flex items-center gap-1'>
-                      <button
-                        type='button'
-                        onClick={() => handleOpen(draft.url)}
-                        className='p-1.5 hover:bg-gray-100 rounded'
-                        aria-label='Open in context'
-                        title='Open in context'
-                      >
-                        <ExternalLink className='w-4 h-4 text-gray-600' />
-                      </button>
-                      <button
-                        type='button'
-                        onClick={() => handleTrash(draft)}
-                        className='p-1.5 hover:bg-gray-100 rounded'
-                        aria-label='Discard'
-                        title='Discard'
-                      >
-                        <Trash2 className='w-4 h-4 text-gray-600' />
-                      </button>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {filteredDrafts.map((draft) =>
+              commentRow(draft, selectedIds, toggleSelection, handleOpen, handleTrash),
+            )}
           </tbody>
         </table>
       </div>
     </div>
+  )
+}
+function commentRow(
+  draft: Draft,
+  selectedIds: Set<unknown>,
+  toggleSelection: (id: string) => void,
+  handleOpen: (url: string) => void,
+  handleTrash: (draft: { charCount: number; id: string }) => void,
+) {
+  return (
+    <tr key={draft.id} className='hover:bg-gray-50'>
+      <td className='px-3 py-3'>
+        <input
+          type='checkbox'
+          checked={selectedIds.has(draft.id)}
+          onChange={() => toggleSelection(draft.id)}
+          className='rounded'
+        />
+      </td>
+      <td className='px-3 py-3'>
+        <div className='space-y-1'>
+          {/* Context line */}
+          <div className='flex items-center justify-between gap-1.5 text-xs text-gray-600'>
+            <div className='flex items-center gap-1.5 min-w-0 flex-1'>
+              <span className='w-4 h-4 flex items-center justify-center flex-shrink-0'>
+                {draft.type === 'PR' && <GitPullRequestIcon size={16} />}
+                {draft.type === 'ISSUE' && <IssueOpenedIcon size={16} />}
+                {draft.type === 'REDDIT' && (
+                  <img
+                    src='https://styles.redditmedia.com/t5_2fwo/styles/communityIcon_1bqa1ibfp8q11.png?width=128&frame=1&auto=webp&s=400b33e7080aa4996c405a96b3872a12f0e3b68d'
+                    alt='Reddit'
+                    className='w-4 h-4 rounded-full'
+                  />
+                )}
+              </span>
+
+              {isGitHubDraft(draft) && (
+                <>
+                  <a href={'TODO'} className='hover:underline'>
+                    #{draft.number}
+                  </a>{' '}
+                  <a href='TODO' className='hover:underline truncate'>
+                    {draft.repoSlug}
+                  </a>
+                </>
+              )}
+              {isRedditDraft(draft) && (
+                <a href={'TODO'} className='hover:underline truncate'>
+                  r/{draft.subreddit}
+                </a>
+              )}
+            </div>
+            <div className='flex items-center gap-1 flex-shrink-0'>
+              {draft.linkCount > 0 && (
+                <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-700'>
+                  <Link className='w-3 h-3' />
+                  {draft.linkCount}
+                </span>
+              )}
+              {draft.imageCount > 0 && (
+                <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-purple-50 text-purple-700'>
+                  <Image className='w-3 h-3' />
+                  {draft.imageCount}
+                </span>
+              )}
+              {draft.codeCount > 0 && (
+                <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-pink-50 text-pink-700'>
+                  <Code className='w-3 h-3' />
+                  {draft.codeCount}
+                </span>
+              )}
+              <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-gray-50 text-gray-700'>
+                <TextSelect className='w-3 h-3' />
+                {draft.charCount}
+              </span>
+            </div>
+          </div>
+
+          {/* Title */}
+          <div className='text-sm truncate'>
+            <span className='font-medium'>{draft.title}</span>
+          </div>
+          {/* Draft */}
+          <div className='text-sm truncate'>
+            <span className='text-gray-500'>{draft.content.substring(0, 60)}…</span>
+          </div>
+        </div>
+      </td>
+      <td className='px-3 py-3 text-sm text-gray-500'>
+        <div className='flex flex-col items-center gap-1'>
+          <span title={new Date(draft.lastEdit).toLocaleString()} className='whitespace-nowrap'>
+            {timeAgo(new Date(draft.lastEdit))}
+          </span>
+          <div className='flex items-center gap-1'>
+            <button
+              type='button'
+              onClick={() => handleOpen(draft.url)}
+              className='p-1.5 hover:bg-gray-100 rounded'
+              aria-label='Open in context'
+              title='Open in context'
+            >
+              <ExternalLink className='w-4 h-4 text-gray-600' />
+            </button>
+            <button
+              type='button'
+              onClick={() => handleTrash(draft)}
+              className='p-1.5 hover:bg-gray-100 rounded'
+              aria-label='Discard'
+              title='Discard'
+            >
+              <Trash2 className='w-4 h-4 text-gray-600' />
+            </button>
+          </div>
+        </div>
+      </td>
+    </tr>
   )
 }
