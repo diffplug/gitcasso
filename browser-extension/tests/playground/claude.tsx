@@ -6,6 +6,7 @@ import {
   Circle,
   Code,
   ExternalLink,
+  Filter,
   GitCommit,
   GitPullRequest,
   Globe,
@@ -142,6 +143,7 @@ export const ClaudePrototype = () => {
   const [privateOnlyFilter, setPrivateOnlyFilter] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('edited-newest')
+  const [showFilters, setShowFilters] = useState(false)
 
   const filteredDrafts = useMemo(() => {
     let filtered = [...drafts]
@@ -307,24 +309,6 @@ export const ClaudePrototype = () => {
       {/* Header controls */}
       <div className='p-3 border-b'>
         <div className='flex flex-wrap gap-3 items-center'>
-          <label className='flex items-center gap-2 cursor-pointer'>
-            <input
-              type='checkbox'
-              checked={hasCodeFilter}
-              onChange={(e) => setHasCodeFilter(e.target.checked)}
-              className='rounded'
-            />
-            <span className='text-sm'>Has code</span>
-          </label>
-          <label className='flex items-center gap-2 cursor-pointer'>
-            <input
-              type='checkbox'
-              checked={privateOnlyFilter}
-              onChange={(e) => setPrivateOnlyFilter(e.target.checked)}
-              className='rounded'
-            />
-            <span className='text-sm'>Private only</span>
-          </label>
         </div>
 
         {/* Bulk actions bar */}
@@ -372,14 +356,50 @@ export const ClaudePrototype = () => {
                 className='px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
               >
                 <div className='relative'>
-                  <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400' />
-                  <input
-                    type='text'
-                    placeholder='Search drafts...'
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className='w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-                  />
+                  <div className='flex items-center gap-1'>
+                    <div className='relative flex-1'>
+                      <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400' />
+                      <input
+                        type='text'
+                        placeholder='Search drafts...'
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className='w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                      />
+                    </div>
+                    <button
+                      type='button'
+                      onClick={() => setShowFilters(!showFilters)}
+                      className='p-1.5 hover:bg-gray-100 rounded'
+                      title='Filter options'
+                    >
+                      <Filter className='w-4 h-4 text-gray-600' />
+                    </button>
+                  </div>
+                  {showFilters && (
+                    <div className='absolute top-full left-0 mt-1 p-3 bg-white border border-gray-300 rounded-md shadow-lg z-10 min-w-48'>
+                      <div className='space-y-2'>
+                        <label className='flex items-center gap-2 cursor-pointer'>
+                          <input
+                            type='checkbox'
+                            checked={hasCodeFilter}
+                            onChange={(e) => setHasCodeFilter(e.target.checked)}
+                            className='rounded'
+                          />
+                          <span className='text-sm'>Has code</span>
+                        </label>
+                        <label className='flex items-center gap-2 cursor-pointer'>
+                          <input
+                            type='checkbox'
+                            checked={privateOnlyFilter}
+                            onChange={(e) => setPrivateOnlyFilter(e.target.checked)}
+                            className='rounded'
+                          />
+                          <span className='text-sm'>Private only</span>
+                        </label>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </th>
               <th
