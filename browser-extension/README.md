@@ -42,15 +42,15 @@ This is a [WXT](https://wxt.dev/)-based browser extension that
 
 ### Entry points
 
-- `src/entrypoints/content.ts` - injected into every webpage
-- `src/entrypoints/background.ts` - service worker that manages state and handles messages
-- `src/entrypoints/popup` - React-based popup (html/css/tsx) with shadcn/ui table components
+- [`src/entrypoints/content.ts`](src/entrypoints/content.ts) - injected into every webpage
+- [`src/entrypoints/background.ts`](src/entrypoints/background.ts) - service worker that manages state and handles messages
+- [`src/entrypoints/popup/popup.tsx`](src/entrypoints/popup/popup.tsx) - popup (html/css/tsx) with shadcn/ui table components
 
 ```mermaid
 graph TD
     Content[Content Script<br/>content.ts] 
     Background[Background Script<br/>background.ts]
-    Popup[Popup Script<br/>popup/main.tsx]
+    Popup[Popup Script<br/>popup/popup.tsx]
     
     Content -->|ENHANCED/DESTROYED<br/>CommentEvent| Background
     Popup -->|GET_OPEN_SPOTS<br/>SWITCH_TO_TAB| Background
@@ -69,8 +69,6 @@ graph TD
     class TextArea,UI ui
 ```
 
-### Architecture
-
 Every time a `textarea` shows up on a page, on initial load or later on, it gets passed to a list of `CommentEnhancer`s. Each one gets a turn to say "I can enhance this box!". They show that they can enhance it by returning something non-null in the method `tryToEnhance(textarea: HTMLTextAreaElement): Spot | null`. Later on, that same `Spot` data will be used by the `tableRow(spot: Spot): ReactNode` method to create React components for rich formatting in the popup table.
 
 Those `Spot` values get bundled up with the `HTMLTextAreaElement` itself into an `EnhancedTextarea`, which gets added to the `TextareaRegistry`. At some interval, draft edits get saved by the browser extension.
@@ -79,12 +77,12 @@ When the `textarea` gets removed from the page, the `TextareaRegistry` is notifi
 
 ## Testing
 
-In `tests/har` there are various `.har` files. These are complete recordings of a single page load.
-
-- `pnpm run har:view` and you can see the recordings, with or without our browser extension.
+- `npm run playground` gives you a test environment where you can tinker with the popup with various test data, supports hot reload
+- `npm run har:view` gives you recordings of various web pages which you can see with and without enhancement by the browser extension
 
 ### Recording new HAR files
 
+- the har recordings live in `tests/har`, they are complete recordings of the network requests of a single page load
 - you can add or change URLs in `tests/har-index.ts`
 - `npx playwright codegen https://github.com/login --save-storage=playwright/.auth/gh.json` will store new auth tokens
   - login manually, then close the browser
