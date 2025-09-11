@@ -9,6 +9,7 @@ import {
   Image,
   Link,
   Search,
+  Clock,
   TextSelect,
   Trash2,
 } from 'lucide-react'
@@ -157,7 +158,7 @@ const timeAgo = (date: Date | number) => {
   ]
   for (const i of intervals) {
     const v = Math.floor(seconds / i.secs)
-    if (v >= 1) return `${v}${i.label} ago`
+    if (v >= 1) return `${v}${i.label}`
   }
   return 'just now'
 }
@@ -514,6 +515,10 @@ function commentRow(
               <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-gray-50 text-gray-700'>
                 <TextSelect className='w-3 h-3' />
                 {draft.charCount}
+              </span>
+              <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-gray-50 text-gray-700'>
+                <Clock className='w-3 h-3' />
+                {timeAgo(draft.lastEdit)}
               </span>
             </div>
           </div>
