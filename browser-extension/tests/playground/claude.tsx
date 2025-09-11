@@ -480,9 +480,7 @@ function commentRow(
 
               {isGitHubDraft(draft) && (
                 <>
-                  <a href={'TODO'} className='hover:underline'>
-                    #{draft.number}
-                  </a>{' '}
+                  #{draft.number}
                   <a href='TODO' className='hover:underline truncate'>
                     {draft.repoSlug}
                   </a>
@@ -521,8 +519,10 @@ function commentRow(
           </div>
 
           {/* Title */}
-          <div className='text-sm truncate'>
-            <span className='font-medium'>{draft.title}</span>
+          <div className='text-sm truncate hover:underline'>
+            <a href='TODO' className='font-medium'>
+              {draft.title}
+            </a>
           </div>
           {/* Draft */}
           <div className='text-sm truncate'>
