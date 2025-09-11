@@ -136,7 +136,6 @@ const timeAgo = (date: Date | number) => {
 export const ClaudePrototype = () => {
   const [drafts] = useState(generateMockDrafts())
   const [selectedIds, setSelectedIds] = useState(new Set())
-  const [typeFilter, setTypeFilter] = useState('All')
   const [hasCodeFilter, setHasCodeFilter] = useState(false)
   const [privateOnlyFilter, setPrivateOnlyFilter] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -144,9 +143,6 @@ export const ClaudePrototype = () => {
 
   const filteredDrafts = useMemo(() => {
     let filtered = [...drafts]
-    if (typeFilter !== 'All') {
-      filtered = filtered.filter((d) => d.kind === typeFilter)
-    }
     if (hasCodeFilter) {
       filtered = filtered.filter((d) => d.hasCode)
     }
@@ -173,7 +169,7 @@ export const ClaudePrototype = () => {
         break
     }
     return filtered
-  }, [drafts, typeFilter, hasCodeFilter, privateOnlyFilter, searchQuery, sortBy])
+  }, [drafts, hasCodeFilter, privateOnlyFilter, searchQuery, sortBy])
 
   const toggleSelection = (id: string) => {
     const newSelected = new Set(selectedIds)
@@ -264,7 +260,6 @@ export const ClaudePrototype = () => {
   if (
     filteredDrafts.length === 0 &&
     (searchQuery ||
-      typeFilter !== 'All' ||
       hasCodeFilter ||
       privateOnlyFilter)
   ) {
@@ -273,19 +268,6 @@ export const ClaudePrototype = () => {
         <div className='p-6 border-b'>
           {/* Keep the header controls visible */}
           <div className='flex flex-wrap gap-3 items-center'>
-            {/* Type filter */}
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className='px-3 py-1.5 border border-gray-300 rounded-md text-sm'
-            >
-              <option>All</option>
-              <option>PR</option>
-              <option>Issue</option>
-              <option>Comment</option>
-              <option>Review</option>
-            </select>
-
             {/* Search */}
             <div className='relative flex-1 max-w-xs'>
               <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400' />
@@ -305,7 +287,6 @@ export const ClaudePrototype = () => {
           <button
             type='button'
             onClick={() => {
-              setTypeFilter('All')
               setHasCodeFilter(false)
               setPrivateOnlyFilter(false)
               setSearchQuery('')
@@ -324,19 +305,6 @@ export const ClaudePrototype = () => {
       {/* Header controls */}
       <div className='p-6 border-b'>
         <div className='flex flex-wrap gap-3 items-center'>
-          {/* Type filter */}
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className='px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
-          >
-            <option>All</option>
-            <option>PR</option>
-            <option>Issue</option>
-            <option>Comment</option>
-            <option>Review</option>
-          </select>
-
           {/* Toggle filters */}
           <label className='flex items-center gap-2 cursor-pointer'>
             <input
