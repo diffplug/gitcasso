@@ -31,15 +31,6 @@ This is a [WXT](https://wxt.dev/)-based browser extension that
 - finds `textarea` components and decorates them with [overtype](https://overtype.dev/) and [highlight.js](https://highlightjs.org/)
 - stores unposted comment drafts, and makes them easy to find via the extension popup
 
-### Tech Stack
-
-- **Framework**: [WXT](https://wxt.dev/) for browser extension development
-- **UI**: React with TypeScript JSX
-- **Styling**: Tailwind CSS v4 (with first-party Vite plugin)
-- **Components**: shadcn/ui for table components
-- **Editor Enhancement**: [Overtype](https://overtype.dev/) with syntax highlighting
-- **Build**: Vite with React plugin
-
 ### Entry points
 
 - [`src/entrypoints/content.ts`](src/entrypoints/content.ts) - injected into every webpage
