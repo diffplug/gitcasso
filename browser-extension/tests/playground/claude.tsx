@@ -1,7 +1,6 @@
 import {
   AtSign,
   CheckCircle2,
-  ChevronDown,
   Circle,
   Code,
   ExternalLink,
@@ -15,7 +14,7 @@ import {
   Trash2,
   XCircle,
 } from 'lucide-react'
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 // Mock data generator
 const generateMockDrafts = () => [
@@ -116,8 +115,9 @@ const generateMockDrafts = () => [
 ]
 
 // Helper function for relative time
-const timeAgo = (date) => {
-  const seconds = Math.floor((Date.now() - date.getTime()) / 1000)
+const timeAgo = (date: Date | number) => {
+  const timestamp = typeof date === 'number' ? date : date.getTime()
+  const seconds = Math.floor((Date.now() - timestamp) / 1000)
   const intervals = [
     { label: 'y', secs: 31536000 },
     { label: 'mo', secs: 2592000 },
@@ -176,7 +176,7 @@ const DraftsTable = () => {
           d.title.toLowerCase().includes(query) ||
           d.content.toLowerCase().includes(query) ||
           d.repoSlug.toLowerCase().includes(query) ||
-          (d.number && d.number.toString().includes(query)),
+          d.number?.toString().includes(query),
       )
     }
 
@@ -196,7 +196,7 @@ const DraftsTable = () => {
     return filtered
   }, [drafts, platformFilter, typeFilter, hasCodeFilter, privateOnlyFilter, searchQuery, sortBy])
 
-  const toggleSelection = (id) => {
+  const toggleSelection = (id: string) => {
     const newSelected = new Set(selectedIds)
     if (newSelected.has(id)) {
       newSelected.delete(id)
@@ -214,7 +214,7 @@ const DraftsTable = () => {
     }
   }
 
-  const getStateIcon = (state) => {
+  const getStateIcon = (state: { type: string }) => {
     switch (state.type) {
       case 'open':
         return <Circle className='w-3 h-3 text-sky-500' />
@@ -229,7 +229,7 @@ const DraftsTable = () => {
     }
   }
 
-  const getKindIcon = (kind) => {
+  const getKindIcon = (kind: string) => {
     switch (kind) {
       case 'PR':
         return <GitPullRequest className='w-3 h-3' />
@@ -244,11 +244,11 @@ const DraftsTable = () => {
     }
   }
 
-  const handleOpen = (url) => {
+  const handleOpen = (url: string) => {
     window.open(url, '_blank')
   }
 
-  const handleTrash = (draft) => {
+  const handleTrash = (draft: { charCount: number; id: string }) => {
     if (draft.charCount > 20) {
       if (confirm('Are you sure you want to discard this draft?')) {
         console.log('Trashing draft:', draft.id)
@@ -269,9 +269,13 @@ const DraftsTable = () => {
             Reddit.
           </p>
           <div className='space-y-2'>
-            <button className='text-blue-600 hover:underline'>How it works</button>
+            <button type='button' className='text-blue-600 hover:underline'>
+              How it works
+            </button>
             <span className='mx-2'>·</span>
-            <button className='text-blue-600 hover:underline'>Check permissions</button>
+            <button type='button' className='text-blue-600 hover:underline'>
+              Check permissions
+            </button>
           </div>
         </div>
       </div>
@@ -332,6 +336,7 @@ const DraftsTable = () => {
         <div className='text-center py-16'>
           <p className='text-gray-600 mb-4'>No matches found</p>
           <button
+            type='button'
             onClick={() => {
               setPlatformFilter('All')
               setTypeFilter('All')
@@ -426,10 +431,18 @@ const DraftsTable = () => {
         {selectedIds.size > 0 && (
           <div className='mt-3 p-3 bg-blue-50 rounded-md flex items-center gap-3'>
             <span className='text-sm font-medium'>{selectedIds.size} selected</span>
-            <button className='text-sm text-blue-600 hover:underline'>Copy</button>
-            <button className='text-sm text-blue-600 hover:underline'>Preview</button>
-            <button className='text-sm text-blue-600 hover:underline'>Discard</button>
-            <button className='text-sm text-blue-600 hover:underline'>Open</button>
+            <button type='button' className='text-sm text-blue-600 hover:underline'>
+              Copy
+            </button>
+            <button type='button' className='text-sm text-blue-600 hover:underline'>
+              Preview
+            </button>
+            <button type='button' className='text-sm text-blue-600 hover:underline'>
+              Discard
+            </button>
+            <button type='button' className='text-sm text-blue-600 hover:underline'>
+              Open
+            </button>
           </div>
         )}
       </div>
@@ -553,6 +566,7 @@ const DraftsTable = () => {
                 <td className='px-3 py-3'>
                   <div className='flex items-center justify-end gap-1'>
                     <button
+                      type='button'
                       onClick={() => handleOpen(draft.url)}
                       className='p-1.5 hover:bg-gray-100 rounded'
                       aria-label='Open in context'
@@ -561,6 +575,7 @@ const DraftsTable = () => {
                       <ExternalLink className='w-4 h-4 text-gray-600' />
                     </button>
                     <button
+                      type='button'
                       onClick={() => handleTrash(draft)}
                       className='p-1.5 hover:bg-gray-100 rounded'
                       aria-label='Discard'
