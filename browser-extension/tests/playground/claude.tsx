@@ -22,7 +22,6 @@ import { useMemo, useState } from 'react'
 // Mock data generator
 const generateMockDrafts = () => [
   {
-    account: '@johnsmith',
     charCount: 245,
     content:
       'This PR addresses the memory leak issue reported in #1233. The problem was caused by event listeners not being properly disposed...',
@@ -41,7 +40,6 @@ const generateMockDrafts = () => [
     url: 'https://github.com/microsoft/vscode/pull/1234',
   },
   {
-    account: 'u/techwriter',
     charCount: 180,
     content:
       "I've been using GitLens for years and it's absolutely essential for my workflow. The inline blame annotations are incredibly helpful when...",
@@ -58,7 +56,6 @@ const generateMockDrafts = () => [
     url: 'https://reddit.com/r/programming/comments/abc123',
   },
   {
-    account: '@sarahdev',
     charCount: 456,
     content:
       "When using useEffect with async functions, the cleanup function doesn't seem to be called correctly in certain edge cases...",
@@ -77,7 +74,6 @@ const generateMockDrafts = () => [
     url: 'https://github.com/facebook/react/issues/5678',
   },
   {
-    account: '@alexcoder',
     charCount: 322,
     content:
       'LGTM! Just a few minor suggestions about the examples in the routing section. Consider adding more context about...',
@@ -96,7 +92,6 @@ const generateMockDrafts = () => [
     url: 'https://github.com/vercel/next.js/pull/9012',
   },
   {
-    account: '@mikeeng',
     charCount: 678,
     content:
       'This PR implements ESM support in worker threads as discussed in the last TSC meeting. The implementation follows...',
@@ -465,7 +460,6 @@ export const ClaudePrototype = () => {
                         {draft.kind}
                       </span>
                       {getStateIcon(draft.state)}
-                      <span className='text-gray-500'>{draft.account}</span>
                     </div>
 
                     {/* Title + snippet */}
