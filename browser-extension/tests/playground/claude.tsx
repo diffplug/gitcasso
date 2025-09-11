@@ -303,7 +303,6 @@ export const ClaudePrototype = () => {
             <col className='w-10' />
             <col />
             <col className='w-24' />
-            <col className='w-24' />
           </colgroup>
           <thead className='border-b'>
             <tr>
@@ -402,12 +401,6 @@ export const ClaudePrototype = () => {
                   )}
                 </button>
               </th>
-              <th
-                scope='col'
-                className='px-3 py-3 text-right text-xs font-medium text-gray-500 tracking-wider'
-              >
-                ACTIONS
-              </th>
             </tr>
           </thead>
           <tbody className='divide-y divide-gray-200'>
@@ -481,30 +474,30 @@ export const ClaudePrototype = () => {
                   </div>
                 </td>
                 <td className='px-3 py-3 text-sm text-gray-500'>
-                  <span title={new Date(draft.lastEdit).toLocaleString()}>
-                    {timeAgo(new Date(draft.lastEdit))}
-                  </span>
-                </td>
-                <td className='px-3 py-3'>
-                  <div className='flex items-center justify-end gap-1'>
-                    <button
-                      type='button'
-                      onClick={() => handleOpen(draft.url)}
-                      className='p-1.5 hover:bg-gray-100 rounded'
-                      aria-label='Open in context'
-                      title='Open in context'
-                    >
-                      <ExternalLink className='w-4 h-4 text-gray-600' />
-                    </button>
-                    <button
-                      type='button'
-                      onClick={() => handleTrash(draft)}
-                      className='p-1.5 hover:bg-gray-100 rounded'
-                      aria-label='Discard'
-                      title='Discard'
-                    >
-                      <Trash2 className='w-4 h-4 text-gray-600' />
-                    </button>
+                  <div className='flex flex-col items-center gap-1'>
+                    <span title={new Date(draft.lastEdit).toLocaleString()} className='whitespace-nowrap'>
+                      {timeAgo(new Date(draft.lastEdit))}
+                    </span>
+                    <div className='flex items-center gap-1'>
+                      <button
+                        type='button'
+                        onClick={() => handleOpen(draft.url)}
+                        className='p-1.5 hover:bg-gray-100 rounded'
+                        aria-label='Open in context'
+                        title='Open in context'
+                      >
+                        <ExternalLink className='w-4 h-4 text-gray-600' />
+                      </button>
+                      <button
+                        type='button'
+                        onClick={() => handleTrash(draft)}
+                        className='p-1.5 hover:bg-gray-100 rounded'
+                        aria-label='Discard'
+                        title='Discard'
+                      >
+                        <Trash2 className='w-4 h-4 text-gray-600' />
+                      </button>
+                    </div>
                   </div>
                 </td>
               </tr>
