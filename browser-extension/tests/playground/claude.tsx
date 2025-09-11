@@ -1,3 +1,4 @@
+//import { DraftStats } from '@/lib/enhancers/draftStats'
 import { GitPullRequestIcon, IssueOpenedIcon } from '@primer/octicons-react'
 import {
   ArrowDown,
@@ -13,8 +14,58 @@ import {
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
-// Mock data generator
-const generateMockDrafts = () => [
+/*
+interface GitHubIssueAddCommentSpot extends CommentSpot {
+  type: 'GH_ISSUE_ADD_COMMENT'
+  domain: 'string'
+  slug: string // owner/repo
+  number: number // issue number, undefined for new issues
+  title: string
+}
+export interface GitHubPRAddCommentSpot extends CommentSpot {
+  type: 'GH_PR_ADD_COMMENT' // Override to narrow from string to specific union
+  domain: string
+  slug: string // owner/repo
+  number: number // issue/PR number, undefined for new issues and PRs
+  title: string
+}
+*/
+
+type DraftType = 'PR' | 'ISSUE' | 'REDDIT'
+
+interface BaseDraft {
+  id: string
+  charCount: number
+  codeCount: number
+  content: string
+  imageCount: number
+  type: DraftType
+  lastEdit: number
+  linkCount: number
+  title: string
+  url: string
+}
+
+interface GitHubDraft extends BaseDraft {
+  repoSlug: string
+  number: number
+}
+
+interface RedditDraft extends BaseDraft {
+  subreddit: string
+}
+
+type Draft = GitHubDraft | RedditDraft
+
+const isGitHubDraft = (draft: Draft): draft is GitHubDraft => {
+  return draft.type === 'PR' || draft.type === 'ISSUE'
+}
+
+const isRedditDraft = (draft: Draft): draft is RedditDraft => {
+  return draft.type === 'REDDIT'
+}
+
+const generateMockDrafts = (): Draft[] => [
   {
     charCount: 245,
     codeCount: 3,
@@ -22,17 +73,14 @@ const generateMockDrafts = () => [
       'This PR addresses the memory leak issue reported in #1233. The problem was caused by event listeners not being properly disposed...',
     id: '1',
     imageCount: 2,
-    kind: 'PR',
     lastEdit: Date.now() - 1000 * 60 * 30,
     linkCount: 2,
     number: 1234,
-    platform: 'GitHub',
-    private: true,
     repoSlug: 'microsoft/vscode',
-    state: { type: 'open' },
     title: 'Fix memory leak in extension host',
+    type: 'PR',
     url: 'https://github.com/microsoft/vscode/pull/1234',
-  },
+  } satisfies GitHubDraft,
   {
     charCount: 180,
     codeCount: 0,
@@ -40,15 +88,13 @@ const generateMockDrafts = () => [
       "I've been using GitLens for years and it's absolutely essential for my workflow. The inline blame annotations are incredibly helpful when...",
     id: '2',
     imageCount: 0,
-    kind: 'Comment',
     lastEdit: Date.now() - 1000 * 60 * 60 * 2,
     linkCount: 1,
-    private: false,
-    repoSlug: 'r/programming',
-    state: { type: 'post' },
+    subreddit: 'programming',
     title: "Re: What's your favorite VS Code extension?",
+    type: 'REDDIT',
     url: 'https://reddit.com/r/programming/comments/abc123',
-  },
+  } satisfies RedditDraft,
   {
     charCount: 456,
     codeCount: 1,
@@ -56,17 +102,14 @@ const generateMockDrafts = () => [
       "When using useEffect with async functions, the cleanup function doesn't seem to be called correctly in certain edge cases...",
     id: '3',
     imageCount: 0,
-    kind: 'Issue',
     lastEdit: Date.now() - 1000 * 60 * 60 * 5,
     linkCount: 0,
     number: 5678,
-    platform: 'GitHub',
-    private: false,
     repoSlug: 'facebook/react',
-    state: { type: 'open' },
     title: 'Unexpected behavior with useEffect cleanup',
+    type: 'ISSUE',
     url: 'https://github.com/facebook/react/issues/5678',
-  },
+  } satisfies GitHubDraft,
   {
     charCount: 322,
     codeCount: 0,
@@ -74,17 +117,14 @@ const generateMockDrafts = () => [
       'LGTM! Just a few minor suggestions about the examples in the routing section. Consider adding more context about...',
     id: '4',
     imageCount: 4,
-    kind: 'PR',
     lastEdit: Date.now() - 1000 * 60 * 60 * 24,
     linkCount: 3,
     number: 9012,
-    platform: 'GitHub',
-    private: true,
     repoSlug: 'vercel/next.js',
-    state: { type: 'merged' },
     title: 'Update routing documentation',
+    type: 'PR',
     url: 'https://github.com/vercel/next.js/pull/9012',
-  },
+  } satisfies GitHubDraft,
   {
     charCount: 678,
     codeCount: 7,
@@ -92,17 +132,14 @@ const generateMockDrafts = () => [
       'This PR implements ESM support in worker threads as discussed in the last TSC meeting. The implementation follows...',
     id: '5',
     imageCount: 1,
-    kind: 'PR',
     lastEdit: Date.now() - 1000 * 60 * 60 * 48,
     linkCount: 5,
     number: 3456,
-    platform: 'GitHub',
-    private: false,
     repoSlug: 'nodejs/node',
-    state: { type: 'closed' },
     title: 'Add support for ESM in worker threads',
+    type: 'PR',
     url: 'https://github.com/nodejs/node/pull/3456',
-  },
+  } satisfies GitHubDraft,
 ]
 
 // Helper function for relative time
@@ -148,12 +185,8 @@ export const ClaudePrototype = () => {
     }
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      filtered = filtered.filter(
-        (d) =>
-          d.title.toLowerCase().includes(query) ||
-          d.content.toLowerCase().includes(query) ||
-          d.repoSlug.toLowerCase().includes(query) ||
-          d.number?.toString().includes(query),
+      filtered = filtered.filter((d) =>
+        Object.values(d).some((value) => String(value).toLowerCase().includes(query)),
       )
     }
     // Sort
@@ -418,15 +451,9 @@ export const ClaudePrototype = () => {
                     <div className='flex items-center justify-between gap-1.5 text-xs text-gray-600'>
                       <div className='flex items-center gap-1.5 min-w-0 flex-1'>
                         <span className='w-4 h-4 flex items-center justify-center flex-shrink-0'>
-                          {draft.platform === 'GitHub' ? (
-                            draft.kind === 'PR' ? (
-                              <GitPullRequestIcon size={16} />
-                            ) : draft.kind === 'Issue' ? (
-                              <IssueOpenedIcon size={16} />
-                            ) : (
-                              '🐙'
-                            )
-                          ) : (
+                          {draft.type === 'PR' && <GitPullRequestIcon size={16} />}
+                          {draft.type === 'ISSUE' && <IssueOpenedIcon size={16} />}
+                          {draft.type === 'REDDIT' && (
                             <img
                               src='https://styles.redditmedia.com/t5_2fwo/styles/communityIcon_1bqa1ibfp8q11.png?width=128&frame=1&auto=webp&s=400b33e7080aa4996c405a96b3872a12f0e3b68d'
                               alt='Reddit'
@@ -434,11 +461,22 @@ export const ClaudePrototype = () => {
                             />
                           )}
                         </span>
-                        <a href={draft.url} className='hover:underline truncate'>
-                          {draft.repoSlug.startsWith('r/')
-                            ? draft.repoSlug
-                            : `#${draft.number} ${draft.repoSlug}`}
-                        </a>
+                        {}
+                        {isGitHubDraft(draft) && (
+                          <>
+                            <a href={'TODO'} className='hover:underline'>
+                              #{draft.number}
+                            </a>{' '}
+                            <a href='TODO' className='hover:underline truncate'>
+                              {draft.repoSlug}
+                            </a>
+                          </>
+                        )}
+                        {isRedditDraft(draft) && (
+                          <a href={'TODO'} className='hover:underline truncate'>
+                            r/{draft.subreddit}
+                          </a>
+                        )}
                       </div>
                       <div className='flex items-center gap-1 flex-shrink-0'>
                         {draft.linkCount > 0 && (
