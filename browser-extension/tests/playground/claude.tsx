@@ -7,6 +7,7 @@ import {
   Filter,
   Link,
   Search,
+  TextSelect,
   Trash2,
 } from 'lucide-react'
 import { IssueOpenedIcon, GitPullRequestIcon } from '@primer/octicons-react'
@@ -423,56 +424,59 @@ export const ClaudePrototype = () => {
                 <td className='px-3 py-3'>
                   <div className='space-y-1'>
                     {/* Context line */}
-                    <div className='flex items-center gap-1.5 text-xs text-gray-600'>
-                      <span className='w-4 h-4 flex items-center justify-center'>
-                        {draft.platform === 'GitHub' ? (
-                          draft.kind === 'PR' ? (
-                            <GitPullRequestIcon size={16} />
-                          ) : draft.kind === 'Issue' ? (
-                            <IssueOpenedIcon size={16} />
-                          ) : '🐙'
-                        ) : '🔗'}
-                      </span>
-                      <a
-                        href={draft.url}
-                        className='hover:underline truncate max-w-[28ch]'
-                      >
-                        {draft.repoSlug.startsWith('r/') ? draft.repoSlug :
-                          `#${draft.number} ${draft.repoSlug}`
-                        }
-                      </a>
+                    <div className='flex items-center justify-between gap-1.5 text-xs text-gray-600'>
+                      <div className='flex items-center gap-1.5 min-w-0 flex-1'>
+                        <span className='w-4 h-4 flex items-center justify-center flex-shrink-0'>
+                          {draft.platform === 'GitHub' ? (
+                            draft.kind === 'PR' ? (
+                              <GitPullRequestIcon size={16} />
+                            ) : draft.kind === 'Issue' ? (
+                              <IssueOpenedIcon size={16} />
+                            ) : '🐙'
+                          ) : '🔗'}
+                        </span>
+                        <a
+                          href={draft.url}
+                          className='hover:underline truncate'
+                        >
+                          {draft.repoSlug.startsWith('r/') ? draft.repoSlug :
+                            `#${draft.number} ${draft.repoSlug}`
+                          }
+                        </a>
+                      </div>
+                      <div className='flex items-center gap-1 flex-shrink-0'>
+                        {draft.linkCount > 0 && (
+                          <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-700'>
+                            <Link className='w-3 h-3' />
+                            {draft.linkCount}
+                          </span>
+                        )}
+                        {draft.imageCount > 0 && (
+                          <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-purple-50 text-purple-700'>
+                            <Image className='w-3 h-3' />
+                            {draft.imageCount}
+                          </span>
+                        )}
+                        {draft.codeCount > 0 && (
+                          <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-pink-50 text-pink-700'>
+                            <Code className='w-3 h-3' />
+                            {draft.codeCount}
+                          </span>
+                        )}
+                        <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-gray-50 text-gray-700'>
+                          <TextSelect className='w-3 h-3' />
+                          {draft.charCount}
+                        </span>
+                      </div>
                     </div>
 
-                    {/* Title + snippet */}
+                    {/* Title */}
                     <div className='text-sm truncate'>
                       <span className='font-medium'>{draft.title}</span>
                     </div>
+                    {/* Draft */}
                     <div className='text-sm truncate'>
                       <span className='text-gray-500'>{draft.content.substring(0, 60)}…</span>
-                    </div>
-
-                    {/* Signals row (hidden on small screens) */}
-                    <div className='hidden sm:flex items-center gap-2'>
-
-                      {draft.linkCount > 0 && (
-                        <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-700'>
-                          <Link className='w-3 h-3' />
-                          {draft.linkCount}
-                        </span>
-                      )}
-                      {draft.imageCount > 0 && (
-                        <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-purple-50 text-purple-700'>
-                          <Image className='w-3 h-3' />
-                          {draft.imageCount}
-                        </span>
-                      )}
-                      {draft.codeCount > 0 && (
-                        <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-pink-50 text-pink-700'>
-                          <Code className='w-3 h-3' />
-                          {draft.codeCount}
-                        </span>
-                      )}
-                      <span className='text-xs text-gray-500'>{draft.charCount} chars</span>
                     </div>
                   </div>
                 </td>
