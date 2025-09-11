@@ -1,18 +1,6 @@
 //import { DraftStats } from '@/lib/enhancers/draftStats'
 import { GitPullRequestIcon, IssueOpenedIcon } from '@primer/octicons-react'
-import {
-  ArrowDown,
-  ArrowUp,
-  Code,
-  ExternalLink,
-  Filter,
-  Image,
-  Link,
-  Search,
-  Clock,
-  TextSelect,
-  Trash2,
-} from 'lucide-react'
+import { Clock, Code, Filter, Image, Link, Search, TextSelect } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 /*
@@ -170,7 +158,7 @@ export const ClaudePrototype = () => {
   const [hasImageFilter, setHasImageFilter] = useState(false)
   const [hasLinkFilter, setHasLinkFilter] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
-  const [sortBy, setSortBy] = useState('edited-newest')
+  const [sortBy, _setSortBy] = useState('edited-newest')
   const [showFilters, setShowFilters] = useState(false)
 
   const filteredDrafts = useMemo(() => {
@@ -332,7 +320,6 @@ export const ClaudePrototype = () => {
           <colgroup>
             <col className='w-10' />
             <col />
-            <col className='w-24' />
           </colgroup>
           <thead className='border-b'>
             <tr>
@@ -414,25 +401,6 @@ export const ClaudePrototype = () => {
                   )}
                 </div>
               </th>
-              <th
-                scope='col'
-                className='px-3 py-3 text-left text-xs font-medium text-gray-500 tracking-wider'
-              >
-                <button
-                  type='button'
-                  onClick={() =>
-                    setSortBy(sortBy === 'edited-newest' ? 'edited-oldest' : 'edited-newest')
-                  }
-                  className='flex items-center gap-1 hover:text-gray-700'
-                >
-                  EDITED
-                  {sortBy === 'edited-newest' ? (
-                    <ArrowDown className='w-3 h-3' />
-                  ) : (
-                    <ArrowUp className='w-3 h-3' />
-                  )}
-                </button>
-              </th>
             </tr>
           </thead>
           <tbody className='divide-y divide-gray-200'>
@@ -449,8 +417,8 @@ function commentRow(
   draft: Draft,
   selectedIds: Set<unknown>,
   toggleSelection: (id: string) => void,
-  handleOpen: (url: string) => void,
-  handleTrash: (draft: { charCount: number; id: string }) => void,
+  _handleOpen: (url: string) => void,
+  _handleTrash: (draft: { charCount: number; id: string }) => void,
 ) {
   return (
     <tr key={draft.id} className='hover:bg-gray-50'>
@@ -531,34 +499,7 @@ function commentRow(
           </div>
           {/* Draft */}
           <div className='text-sm truncate'>
-            <span className='text-gray-500'>{draft.content.substring(0, 60)}…</span>
-          </div>
-        </div>
-      </td>
-      <td className='px-3 py-3 text-sm text-gray-500'>
-        <div className='flex flex-col items-center gap-1'>
-          <span title={new Date(draft.lastEdit).toLocaleString()} className='whitespace-nowrap'>
-            {timeAgo(new Date(draft.lastEdit))}
-          </span>
-          <div className='flex items-center gap-1'>
-            <button
-              type='button'
-              onClick={() => handleOpen(draft.url)}
-              className='p-1.5 hover:bg-gray-100 rounded'
-              aria-label='Open in context'
-              title='Open in context'
-            >
-              <ExternalLink className='w-4 h-4 text-gray-600' />
-            </button>
-            <button
-              type='button'
-              onClick={() => handleTrash(draft)}
-              className='p-1.5 hover:bg-gray-100 rounded'
-              aria-label='Discard'
-              title='Discard'
-            >
-              <Trash2 className='w-4 h-4 text-gray-600' />
-            </button>
+            <span className='text-gray-500'>{draft.content.substring(0, 100)}…</span>
           </div>
         </div>
       </td>
