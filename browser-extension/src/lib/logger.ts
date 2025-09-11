@@ -19,10 +19,6 @@ const LOG_LEVEL_PRIORITY: Record<LogLevel, number> = {
 
 // Helper function to check if a log level is enabled
 const shouldLog = (level: LogLevel): boolean => {
-  // Don't log anything in production mode
-  if (CONFIG.MODE === 'PROD') {
-    return false
-  }
   return LOG_LEVEL_PRIORITY[level] >= LOG_LEVEL_PRIORITY[CONFIG.LOG_LEVEL]
 }
 
