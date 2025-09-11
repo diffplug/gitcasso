@@ -1,27 +1,27 @@
+import { GitPullRequestIcon, IssueOpenedIcon } from '@primer/octicons-react'
 import {
   ArrowDown,
   ArrowUp,
-  Image,
   Code,
   ExternalLink,
   Filter,
+  Image,
   Link,
   Search,
   TextSelect,
   Trash2,
 } from 'lucide-react'
-import { IssueOpenedIcon, GitPullRequestIcon } from '@primer/octicons-react'
 import { useMemo, useState } from 'react'
 
 // Mock data generator
 const generateMockDrafts = () => [
   {
     charCount: 245,
+    codeCount: 3,
     content:
       'This PR addresses the memory leak issue reported in #1233. The problem was caused by event listeners not being properly disposed...',
-    codeCount: 3,
-    imageCount: 2,
     id: '1',
+    imageCount: 2,
     kind: 'PR',
     lastEdit: Date.now() - 1000 * 60 * 30,
     linkCount: 2,
@@ -35,11 +35,11 @@ const generateMockDrafts = () => [
   },
   {
     charCount: 180,
+    codeCount: 0,
     content:
       "I've been using GitLens for years and it's absolutely essential for my workflow. The inline blame annotations are incredibly helpful when...",
-    codeCount: 0,
-    imageCount: 0,
     id: '2',
+    imageCount: 0,
     kind: 'Comment',
     lastEdit: Date.now() - 1000 * 60 * 60 * 2,
     linkCount: 1,
@@ -51,11 +51,11 @@ const generateMockDrafts = () => [
   },
   {
     charCount: 456,
+    codeCount: 1,
     content:
       "When using useEffect with async functions, the cleanup function doesn't seem to be called correctly in certain edge cases...",
-    codeCount: 1,
-    imageCount: 0,
     id: '3',
+    imageCount: 0,
     kind: 'Issue',
     lastEdit: Date.now() - 1000 * 60 * 60 * 5,
     linkCount: 0,
@@ -69,11 +69,11 @@ const generateMockDrafts = () => [
   },
   {
     charCount: 322,
+    codeCount: 0,
     content:
       'LGTM! Just a few minor suggestions about the examples in the routing section. Consider adding more context about...',
-    codeCount: 0,
-    imageCount: 4,
     id: '4',
+    imageCount: 4,
     kind: 'PR',
     lastEdit: Date.now() - 1000 * 60 * 60 * 24,
     linkCount: 3,
@@ -87,11 +87,11 @@ const generateMockDrafts = () => [
   },
   {
     charCount: 678,
+    codeCount: 7,
     content:
       'This PR implements ESM support in worker threads as discussed in the last TSC meeting. The implementation follows...',
-    codeCount: 7,
-    imageCount: 1,
     id: '5',
+    imageCount: 1,
     kind: 'PR',
     lastEdit: Date.now() - 1000 * 60 * 60 * 48,
     linkCount: 5,
@@ -226,10 +226,7 @@ export const ClaudePrototype = () => {
 
   if (
     filteredDrafts.length === 0 &&
-    (searchQuery ||
-      hasCodeFilter ||
-      hasImageFilter ||
-      hasLinkFilter)
+    (searchQuery || hasCodeFilter || hasImageFilter || hasLinkFilter)
   ) {
     return (
       <div className='min-h-screen bg-white'>
@@ -273,8 +270,7 @@ export const ClaudePrototype = () => {
     <div className='min-h-screen bg-white'>
       {/* Header controls */}
       <div className='p-3 border-b'>
-        <div className='flex flex-wrap gap-3 items-center'>
-        </div>
+        <div className='flex flex-wrap gap-3 items-center'></div>
 
         {/* Bulk actions bar */}
         {selectedIds.size > 0 && (
@@ -390,7 +386,9 @@ export const ClaudePrototype = () => {
               >
                 <button
                   type='button'
-                  onClick={() => setSortBy(sortBy === 'edited-newest' ? 'edited-oldest' : 'edited-newest')}
+                  onClick={() =>
+                    setSortBy(sortBy === 'edited-newest' ? 'edited-oldest' : 'edited-newest')
+                  }
                   className='flex items-center gap-1 hover:text-gray-700'
                 >
                   EDITED
@@ -425,16 +423,21 @@ export const ClaudePrototype = () => {
                               <GitPullRequestIcon size={16} />
                             ) : draft.kind === 'Issue' ? (
                               <IssueOpenedIcon size={16} />
-                            ) : '🐙'
-                          ) : '🔗'}
+                            ) : (
+                              '🐙'
+                            )
+                          ) : (
+                            <img
+                              src='https://styles.redditmedia.com/t5_2fwo/styles/communityIcon_1bqa1ibfp8q11.png?width=128&frame=1&auto=webp&s=400b33e7080aa4996c405a96b3872a12f0e3b68d'
+                              alt='Reddit'
+                              className='w-4 h-4 rounded-full'
+                            />
+                          )}
                         </span>
-                        <a
-                          href={draft.url}
-                          className='hover:underline truncate'
-                        >
-                          {draft.repoSlug.startsWith('r/') ? draft.repoSlug :
-                            `#${draft.number} ${draft.repoSlug}`
-                          }
+                        <a href={draft.url} className='hover:underline truncate'>
+                          {draft.repoSlug.startsWith('r/')
+                            ? draft.repoSlug
+                            : `#${draft.number} ${draft.repoSlug}`}
                         </a>
                       </div>
                       <div className='flex items-center gap-1 flex-shrink-0'>
@@ -475,7 +478,10 @@ export const ClaudePrototype = () => {
                 </td>
                 <td className='px-3 py-3 text-sm text-gray-500'>
                   <div className='flex flex-col items-center gap-1'>
-                    <span title={new Date(draft.lastEdit).toLocaleString()} className='whitespace-nowrap'>
+                    <span
+                      title={new Date(draft.lastEdit).toLocaleString()}
+                      className='whitespace-nowrap'
+                    >
                       {timeAgo(new Date(draft.lastEdit))}
                     </span>
                     <div className='flex items-center gap-1'>
