@@ -18,8 +18,8 @@ const generateMockDrafts = () => [
     charCount: 245,
     content:
       'This PR addresses the memory leak issue reported in #1233. The problem was caused by event listeners not being properly disposed...',
-    hasCode: true,
-    hasImage: true,
+    codeCount: 3,
+    imageCount: 2,
     id: '1',
     kind: 'PR',
     lastEdit: Date.now() - 1000 * 60 * 30,
@@ -36,8 +36,8 @@ const generateMockDrafts = () => [
     charCount: 180,
     content:
       "I've been using GitLens for years and it's absolutely essential for my workflow. The inline blame annotations are incredibly helpful when...",
-    hasCode: false,
-    hasImage: false,
+    codeCount: 0,
+    imageCount: 0,
     id: '2',
     kind: 'Comment',
     lastEdit: Date.now() - 1000 * 60 * 60 * 2,
@@ -52,8 +52,8 @@ const generateMockDrafts = () => [
     charCount: 456,
     content:
       "When using useEffect with async functions, the cleanup function doesn't seem to be called correctly in certain edge cases...",
-    hasCode: true,
-    hasImage: false,
+    codeCount: 1,
+    imageCount: 0,
     id: '3',
     kind: 'Issue',
     lastEdit: Date.now() - 1000 * 60 * 60 * 5,
@@ -70,8 +70,8 @@ const generateMockDrafts = () => [
     charCount: 322,
     content:
       'LGTM! Just a few minor suggestions about the examples in the routing section. Consider adding more context about...',
-    hasCode: false,
-    hasImage: true,
+    codeCount: 0,
+    imageCount: 4,
     id: '4',
     kind: 'PR',
     lastEdit: Date.now() - 1000 * 60 * 60 * 24,
@@ -88,8 +88,8 @@ const generateMockDrafts = () => [
     charCount: 678,
     content:
       'This PR implements ESM support in worker threads as discussed in the last TSC meeting. The implementation follows...',
-    hasCode: true,
-    hasImage: true,
+    codeCount: 7,
+    imageCount: 1,
     id: '5',
     kind: 'PR',
     lastEdit: Date.now() - 1000 * 60 * 60 * 48,
@@ -128,7 +128,8 @@ export const ClaudePrototype = () => {
   const [drafts] = useState(generateMockDrafts())
   const [selectedIds, setSelectedIds] = useState(new Set())
   const [hasCodeFilter, setHasCodeFilter] = useState(false)
-  const [privateOnlyFilter, setPrivateOnlyFilter] = useState(false)
+  const [hasImageFilter, setHasImageFilter] = useState(false)
+  const [hasLinkFilter, setHasLinkFilter] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('edited-newest')
   const [showFilters, setShowFilters] = useState(false)
@@ -136,10 +137,13 @@ export const ClaudePrototype = () => {
   const filteredDrafts = useMemo(() => {
     let filtered = [...drafts]
     if (hasCodeFilter) {
-      filtered = filtered.filter((d) => d.hasCode)
+      filtered = filtered.filter((d) => d.codeCount > 0)
     }
-    if (privateOnlyFilter) {
-      filtered = filtered.filter((d) => d.private)
+    if (hasImageFilter) {
+      filtered = filtered.filter((d) => d.imageCount > 0)
+    }
+    if (hasLinkFilter) {
+      filtered = filtered.filter((d) => d.linkCount > 0)
     }
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
@@ -161,7 +165,7 @@ export const ClaudePrototype = () => {
         break
     }
     return filtered
-  }, [drafts, hasCodeFilter, privateOnlyFilter, searchQuery, sortBy])
+  }, [drafts, hasCodeFilter, hasImageFilter, hasLinkFilter, searchQuery, sortBy])
 
   const toggleSelection = (id: string) => {
     const newSelected = new Set(selectedIds)
@@ -223,7 +227,8 @@ export const ClaudePrototype = () => {
     filteredDrafts.length === 0 &&
     (searchQuery ||
       hasCodeFilter ||
-      privateOnlyFilter)
+      hasImageFilter ||
+      hasLinkFilter)
   ) {
     return (
       <div className='min-h-screen bg-white'>
@@ -250,7 +255,8 @@ export const ClaudePrototype = () => {
             type='button'
             onClick={() => {
               setHasCodeFilter(false)
-              setPrivateOnlyFilter(false)
+              setHasImageFilter(false)
+              setHasLinkFilter(false)
               setSearchQuery('')
             }}
             className='text-blue-600 hover:underline'
@@ -311,7 +317,7 @@ export const ClaudePrototype = () => {
               </th>
               <th
                 scope='col'
-                className='px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
+                className='px-3 py-3 text-left text-xs font-medium text-gray-500 tracking-wider'
               >
                 <div className='relative'>
                   <div className='flex items-center gap-1'>
@@ -340,20 +346,38 @@ export const ClaudePrototype = () => {
                         <label className='flex items-center gap-2 cursor-pointer'>
                           <input
                             type='checkbox'
-                            checked={hasCodeFilter}
-                            onChange={(e) => setHasCodeFilter(e.target.checked)}
+                            checked={hasLinkFilter}
+                            onChange={(e) => setHasLinkFilter(e.target.checked)}
                             className='rounded'
                           />
-                          <span className='text-sm'>Has code</span>
+                          <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-700'>
+                            <Link className='w-3 h-3' />
+                            links
+                          </span>
                         </label>
                         <label className='flex items-center gap-2 cursor-pointer'>
                           <input
                             type='checkbox'
-                            checked={privateOnlyFilter}
-                            onChange={(e) => setPrivateOnlyFilter(e.target.checked)}
+                            checked={hasImageFilter}
+                            onChange={(e) => setHasImageFilter(e.target.checked)}
                             className='rounded'
                           />
-                          <span className='text-sm'>Private only</span>
+                          <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-purple-50 text-purple-700'>
+                            <Image className='w-3 h-3' />
+                            images
+                          </span>
+                        </label>
+                        <label className='flex items-center gap-2 cursor-pointer'>
+                          <input
+                            type='checkbox'
+                            checked={hasCodeFilter}
+                            onChange={(e) => setHasCodeFilter(e.target.checked)}
+                            className='rounded'
+                          />
+                          <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-pink-50 text-pink-700'>
+                            <Code className='w-3 h-3' />
+                            code
+                          </span>
                         </label>
                       </div>
                     </div>
@@ -362,7 +386,7 @@ export const ClaudePrototype = () => {
               </th>
               <th
                 scope='col'
-                className='px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
+                className='px-3 py-3 text-left text-xs font-medium text-gray-500 tracking-wider'
               >
                 <button
                   type='button'
@@ -379,9 +403,9 @@ export const ClaudePrototype = () => {
               </th>
               <th
                 scope='col'
-                className='px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider'
+                className='px-3 py-3 text-right text-xs font-medium text-gray-500 tracking-wider'
               >
-                Actions
+                ACTIONS
               </th>
             </tr>
           </thead>
@@ -431,16 +455,16 @@ export const ClaudePrototype = () => {
                           {draft.linkCount}
                         </span>
                       )}
-                      {draft.hasImage && (
+                      {draft.imageCount > 0 && (
                         <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-purple-50 text-purple-700'>
                           <Image className='w-3 h-3' />
-                          image
+                          {draft.imageCount}
                         </span>
                       )}
-                      {draft.hasCode && (
+                      {draft.codeCount > 0 && (
                         <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-pink-50 text-pink-700'>
                           <Code className='w-3 h-3' />
-                          code
+                          {draft.codeCount}
                         </span>
                       )}
                       <span className='text-xs text-gray-500'>{draft.charCount} chars</span>
