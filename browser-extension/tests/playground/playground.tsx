@@ -1,14 +1,19 @@
-import { createRoot } from 'react-dom/client'
 import { useState } from 'react'
+import { createRoot } from 'react-dom/client'
 import '@/entrypoints/popup/style.css'
 import './style.css'
+import { ClaudePrototype } from './claude'
 import { Replica } from './replica'
-import { ClaudePrototype } from "./claude"
 
-type Mode = 'Replica' | 'ClaudePrototype'
+const MODES = {
+  claude: { component: ClaudePrototype, label: 'claude' },
+  replica: { component: Replica, label: 'replica' },
+} as const
+
+type Mode = keyof typeof MODES
 
 const App = () => {
-  const [activeComponent, setActiveComponent] = useState<Mode>('Replica')
+  const [activeComponent, setActiveComponent] = useState<Mode>('replica')
 
   return (
     <div className='min-h-screen bg-slate-100'>
@@ -20,30 +25,27 @@ const App = () => {
             <li>Hot reload is active for instant updates</li>
           </ul>
           <div className='flex gap-2 mt-4'>
-            <button
-              onClick={() => setActiveComponent('Replica')}
-              className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeComponent === 'Replica'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            {Object.entries(MODES).map(([mode, config]) => (
+              <button
+                key={mode}
+                onClick={() => setActiveComponent(mode as Mode)}
+                className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
+                  activeComponent === mode
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
-            >
-              Replica
-            </button>
-            <button
-              onClick={() => setActiveComponent('ClaudePrototype')}
-              className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeComponent === 'ClaudePrototype'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-            >
-              ClaudePrototype
-            </button>
+              >
+                {config.label}
+              </button>
+            ))}
           </div>
         </div>
 
         <div className='popup-frame'>
-          {activeComponent === 'Replica' && <Replica />}
-          {activeComponent === 'ClaudePrototype' && <ClaudePrototype />}
+          {(() => {
+            const Component = MODES[activeComponent].component
+            return <Component />
+          })()}
         </div>
       </div>
     </div>

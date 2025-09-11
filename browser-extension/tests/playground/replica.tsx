@@ -1,10 +1,9 @@
 import { SpotTable } from '@/components/SpotTable'
 import type { CommentState } from '@/entrypoints/background'
-import { EnhancerRegistry } from '@/lib/registries'
-
 import type { CommentSpot } from '@/lib/enhancer'
 import type { GitHubIssueAddCommentSpot } from '@/lib/enhancers/github/githubIssueAddComment'
 import type { GitHubPRAddCommentSpot } from '@/lib/enhancers/github/githubPRAddComment'
+import { EnhancerRegistry } from '@/lib/registries'
 
 const gh_pr: GitHubPRAddCommentSpot = {
   domain: 'github.com',
@@ -40,7 +39,6 @@ const sampleSpots: CommentState[] = spots.map((spot) => {
   }
   return state
 })
-
 
 export function Replica() {
   const handleSpotClick = (spot: CommentState) => {
