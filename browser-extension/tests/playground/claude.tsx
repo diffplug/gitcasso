@@ -2,23 +2,32 @@
 
 import { GitPullRequestIcon, IssueOpenedIcon } from '@primer/octicons-react'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { Clock, Code, Filter, Image, Link, Search, TextSelect } from 'lucide-react'
+import {
+  Clock,
+  Code,
+  Filter,
+  Image,
+  Link,
+  MailCheck,
+  MessageSquareDashed,
+  Search,
+  TextSelect,
+} from 'lucide-react'
 import { useMemo, useState } from 'react'
 import type { CommentSpot } from '@/lib/enhancer'
 import type { DraftStats } from '@/lib/enhancers/draftStats'
 
 // CVA configuration for stat badges
 const statBadge = cva('inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs', {
-  defaultVariants: {
-    type: 'text',
-  },
   variants: {
     type: {
       code: 'bg-pink-50 text-pink-700',
       image: 'bg-purple-50 text-purple-700',
       link: 'bg-blue-50 text-blue-700',
+      sent: 'bg-green-50 text-green-700',
       text: 'bg-gray-50 text-gray-700',
       time: 'bg-gray-50 text-gray-700',
+      unsent: 'bg-amber-100 text-amber-700',
     },
   },
 })
@@ -28,14 +37,16 @@ const typeIcons = {
   code: Code,
   image: Image,
   link: Link,
+  sent: MailCheck,
   text: TextSelect,
   time: Clock,
+  unsent: MessageSquareDashed,
 } as const
 
 // StatBadge component
 type BadgeProps = VariantProps<typeof statBadge> & {
-  text: number | string
   type: keyof typeof typeIcons
+  text?: number | string
 }
 
 const Badge = ({ text, type }: BadgeProps) => {
@@ -43,7 +54,7 @@ const Badge = ({ text, type }: BadgeProps) => {
   return (
     <span className={statBadge({ type })}>
       <Icon className='w-3 h-3' />
-      {text}
+      {text || type}
     </span>
   )
 }
@@ -131,7 +142,7 @@ const generateMockDrafts = (): CommentTableRow[] => [
     spot: {
       number: 1234,
       slug: 'microsoft/vscode',
-      title: 'Fix memory leak in extension host',
+      title: "Fix memory leak in extension host (why is this so hard! It's been months!)",
       type: 'PR',
       unique_key: '1',
     } satisfies GitHubSpot,
@@ -501,7 +512,7 @@ export const ClaudePrototype = () => {
                             onChange={(e) => setHasLinkFilter(e.target.checked)}
                             className='rounded'
                           />
-                          <Badge type='link' text='links' />
+                          <Badge type='link' />
                         </label>
                         <label className='flex items-center gap-2 cursor-pointer'>
                           <input
@@ -510,7 +521,7 @@ export const ClaudePrototype = () => {
                             onChange={(e) => setHasImageFilter(e.target.checked)}
                             className='rounded'
                           />
-                          <Badge type='image' text='images' />
+                          <Badge type='image' />
                         </label>
                         <label className='flex items-center gap-2 cursor-pointer'>
                           <input
@@ -519,7 +530,7 @@ export const ClaudePrototype = () => {
                             onChange={(e) => setHasCodeFilter(e.target.checked)}
                             className='rounded'
                           />
-                          <Badge type='code' text='code' />
+                          <Badge type='code' />
                         </label>
                       </div>
                     </div>
@@ -602,10 +613,11 @@ function commentRow(
           </div>
 
           {/* Title */}
-          <div className='text-sm truncate hover:underline'>
-            <a href='TODO' className='font-medium'>
+          <div className='flex items-center gap-1'>
+            <a href='TODO' className='text-sm font-medium  hover:underline truncate'>
               {row.spot.title}
             </a>
+            <Badge type={row.isSent ? 'sent' : 'unsent'} />
           </div>
           {/* Draft */}
           <div className='text-sm truncate'>
