@@ -7,16 +7,16 @@ import {
   Clock,
   Code,
   EyeOff,
-  Filter,
   Image,
   Link,
+  LucideProps,
   MailCheck,
   MessageSquareDashed,
   Monitor,
   Search,
   TextSelect,
 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import react, { useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import type { CommentSpot } from '@/lib/enhancer'
 import type { DraftStats } from '@/lib/enhancers/draftStats'
@@ -79,29 +79,57 @@ const typeIcons = {
 type BadgeProps = VariantProps<typeof statBadge> & {
   type: keyof typeof typeIcons
   text?: number | string
-  onClick?: () => void
-  selected?: boolean
 }
 
-const Badge = ({ text, type, onClick, selected }: BadgeProps) => {
+const Badge = ({ text, type }: BadgeProps) => {
   const Icon = typeIcons[type]
-  const Component = onClick ? 'button' : 'span'
-
   return (
-    <Component
+    <span
       className={twMerge(
         statBadge({
-          clickable: !!onClick,
-          selected: selected || false,
           type,
         }),
       )}
-      onClick={onClick}
-      {...(onClick && { type: 'button' })}
     >
       {type === 'blank' || <Icon className='w-3 h-3' />}
       {text || type}
-    </Component>
+    </span>
+  )
+}
+
+
+interface Segment {
+  text?: string
+  type: keyof typeof typeIcons
+  onClick: () => void
+  selected: boolean
+}
+interface MultiSegmentProps {
+  segments: Segment[]
+}
+
+const MultiSegment = ({ segments }: MultiSegmentProps) => {
+  return (
+    <div className="inline-flex items-center gap-0">
+      {segments.map((segment, index) => {
+        const Icon = typeIcons[segment.type]
+        return (
+          <button
+            key={index}
+            className={statBadge({
+              clickable: true,
+              selected: segment.selected,
+              type: segment.type,
+            })}
+            onClick={segment.onClick}
+            type="button"
+          >
+            {segment.type === 'blank' || <Icon className='w-3 h-3' />}
+            {segment.text}
+          </button>
+        )
+      })}
+    </div>
   )
 }
 
@@ -529,24 +557,26 @@ export const ClaudePrototype = () => {
                       />
                     </div>
                     <div className='relative flex overflow-hidden'>
-                      <Badge
-                        type='unsent'
-                        text='unsent only'
-                        selected={filters.sentFilter === 'unsent'}
-                        onClick={() => updateFilter('sentFilter', 'unsent')}
-                      />
-                      <Badge
-                        type='blank'
-                        text='both'
-                        selected={filters.sentFilter === 'all'}
-                        onClick={() => updateFilter('sentFilter', 'all')}
-                      />
-                      <Badge
-                        type='sent'
-                        text='sent only'
-                        selected={filters.sentFilter === 'sent'}
-                        onClick={() => updateFilter('sentFilter', 'sent')}
-                      />
+                      <MultiSegment segments={[
+                        {
+                          type: 'unsent',
+                          text: '',
+                          selected: filters.sentFilter === 'unsent',
+                          onClick: () => updateFilter('sentFilter', 'unsent')
+                        },
+                        {
+                          type: 'blank',
+                          text: 'both',
+                          selected: filters.sentFilter === 'all',
+                          onClick: () => updateFilter('sentFilter', 'all')
+                        },
+                        {
+                          type: 'sent',
+                          text: ' ',
+                          selected: filters.sentFilter === 'sent',
+                          onClick: () => updateFilter('sentFilter', 'sent')
+                        }
+                      ]} />
                     </div>
                   </div>
                 </div>
