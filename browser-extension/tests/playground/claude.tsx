@@ -572,7 +572,7 @@ function filterControls(
 ) {
   return (
     <div className='absolute top-full right-0 mt-1 p-3 bg-white border border-gray-300 rounded-md shadow-lg z-10 min-w-48'>
-      <div className='space-y-3'>
+      <div className='space-y-1'>
         <div className='relative flex overflow-hidden'>
           <Badge
             type='archived'
@@ -600,10 +600,9 @@ function filterControls(
             onClick={() => updateFilter('sentFilter', 'sent')}
           />
         </div>
-        <div className='relative flex overflow-hidden'>
+        <div className='relative flex'>
           <Badge
             type='link'
-            text='required'
             onClick={() => updateFilter('hasLink', true)}
           />
           <Badge
@@ -615,7 +614,6 @@ function filterControls(
         <div className='relative flex overflow-hidden'>
           <Badge
             type='image'
-            text='required'
             onClick={() => updateFilter('hasImage', true)}
           />
           <Badge
@@ -627,7 +625,6 @@ function filterControls(
         <div className='relative flex overflow-hidden'>
           <Badge
             type='code'
-            text='required'
             onClick={() => updateFilter('hasCode', true)}
           />
           <Badge
