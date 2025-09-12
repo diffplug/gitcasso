@@ -1,5 +1,3 @@
-//import { DraftStats } from '@/lib/enhancers/draftStats'
-
 import { GitPullRequestIcon, IssueOpenedIcon } from '@primer/octicons-react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import {
@@ -9,14 +7,13 @@ import {
   EyeOff,
   Image,
   Link,
-  LucideProps,
   MailCheck,
   MessageSquareDashed,
   Monitor,
   Search,
   TextSelect,
 } from 'lucide-react'
-import react, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import type { CommentSpot } from '@/lib/enhancer'
 import type { DraftStats } from '@/lib/enhancers/draftStats'
@@ -97,7 +94,6 @@ const Badge = ({ text, type }: BadgeProps) => {
   )
 }
 
-
 interface Segment {
   text?: string
   type: keyof typeof typeIcons
@@ -111,30 +107,31 @@ interface MultiSegmentProps {
 
 const MultiSegment = ({ segments, value, onValueChange }: MultiSegmentProps) => {
   return (
-    <div className="inline-flex items-center gap-0">
+    <div className='inline-flex items-center gap-0'>
       {segments.map((segment, index) => {
         const Icon = typeIcons[segment.type]
         const isFirst = index === 0
         const isLast = index === segments.length - 1
 
-        const roundedClasses = isFirst && isLast
-          ? ''
-          : isFirst
-            ? '!rounded-r-none'
-            : isLast
-              ? '!rounded-l-none'
-              : '!rounded-none'
+        const roundedClasses =
+          isFirst && isLast
+            ? ''
+            : isFirst
+              ? '!rounded-r-none'
+              : isLast
+                ? '!rounded-l-none'
+                : '!rounded-none'
 
         return (
           <button
-            key={index}
+            key={segment.value}
             className={`${statBadge({
               clickable: true,
               selected: value === segment.value,
               type: segment.type,
             })} ${roundedClasses}`}
             onClick={() => onValueChange(segment.value)}
-            type="button"
+            type='button'
           >
             {segment.type === 'blank' || <Icon className='w-3 h-3' />}
             {segment.text}
@@ -392,7 +389,6 @@ export const ClaudePrototype = () => {
   const updateFilter = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
     setFilters((prev) => ({ ...prev, [key]: value }))
   }
-  const [showFilters, setShowFilters] = useState(false)
 
   const filteredDrafts = useMemo(() => {
     let filtered = [...drafts]
@@ -571,24 +567,27 @@ export const ClaudePrototype = () => {
                     <div className='relative flex overflow-hidden'>
                       <MultiSegment
                         value={filters.sentFilter}
-                        onValueChange={(value) => updateFilter('sentFilter', value as 'all' | 'sent' | 'unsent')}
+                        onValueChange={(value) =>
+                          updateFilter('sentFilter', value as 'all' | 'sent' | 'unsent')
+                        }
                         segments={[
                           {
+                            text: '',
                             type: 'unsent',
-                            text: '',
-                            value: 'unsent'
+                            value: 'unsent',
                           },
                           {
-                            type: 'blank',
                             text: 'both',
-                            value: 'all'
+                            type: 'blank',
+                            value: 'all',
                           },
                           {
-                            type: 'sent',
                             text: '',
-                            value: 'sent'
-                          }
-                        ]} />
+                            type: 'sent',
+                            value: 'sent',
+                          },
+                        ]}
+                      />
                     </div>
                   </div>
                 </div>
