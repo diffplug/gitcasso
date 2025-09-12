@@ -1,7 +1,6 @@
 import { GitPullRequestIcon, IssueOpenedIcon } from '@primer/octicons-react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import {
-  Archive,
   Clock,
   Code,
   EyeOff,
@@ -12,6 +11,7 @@ import {
   Monitor,
   Search,
   TextSelect,
+  Trash,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -21,7 +21,7 @@ import type { DraftStats } from '@/lib/enhancers/draftStats'
 interface FilterState {
   sentFilter: 'both' | 'sent' | 'unsent'
   searchQuery: string
-  showArchived: boolean
+  showTrashed: boolean
 }
 
 // CVA configuration for stat badges
@@ -41,7 +41,7 @@ const statBadge = cva(
         true: '!border-solid !border-current',
       },
       type: {
-        archived: 'bg-gray-50 text-yellow-700',
+        trashed: 'bg-gray-50 text-yellow-700',
         blank: 'bg-transparent text-gray-700',
         code: 'bg-pink-50 text-pink-700',
         hideArchived: 'bg-transparent text-gray-700',
@@ -59,8 +59,8 @@ const statBadge = cva(
 
 // Map types to their icons
 const typeIcons = {
-  archived: Archive,
-  blank: Archive,
+  trashed: Trash,
+  blank: Code,
   code: Code,
   hideArchived: EyeOff,
   image: Image,
@@ -183,7 +183,7 @@ interface CommentTableRow {
   latestDraft: Draft
   isOpenTab: boolean
   isSent: boolean
-  isArchived: boolean
+  isTrashed: boolean
 }
 
 type GitHubOrReddit = GitHubSpot | RedditSpot
@@ -198,7 +198,7 @@ const isRedditDraft = (spot: GitHubOrReddit): spot is RedditSpot => {
 
 const generateMockDrafts = (): CommentTableRow[] => [
   {
-    isArchived: false,
+    isTrashed: false,
     isOpenTab: true,
     isSent: false,
     latestDraft: {
@@ -231,7 +231,7 @@ const generateMockDrafts = (): CommentTableRow[] => [
     } satisfies GitHubSpot,
   },
   {
-    isArchived: false,
+    isTrashed: false,
     isOpenTab: false,
     isSent: false,
     latestDraft: {
@@ -258,7 +258,7 @@ const generateMockDrafts = (): CommentTableRow[] => [
     } satisfies RedditSpot,
   },
   {
-    isArchived: false,
+    isTrashed: false,
     isOpenTab: true,
     isSent: false,
     latestDraft: {
@@ -281,7 +281,7 @@ const generateMockDrafts = (): CommentTableRow[] => [
     } satisfies GitHubSpot,
   },
   {
-    isArchived: false,
+    isTrashed: false,
     isOpenTab: false,
     isSent: true,
     latestDraft: {
@@ -316,7 +316,7 @@ const generateMockDrafts = (): CommentTableRow[] => [
     } satisfies GitHubSpot,
   },
   {
-    isArchived: true,
+    isTrashed: true,
     isOpenTab: true,
     isSent: false,
     latestDraft: {
@@ -383,7 +383,7 @@ export const ClaudePrototype = () => {
   const [filters, setFilters] = useState<FilterState>({
     searchQuery: '',
     sentFilter: 'both',
-    showArchived: false,
+    showTrashed: false,
   })
 
   const updateFilter = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
@@ -392,8 +392,8 @@ export const ClaudePrototype = () => {
 
   const filteredDrafts = useMemo(() => {
     let filtered = [...drafts]
-    if (!filters.showArchived) {
-      filtered = filtered.filter((d) => !d.isArchived)
+    if (!filters.showTrashed) {
+      filtered = filtered.filter((d) => !d.isTrashed)
     }
     if (filters.sentFilter !== 'both') {
       filtered = filtered.filter((d) => (filters.sentFilter === 'sent' ? d.isSent : !d.isSent))
@@ -495,7 +495,7 @@ export const ClaudePrototype = () => {
               setFilters({
                 searchQuery: '',
                 sentFilter: 'both',
-                showArchived: true,
+                showTrashed: true,
               })
             }}
             className='text-blue-600 hover:underline'
@@ -508,30 +508,25 @@ export const ClaudePrototype = () => {
   }
 
   return (
-    <div className='min-h-screen bg-white'>
-      {/* Header controls */}
-      <div className='p-3 border-b'>
-        <div className='flex flex-wrap gap-3 items-center'></div>
-
-        {/* Bulk actions bar - floating popup */}
-        {selectedIds.size > 0 && (
-          <div className='fixed bottom-6 left-1/2 transform -translate-x-1/2 p-3 bg-blue-50 rounded-md shadow-lg border border-blue-200 flex items-center gap-3 z-50'>
-            <span className='text-sm font-medium'>{selectedIds.size} selected</span>
-            <button type='button' className='text-sm text-blue-600 hover:underline'>
-              Copy
-            </button>
-            <button type='button' className='text-sm text-blue-600 hover:underline'>
-              Preview
-            </button>
-            <button type='button' className='text-sm text-blue-600 hover:underline'>
-              Discard
-            </button>
-            <button type='button' className='text-sm text-blue-600 hover:underline'>
-              Open
-            </button>
-          </div>
-        )}
-      </div>
+    <div className='bg-white'>
+      {/* Bulk actions bar - floating popup */}
+      {selectedIds.size > 0 && (
+        <div className='fixed bottom-6 left-1/2 transform -translate-x-1/2 p-3 bg-blue-50 rounded-md shadow-lg border border-blue-200 flex items-center gap-3 z-50'>
+          <span className='text-sm font-medium'>{selectedIds.size} selected</span>
+          <button type='button' className='text-sm text-blue-600 hover:underline'>
+            Copy
+          </button>
+          <button type='button' className='text-sm text-blue-600 hover:underline'>
+            Preview
+          </button>
+          <button type='button' className='text-sm text-blue-600 hover:underline'>
+            Discard
+          </button>
+          <button type='button' className='text-sm text-blue-600 hover:underline'>
+            Open
+          </button>
+        </div>
+      )}
 
       {/* Table */}
       <div className='overflow-x-auto'>
@@ -673,7 +668,7 @@ function commentRow(
               {row.spot.title}
             </a>
             <Badge type={row.isSent ? 'sent' : 'unsent'} />
-            {row.isArchived && <Badge type='archived' />}
+            {row.isTrashed && <Badge type='trashed' />}
           </div>
           {/* Draft */}
           <div className='text-sm truncate'>

@@ -17,13 +17,12 @@ body {
 /* Popup simulator frame */
 .popup-frame {
   width: var(--popup-width);
-  padding: 15px;
+  height: var(--popup-height);
   font-size: 14px;
   line-height: 1.4;
   background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 0px;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
   margin: 0 auto;
-  text-align: left;
 }

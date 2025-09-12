@@ -13,7 +13,7 @@ const MODES = {
 type Mode = keyof typeof MODES
 
 const App = () => {
-  const [activeComponent, setActiveComponent] = useState<Mode>('replica')
+  const [activeComponent, setActiveComponent] = useState<Mode>('claude')
 
   return (
     <div className='min-h-screen bg-slate-100'>
@@ -30,11 +30,10 @@ const App = () => {
                 key={mode}
                 type='button'
                 onClick={() => setActiveComponent(mode as Mode)}
-                className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                  activeComponent === mode
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeComponent === mode
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
               >
                 {config.label}
               </button>
