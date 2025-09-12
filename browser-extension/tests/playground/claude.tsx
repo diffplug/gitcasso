@@ -11,6 +11,7 @@ import {
   Link,
   MailCheck,
   MessageSquareDashed,
+  Monitor,
   Search,
   TextSelect,
 } from 'lucide-react'
@@ -26,6 +27,7 @@ const statBadge = cva('inline-flex items-center gap-1 px-1.5 py-0.5 rounded text
       code: 'bg-pink-50 text-pink-700',
       image: 'bg-purple-50 text-purple-700',
       link: 'bg-blue-50 text-blue-700',
+      open: 'bg-cyan-50 text-cyan-700',
       sent: 'bg-green-50 text-green-700',
       text: 'bg-gray-50 text-gray-700',
       time: 'bg-gray-50 text-gray-700',
@@ -40,6 +42,7 @@ const typeIcons = {
   code: Code,
   image: Image,
   link: Link,
+  open: Monitor,
   sent: MailCheck,
   text: TextSelect,
   time: Clock,
@@ -612,6 +615,7 @@ function commentRow(
               )}
               <Badge type='text' text={row.latestDraft.stats.charCount} />
               <Badge type='time' text={timeAgo(row.latestDraft.time)} />
+              {row.isOpenTab && <Badge type='open' />}
             </div>
           </div>
 
