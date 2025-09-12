@@ -3,6 +3,7 @@
 import { GitPullRequestIcon, IssueOpenedIcon } from '@primer/octicons-react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import {
+  Archive,
   Clock,
   Code,
   Filter,
@@ -21,6 +22,7 @@ import type { DraftStats } from '@/lib/enhancers/draftStats'
 const statBadge = cva('inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs', {
   variants: {
     type: {
+      archived: 'bg-gray-50 text-yellow-700',
       code: 'bg-pink-50 text-pink-700',
       image: 'bg-purple-50 text-purple-700',
       link: 'bg-blue-50 text-blue-700',
@@ -34,6 +36,7 @@ const statBadge = cva('inline-flex items-center gap-1 px-1.5 py-0.5 rounded text
 
 // Map types to their icons
 const typeIcons = {
+  archived: Archive,
   code: Code,
   image: Image,
   link: Link,
@@ -618,6 +621,7 @@ function commentRow(
               {row.spot.title}
             </a>
             <Badge type={row.isSent ? 'sent' : 'unsent'} />
+            {row.isArchived && <Badge type='archived' />}
           </div>
           {/* Draft */}
           <div className='text-sm truncate'>
