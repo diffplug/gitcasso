@@ -9,5 +9,22 @@ export function modifyDOM(overtypeInput: HTMLTextAreaElement): HTMLElement {
   overtypeInput.placeholder = 'Add your comment here...'
   const overtypeContainer = overtypeWrapper.parentElement!.closest('div')!
   overtypeContainer.classList.add('overtype-container')
+
+  // Watch for class changes and restore if removed
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+        if (!overtypeContainer.classList.contains('overtype-container')) {
+          overtypeContainer.classList.add('overtype-container')
+        }
+      }
+    })
+  })
+
+  observer.observe(overtypeContainer, {
+    attributeFilter: ['class'],
+    attributes: true,
+  })
+
   return overtypeContainer.parentElement!.closest('div')!
 }

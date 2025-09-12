@@ -1,17 +1,9 @@
-import { defineConfig } from 'wxt'
-import react from '@vitejs/plugin-react'
+import path from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
-import path from 'path'
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'wxt'
 
 export default defineConfig({
-  vite: () => ({
-    plugins: [react(), tailwindcss()],
-    resolve: {
-      alias: {
-        '@': path.resolve('./src')
-      }
-    }
-  }),
   manifest: {
     description:
       'Syntax highlighting and autosave for comments on GitHub (and other other markdown-friendly websites).',
@@ -27,6 +19,14 @@ export default defineConfig({
   },
   modules: ['@wxt-dev/webextension-polyfill'],
   srcDir: 'src',
+  vite: () => ({
+    plugins: [react(), tailwindcss()],
+    resolve: {
+      alias: {
+        '@': path.resolve('./src'),
+      },
+    },
+  }),
   webExt: {
     disabled: true,
   },

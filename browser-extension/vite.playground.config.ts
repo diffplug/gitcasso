@@ -1,26 +1,23 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import path from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
-import path from 'path'
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
 
 export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss()
-  ],
+  build: {
+    emptyOutDir: true,
+    outDir: '../../dist-playground',
+  },
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
-      '@': path.resolve('./src')
-    }
+      '@': path.resolve('./src'),
+    },
   },
   root: 'tests/playground',
   server: {
-    port: 3002,
+    host: true,
     open: true,
-    host: true
+    port: 3002,
   },
-  build: {
-    outDir: '../../dist-playground',
-    emptyOutDir: true
-  }
 })

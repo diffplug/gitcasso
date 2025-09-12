@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [WxtVitest()],
   test: {
     environment: 'node',
-    pool: 'threads',
     globals: true,
+    pool: 'threads',
   },
 })

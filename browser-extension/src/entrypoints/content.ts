@@ -1,8 +1,7 @@
-import { CONFIG, type ModeType } from '@/lib/config'
-import type { CommentEvent, CommentSpot } from '@/lib/enhancer'
-import { logger } from '@/lib/logger'
-import { EnhancerRegistry, TextareaRegistry } from '@/lib/registries'
-import { githubPrNewCommentContentScript } from '@/playgrounds/github-playground'
+import { CONFIG } from '../lib/config'
+import type { CommentEvent, CommentSpot } from '../lib/enhancer'
+import { logger } from '../lib/logger'
+import { EnhancerRegistry, TextareaRegistry } from '../lib/registries'
 
 const enhancers = new EnhancerRegistry()
 const enhancedTextareas = new TextareaRegistry()
@@ -24,10 +23,6 @@ enhancedTextareas.setEventHandlers(
 
 export default defineContentScript({
   main() {
-    if ((CONFIG.MODE as ModeType) === 'PLAYGROUNDS_PR') {
-      githubPrNewCommentContentScript()
-      return
-    }
     const textAreasOnPageLoad = document.querySelectorAll<HTMLTextAreaElement>(`textarea`)
     for (const textarea of textAreasOnPageLoad) {
       enhanceMaybe(textarea)
