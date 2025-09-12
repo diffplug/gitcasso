@@ -114,14 +114,25 @@ const MultiSegment = ({ segments, value, onValueChange }: MultiSegmentProps) => 
     <div className="inline-flex items-center gap-0">
       {segments.map((segment, index) => {
         const Icon = typeIcons[segment.type]
+        const isFirst = index === 0
+        const isLast = index === segments.length - 1
+
+        const roundedClasses = isFirst && isLast
+          ? ''
+          : isFirst
+            ? '!rounded-r-none'
+            : isLast
+              ? '!rounded-l-none'
+              : '!rounded-none'
+
         return (
           <button
             key={index}
-            className={statBadge({
+            className={`${statBadge({
               clickable: true,
               selected: value === segment.value,
               type: segment.type,
-            })}
+            })} ${roundedClasses}`}
             onClick={() => onValueChange(segment.value)}
             type="button"
           >
