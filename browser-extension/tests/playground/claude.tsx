@@ -1,4 +1,6 @@
 //import { DraftStats } from '@/lib/enhancers/draftStats'
+import { CommentSpot } from '@/lib/enhancer'
+import { DraftStats } from '@/lib/enhancers/draftStats'
 import { GitPullRequestIcon, IssueOpenedIcon } from '@primer/octicons-react'
 import { Clock, Code, Filter, Image, Link, Search, TextSelect } from 'lucide-react'
 import { useMemo, useState } from 'react'
@@ -21,9 +23,10 @@ export interface GitHubPRAddCommentSpot extends CommentSpot {
 */
 
 type DraftType = 'PR' | 'ISSUE' | 'REDDIT'
+type DraftState = 'EDITING' | 'ABANDONED' | 'SENT'
+type TabState = 'OPEN_NOW' | 'CLOSED'
 
-interface BaseDraft {
-  id: string
+interface BaseDraft extends CommentSpot {
   charCount: number
   codeCount: number
   content: string
@@ -31,17 +34,24 @@ interface BaseDraft {
   type: DraftType
   lastEdit: number
   linkCount: number
-  title: string
-  url: string
 }
 
 interface GitHubDraft extends BaseDraft {
-  repoSlug: string
+  title: string
+  slug: string
   number: number
 }
 
 interface RedditDraft extends BaseDraft {
+  title: string
   subreddit: string
+}
+
+interface LatestDraft {
+  spot: BaseDraft,
+  draft: string,
+  time: number
+  draftStats: DraftStats
 }
 
 type Draft = GitHubDraft | RedditDraft
@@ -60,74 +70,69 @@ const generateMockDrafts = (): Draft[] => [
     codeCount: 3,
     content:
       'This PR addresses the memory leak issue reported in #1233. The problem was caused by event listeners not being properly disposed...',
-    id: '1',
+    unique_key: '1',
     imageCount: 2,
     lastEdit: Date.now() - 1000 * 60 * 30,
     linkCount: 2,
     number: 1234,
-    repoSlug: 'microsoft/vscode',
+    slug: 'microsoft/vscode',
     title: 'Fix memory leak in extension host',
     type: 'PR',
-    url: 'https://github.com/microsoft/vscode/pull/1234',
   } satisfies GitHubDraft,
   {
     charCount: 180,
     codeCount: 0,
     content:
       "I've been using GitLens for years and it's absolutely essential for my workflow. The inline blame annotations are incredibly helpful when...",
-    id: '2',
+    unique_key: '2',
     imageCount: 0,
     lastEdit: Date.now() - 1000 * 60 * 60 * 2,
     linkCount: 1,
     subreddit: 'programming',
     title: "Re: What's your favorite VS Code extension?",
     type: 'REDDIT',
-    url: 'https://reddit.com/r/programming/comments/abc123',
   } satisfies RedditDraft,
   {
     charCount: 456,
     codeCount: 1,
     content:
       "When using useEffect with async functions, the cleanup function doesn't seem to be called correctly in certain edge cases...",
-    id: '3',
+    unique_key: '3',
     imageCount: 0,
     lastEdit: Date.now() - 1000 * 60 * 60 * 5,
     linkCount: 0,
     number: 5678,
-    repoSlug: 'facebook/react',
+    slug: 'facebook/react',
     title: 'Unexpected behavior with useEffect cleanup',
     type: 'ISSUE',
-    url: 'https://github.com/facebook/react/issues/5678',
   } satisfies GitHubDraft,
   {
     charCount: 322,
     codeCount: 0,
     content:
       'LGTM! Just a few minor suggestions about the examples in the routing section. Consider adding more context about...',
-    id: '4',
+    unique_key: '4',
     imageCount: 4,
     lastEdit: Date.now() - 1000 * 60 * 60 * 24,
     linkCount: 3,
     number: 9012,
-    repoSlug: 'vercel/next.js',
+    slug: 'vercel/next.js',
     title: 'Update routing documentation',
     type: 'PR',
-    url: 'https://github.com/vercel/next.js/pull/9012',
   } satisfies GitHubDraft,
   {
     charCount: 678,
     codeCount: 7,
     content:
       'This PR implements ESM support in worker threads as discussed in the last TSC meeting. The implementation follows...',
-    id: '5',
+    unique_key: '5',
     imageCount: 1,
     lastEdit: Date.now() - 1000 * 60 * 60 * 48,
     linkCount: 5,
     number: 3456,
-    repoSlug: 'nodejs/node',
+    slug: 'nodejs/node',
     title: 'Add support for ESM in worker threads',
     type: 'PR',
-    url: 'https://github.com/nodejs/node/pull/3456',
   } satisfies GitHubDraft,
 ]
 
@@ -204,7 +209,7 @@ export const ClaudePrototype = () => {
     if (selectedIds.size === filteredDrafts.length && filteredDrafts.length > 0) {
       setSelectedIds(new Set())
     } else {
-      setSelectedIds(new Set(filteredDrafts.map((d) => d.id)))
+      setSelectedIds(new Set(filteredDrafts.map((d) => d.unique_key)))
     }
   }
 
@@ -421,12 +426,12 @@ function commentRow(
   _handleTrash: (draft: { charCount: number; id: string }) => void,
 ) {
   return (
-    <tr key={draft.id} className='hover:bg-gray-50'>
+    <tr key={draft.unique_key} className='hover:bg-gray-50'>
       <td className='px-3 py-3'>
         <input
           type='checkbox'
-          checked={selectedIds.has(draft.id)}
-          onChange={() => toggleSelection(draft.id)}
+          checked={selectedIds.has(draft.unique_key)}
+          onChange={() => toggleSelection(draft.unique_key)}
           className='rounded'
         />
       </td>
@@ -451,7 +456,7 @@ function commentRow(
                 <>
                   #{draft.number}
                   <a href='TODO' className='hover:underline truncate'>
-                    {draft.repoSlug}
+                    {draft.slug}
                   </a>
                 </>
               )}
