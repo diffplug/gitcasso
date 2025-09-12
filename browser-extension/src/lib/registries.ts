@@ -21,6 +21,7 @@ export class EnhancerRegistry {
     this.register(new GitHubIssueAddCommentEnhancer())
     this.register(new GitHubPRAddCommentEnhancer())
     const textColor = 'rgb(31, 35, 40)'
+    const headingColor = 'rgb(174, 52, 151)'
     OverType.setTheme({
       colors: {
         blockquote: 'rgb(89, 99, 110)',
@@ -28,9 +29,9 @@ export class EnhancerRegistry {
         codeBg: '#f6f8fa',
         cursor: '#f95738',
         em: 'rgb(126, 123, 255)',
-        h1: textColor,
-        h2: textColor,
-        h3: textColor,
+        h1: headingColor,
+        h2: headingColor,
+        h3: headingColor,
         hr: '#5a7a9b',
         link: 'rgb(9, 105, 218)',
         selection: 'rgba(244, 211, 94, 0.4)',
