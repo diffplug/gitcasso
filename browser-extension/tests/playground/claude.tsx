@@ -11,6 +11,7 @@ import {
   MessageSquareDashed,
   Monitor,
   Search,
+  Settings,
   TextSelect,
   Trash2,
 } from 'lucide-react'
@@ -49,6 +50,7 @@ const statBadge = cva(
         link: 'bg-blue-50 text-blue-700',
         open: 'bg-cyan-50 text-cyan-700',
         sent: 'bg-green-50 text-green-700',
+        settings: 'bg-gray-50 text-gray-700',
         text: 'bg-gray-50 text-gray-700',
         time: 'bg-gray-50 text-gray-700',
         trashed: 'bg-gray-50 text-yellow-700',
@@ -67,6 +69,7 @@ const typeIcons = {
   link: Link,
   open: Monitor,
   sent: MailCheck,
+  settings: Settings,
   text: TextSelect,
   time: Clock,
   trashed: Trash2,
@@ -558,6 +561,18 @@ export const ClaudePrototype = () => {
                           },
                         ]}
                       />
+                      <button
+                        type='button'
+                        className={twMerge(
+                          statBadge({
+                            clickable: true,
+                            type: 'settings',
+                          }),
+                          'border',
+                        )}
+                      >
+                        <Settings className='w-3 h-3' />
+                      </button>
                     </div>
                   </div>
                 </div>
