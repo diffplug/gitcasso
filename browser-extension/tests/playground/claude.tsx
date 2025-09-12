@@ -1,12 +1,12 @@
 //import { DraftStats } from '@/lib/enhancers/draftStats'
 
 import { GitPullRequestIcon, IssueOpenedIcon } from '@primer/octicons-react'
-import { twMerge } from 'tailwind-merge'
 import { cva, type VariantProps } from 'class-variance-authority'
 import {
   Archive,
   Clock,
   Code,
+  EyeOff,
   Filter,
   Image,
   Link,
@@ -17,13 +17,11 @@ import {
   TextSelect,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { twMerge } from 'tailwind-merge'
 import type { CommentSpot } from '@/lib/enhancer'
 import type { DraftStats } from '@/lib/enhancers/draftStats'
 
 interface FilterState {
-  hasLink: boolean
-  hasImage: boolean
-  hasCode: boolean
   sentFilter: 'all' | 'sent' | 'unsent'
   searchQuery: string
   showArchived: boolean
@@ -33,11 +31,23 @@ interface FilterState {
 const statBadge = cva(
   'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-normal tracking-normal',
   {
+    defaultVariants: {
+      clickable: false,
+    },
     variants: {
+      clickable: {
+        false: '',
+        true: 'cursor-pointer border border-transparent hover:border-current border-dashed',
+      },
+      selected: {
+        false: '',
+        true: 'border-solid border-current',
+      },
       type: {
         archived: 'bg-gray-50 text-yellow-700',
         blank: 'bg-transparent text-gray-700',
         code: 'bg-pink-50 text-pink-700',
+        hideArchived: 'bg-transparent text-gray-700',
         image: 'bg-purple-50 text-purple-700',
         link: 'bg-blue-50 text-blue-700',
         open: 'bg-cyan-50 text-cyan-700',
@@ -46,13 +56,6 @@ const statBadge = cva(
         time: 'bg-gray-50 text-gray-700',
         unsent: 'bg-amber-100 text-amber-700',
       },
-      clickable: {
-        true: 'cursor-pointer border border-transparent hover:border-current',
-        false: '',
-      },
-    },
-    defaultVariants: {
-      clickable: false,
     },
   },
 )
@@ -62,6 +65,7 @@ const typeIcons = {
   archived: Archive,
   blank: Archive,
   code: Code,
+  hideArchived: EyeOff,
   image: Image,
   link: Link,
   open: Monitor,
@@ -76,18 +80,22 @@ type BadgeProps = VariantProps<typeof statBadge> & {
   type: keyof typeof typeIcons
   text?: number | string
   onClick?: () => void
+  selected?: boolean
 }
 
-const Badge = ({ text, type, onClick }: BadgeProps) => {
+const Badge = ({ text, type, onClick, selected }: BadgeProps) => {
   const Icon = typeIcons[type]
   const Component = onClick ? 'button' : 'span'
 
   return (
     <Component
-      className={twMerge(statBadge({
-        type,
-        clickable: !!onClick
-      }))}
+      className={twMerge(
+        statBadge({
+          clickable: !!onClick,
+          selected: selected || false,
+          type,
+        }),
+      )}
       onClick={onClick}
       {...(onClick && { type: 'button' })}
     >
@@ -336,9 +344,6 @@ export const ClaudePrototype = () => {
   const [drafts] = useState(generateMockDrafts())
   const [selectedIds, setSelectedIds] = useState(new Set())
   const [filters, setFilters] = useState<FilterState>({
-    hasCode: false,
-    hasImage: false,
-    hasLink: false,
     searchQuery: '',
     sentFilter: 'all',
     showArchived: false,
@@ -351,15 +356,6 @@ export const ClaudePrototype = () => {
 
   const filteredDrafts = useMemo(() => {
     let filtered = [...drafts]
-    if (filters.hasCode) {
-      filtered = filtered.filter((d) => d.latestDraft.stats.codeBlocks.length > 0)
-    }
-    if (filters.hasImage) {
-      filtered = filtered.filter((d) => d.latestDraft.stats.images.length > 0)
-    }
-    if (filters.hasLink) {
-      filtered = filtered.filter((d) => d.latestDraft.stats.links.length > 0)
-    }
     if (!filters.showArchived) {
       filtered = filtered.filter((d) => !d.isArchived)
     }
@@ -435,14 +431,7 @@ export const ClaudePrototype = () => {
     )
   }
 
-  if (
-    filteredDrafts.length === 0 &&
-    (filters.searchQuery ||
-      filters.hasCode ||
-      filters.hasImage ||
-      filters.hasLink ||
-      filters.sentFilter !== 'all')
-  ) {
+  if (filteredDrafts.length === 0 && (filters.searchQuery || filters.sentFilter !== 'all')) {
     return (
       <div className='min-h-screen bg-white'>
         <div className='p-6 border-b'>
@@ -468,12 +457,9 @@ export const ClaudePrototype = () => {
             type='button'
             onClick={() => {
               setFilters({
-                hasCode: false,
-                hasImage: false,
-                hasLink: false,
                 searchQuery: '',
                 sentFilter: 'all',
-                showArchived: true
+                showArchived: true,
               })
             }}
             className='text-blue-600 hover:underline'
@@ -567,7 +553,7 @@ export const ClaudePrototype = () => {
   )
 }
 function filterControls(
-  _filters: FilterState,
+  filters: FilterState,
   updateFilter: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void,
 ) {
   return (
@@ -576,61 +562,35 @@ function filterControls(
         <div className='relative flex overflow-hidden'>
           <Badge
             type='archived'
-            text='include'
+            text='show archived'
+            selected={filters.showArchived}
             onClick={() => updateFilter('showArchived', true)}
           />
           <Badge
-            type='blank'
+            type='hideArchived'
             text='hide archived'
+            selected={!filters.showArchived}
             onClick={() => updateFilter('showArchived', false)}
           />
         </div>
         <div className='relative flex overflow-hidden'>
           <Badge
             type='unsent'
+            text='unsent only'
+            selected={filters.sentFilter === 'unsent'}
             onClick={() => updateFilter('sentFilter', 'unsent')}
           />
           <Badge
             type='blank'
             text='both'
+            selected={filters.sentFilter === 'all'}
             onClick={() => updateFilter('sentFilter', 'all')}
           />
           <Badge
             type='sent'
+            text='sent only'
+            selected={filters.sentFilter === 'sent'}
             onClick={() => updateFilter('sentFilter', 'sent')}
-          />
-        </div>
-        <div className='relative flex'>
-          <Badge
-            type='link'
-            onClick={() => updateFilter('hasLink', true)}
-          />
-          <Badge
-            type='blank'
-            text='optional'
-            onClick={() => updateFilter('hasLink', false)}
-          />
-        </div>
-        <div className='relative flex overflow-hidden'>
-          <Badge
-            type='image'
-            onClick={() => updateFilter('hasImage', true)}
-          />
-          <Badge
-            type='blank'
-            text='optional'
-            onClick={() => updateFilter('hasImage', false)}
-          />
-        </div>
-        <div className='relative flex overflow-hidden'>
-          <Badge
-            type='code'
-            onClick={() => updateFilter('hasCode', true)}
-          />
-          <Badge
-            type='blank'
-            text='optional'
-            onClick={() => updateFilter('hasCode', false)}
           />
         </div>
       </div>
