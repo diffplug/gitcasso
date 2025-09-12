@@ -1,4 +1,4 @@
-import type { CommentDraft, CommentEvent, CommentSpot } from '@/lib/enhancer'
+import type { CommentEvent, CommentSpot } from '@/lib/enhancer'
 import type { GetOpenSpotsResponse, ToBackgroundMessage } from '@/lib/messages'
 import {
   CLOSE_MESSAGE_PORT,
@@ -15,7 +15,7 @@ export interface Tab {
 export interface CommentState {
   tab: Tab
   spot: CommentSpot
-  drafts: [number, CommentDraft][]
+  drafts: [number, string][]
 }
 
 export const openSpots = new Map<string, CommentState>()

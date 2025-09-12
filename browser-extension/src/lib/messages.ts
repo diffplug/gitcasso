@@ -1,4 +1,4 @@
-import type { CommentDraft, CommentEvent, CommentSpot } from './enhancer'
+import type { CommentEvent, CommentSpot } from './enhancer'
 
 // Message handler response types
 export const CLOSE_MESSAGE_PORT = false as const // No response will be sent
@@ -31,7 +31,7 @@ export interface GetOpenSpotsResponse {
       windowId: number
     }
     spot: CommentSpot
-    drafts: Array<[number, CommentDraft]>
+    drafts: Array<[number, string]>
   }>
 }
 

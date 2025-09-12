@@ -25,14 +25,7 @@ const gh_issue: GitHubIssueAddCommentSpot = {
 const spots: CommentSpot[] = [gh_pr, gh_issue]
 const sampleSpots: CommentState[] = spots.map((spot) => {
   const state: CommentState = {
-    drafts: [
-      [
-        0,
-        {
-          body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        },
-      ],
-    ],
+    drafts: [[0, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.']],
     spot,
     tab: {
       tabId: 123,

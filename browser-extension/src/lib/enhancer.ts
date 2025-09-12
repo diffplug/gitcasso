@@ -11,17 +11,12 @@ export interface CommentSpot {
   type: string
 }
 
-export interface CommentDraft {
-  title?: string
-  body: string
-}
-
 export type CommentEventType = 'ENHANCED' | 'LOST_FOCUS' | 'DESTROYED'
 
 export interface CommentEvent {
   type: CommentEventType
   spot: CommentSpot
-  draft?: CommentDraft
+  draft?: string
 }
 
 /** Wraps the textareas of a given platform with Gitcasso's enhancements. */
