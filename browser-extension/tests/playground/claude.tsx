@@ -1,6 +1,7 @@
 //import { DraftStats } from '@/lib/enhancers/draftStats'
 
 import { GitPullRequestIcon, IssueOpenedIcon } from '@primer/octicons-react'
+import { twMerge } from 'tailwind-merge'
 import { cva, type VariantProps } from 'class-variance-authority'
 import {
   Archive,
@@ -45,11 +46,11 @@ const statBadge = cva(
         unsent: 'bg-amber-100 text-amber-700',
       },
       clickable: {
-        true: 'cursor-pointer border border-transparent hover:border-blue-500 hover:border-opacity-50  transition-colors',
+        true: 'cursor-pointer border border-transparent hover:border-opacity-50',
         false: '',
       },
       selected: {
-        true: 'border-blue-500 border-opacity-100',
+        true: 'border-opacity-100',
         false: '',
       },
     },
@@ -88,11 +89,11 @@ const Badge = ({ text, type, onClick, isSelected }: BadgeProps) => {
 
   return (
     <Component
-      className={statBadge({
+      className={twMerge(statBadge({
         type,
         clickable: !!onClick,
         selected: !!isSelected
-      })}
+      }))}
       onClick={onClick}
       {...(onClick && { type: 'button' })}
     >
