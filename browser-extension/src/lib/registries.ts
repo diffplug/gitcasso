@@ -1,4 +1,5 @@
 import type { OverTypeInstance } from 'overtype'
+import OverType from 'overtype'
 import type { CommentEnhancer, CommentSpot } from './enhancer'
 import { GitHubIssueAddCommentEnhancer } from './enhancers/github/githubIssueAddComment'
 import { GitHubPRAddCommentEnhancer } from './enhancers/github/githubPRAddComment'
@@ -19,6 +20,26 @@ export class EnhancerRegistry {
     // Register all available handlers
     this.register(new GitHubIssueAddCommentEnhancer())
     this.register(new GitHubPRAddCommentEnhancer())
+    const textColor = 'rgb(31, 35, 40)'
+    OverType.setTheme({
+      colors: {
+        blockquote: 'rgb(89, 99, 110)',
+        code: '#59636e',
+        codeBg: '#f6f8fa',
+        cursor: '#f95738',
+        em: 'rgb(126, 123, 255)',
+        h1: textColor,
+        h2: textColor,
+        h3: textColor,
+        hr: '#5a7a9b',
+        link: 'rgb(9, 105, 218)',
+        selection: 'rgba(244, 211, 94, 0.4)',
+        strong: 'rgb(45, 1, 142)',
+        syntaxMarker: textColor,
+        text: textColor,
+      },
+      name: 'custom-github',
+    })
   }
 
   private register<T extends CommentSpot>(enhancer: CommentEnhancer<T>): void {
