@@ -19,6 +19,14 @@ import { useMemo, useState } from 'react'
 import type { CommentSpot } from '@/lib/enhancer'
 import type { DraftStats } from '@/lib/enhancers/draftStats'
 
+interface FilterState {
+  hasLink: boolean
+  hasImage: boolean
+  hasCode: boolean
+  sentFilter: 'all' | 'sent' | 'unsent'
+  searchQuery: string
+}
+
 // CVA configuration for stat badges
 const statBadge = cva(
   'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-normal tracking-normal',
@@ -308,47 +316,45 @@ const timeAgo = (date: Date | number) => {
 export const ClaudePrototype = () => {
   const [drafts] = useState(generateMockDrafts())
   const [selectedIds, setSelectedIds] = useState(new Set())
-  const [hasCodeFilter, setHasCodeFilter] = useState(false)
-  const [hasImageFilter, setHasImageFilter] = useState(false)
-  const [hasLinkFilter, setHasLinkFilter] = useState(false)
-  const [sentFilter, setSentFilter] = useState<'all' | 'sent' | 'unsent'>('all')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [sortBy, _setSortBy] = useState('edited-newest')
+  const [filters, setFilters] = useState<FilterState>({
+    hasCode: false,
+    hasImage: false,
+    hasLink: false,
+    searchQuery: '',
+    sentFilter: 'all',
+  })
+
+  const updateFilter = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
+    setFilters((prev) => ({ ...prev, [key]: value }))
+  }
   const [showFilters, setShowFilters] = useState(false)
 
   const filteredDrafts = useMemo(() => {
     let filtered = [...drafts]
-    if (hasCodeFilter) {
+    if (filters.hasCode) {
       filtered = filtered.filter((d) => d.latestDraft.stats.codeBlocks.length > 0)
     }
-    if (hasImageFilter) {
+    if (filters.hasImage) {
       filtered = filtered.filter((d) => d.latestDraft.stats.images.length > 0)
     }
-    if (hasLinkFilter) {
+    if (filters.hasLink) {
       filtered = filtered.filter((d) => d.latestDraft.stats.links.length > 0)
     }
-    if (sentFilter !== 'all') {
-      filtered = filtered.filter((d) => (sentFilter === 'sent' ? d.isSent : !d.isSent))
+    if (filters.sentFilter !== 'all') {
+      filtered = filtered.filter((d) => (filters.sentFilter === 'sent' ? d.isSent : !d.isSent))
     }
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase()
+    if (filters.searchQuery) {
+      const query = filters.searchQuery.toLowerCase()
       filtered = filtered.filter((d) =>
         [d.spot.title, d.latestDraft.content, (d.spot as any).slug, (d.spot as any).subreddit].some(
           (value) => value && String(value).toLowerCase().includes(query),
         ),
       )
     }
-    // Sort
-    switch (sortBy) {
-      case 'edited-newest':
-        filtered.sort((a, b) => b.latestDraft.time - a.latestDraft.time)
-        break
-      case 'edited-oldest':
-        filtered.sort((a, b) => a.latestDraft.time - b.latestDraft.time)
-        break
-    }
+    // sort by newest
+    filtered.sort((a, b) => b.latestDraft.time - a.latestDraft.time)
     return filtered
-  }, [drafts, hasCodeFilter, hasImageFilter, hasLinkFilter, sentFilter, searchQuery, sortBy])
+  }, [drafts, filters])
 
   const toggleSelection = (id: string) => {
     const newSelected = new Set(selectedIds)
@@ -408,7 +414,11 @@ export const ClaudePrototype = () => {
 
   if (
     filteredDrafts.length === 0 &&
-    (searchQuery || hasCodeFilter || hasImageFilter || hasLinkFilter || sentFilter !== 'all')
+    (filters.searchQuery ||
+      filters.hasCode ||
+      filters.hasImage ||
+      filters.hasLink ||
+      filters.sentFilter !== 'all')
   ) {
     return (
       <div className='min-h-screen bg-white'>
@@ -421,8 +431,8 @@ export const ClaudePrototype = () => {
               <input
                 type='text'
                 placeholder='Search drafts...'
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={filters.searchQuery}
+                onChange={(e) => updateFilter('searchQuery', e.target.value)}
                 className='w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md text-sm'
               />
             </div>
@@ -434,11 +444,13 @@ export const ClaudePrototype = () => {
           <button
             type='button'
             onClick={() => {
-              setHasCodeFilter(false)
-              setHasImageFilter(false)
-              setHasLinkFilter(false)
-              setSentFilter('all')
-              setSearchQuery('')
+              setFilters({
+                hasCode: false,
+                hasImage: false,
+                hasLink: false,
+                searchQuery: '',
+                sentFilter: 'all',
+              })
             }}
             className='text-blue-600 hover:underline'
           >
@@ -501,8 +513,8 @@ export const ClaudePrototype = () => {
                       <input
                         type='text'
                         placeholder='Search drafts...'
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        value={filters.searchQuery}
+                        onChange={(e) => updateFilter('searchQuery', e.target.value)}
                         className='w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
                       />
                     </div>
@@ -515,46 +527,7 @@ export const ClaudePrototype = () => {
                       <Filter className='w-4 h-4 text-gray-600' />
                     </button>
                   </div>
-                  {showFilters && (
-                    <div className='absolute top-full right-0 mt-1 p-3 bg-white border border-gray-300 rounded-md shadow-lg z-10 min-w-48'>
-                      <div className='space-y-3'>
-                        <div className='space-y-2'>
-                          <label className='flex items-center gap-2 cursor-pointer'>
-                            <input
-                              type='checkbox'
-                              checked={hasLinkFilter}
-                              onChange={(e) => setHasLinkFilter(e.target.checked)}
-                              className='rounded'
-                            />
-                            <Badge type='link' />
-                          </label>
-                          <label className='flex items-center gap-2 cursor-pointer'>
-                            <input
-                              type='checkbox'
-                              checked={hasImageFilter}
-                              onChange={(e) => setHasImageFilter(e.target.checked)}
-                              className='rounded'
-                            />
-                            <Badge type='image' />
-                          </label>
-                          <label className='flex items-center gap-2 cursor-pointer'>
-                            <input
-                              type='checkbox'
-                              checked={hasCodeFilter}
-                              onChange={(e) => setHasCodeFilter(e.target.checked)}
-                              className='rounded'
-                            />
-                            <Badge type='code' />
-                          </label>
-                        </div>
-                        <div className='flex rounded-md overflow-hidden'>
-                          <Badge type='unsent' />
-                          <Badge type='blank' text='both' />
-                          <Badge type='sent' />
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  {showFilters && filterControls(filters, updateFilter)}
                 </div>
               </th>
             </tr>
@@ -569,6 +542,52 @@ export const ClaudePrototype = () => {
     </div>
   )
 }
+function filterControls(
+  filters: FilterState,
+  updateFilter: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void,
+) {
+  return (
+    <div className='absolute top-full right-0 mt-1 p-3 bg-white border border-gray-300 rounded-md shadow-lg z-10 min-w-48'>
+      <div className='space-y-3'>
+        <div className='space-y-2'>
+          <label className='flex items-center gap-2 cursor-pointer'>
+            <input
+              type='checkbox'
+              checked={filters.hasLink}
+              onChange={(e) => updateFilter('hasLink', e.target.checked)}
+              className='rounded'
+            />
+            <Badge type='link' />
+          </label>
+          <label className='flex items-center gap-2 cursor-pointer'>
+            <input
+              type='checkbox'
+              checked={filters.hasImage}
+              onChange={(e) => updateFilter('hasImage', e.target.checked)}
+              className='rounded'
+            />
+            <Badge type='image' />
+          </label>
+          <label className='flex items-center gap-2 cursor-pointer'>
+            <input
+              type='checkbox'
+              checked={filters.hasCode}
+              onChange={(e) => updateFilter('hasCode', e.target.checked)}
+              className='rounded'
+            />
+            <Badge type='code' />
+          </label>
+        </div>
+        <div className='flex rounded-md overflow-hidden'>
+          <Badge type='unsent' />
+          <Badge type='blank' text='both' />
+          <Badge type='sent' />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function commentRow(
   row: CommentTableRow,
   selectedIds: Set<unknown>,
