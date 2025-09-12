@@ -29,7 +29,7 @@ interface FilterState {
 
 // CVA configuration for stat badges
 const statBadge = cva(
-  'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-normal tracking-normal',
+  'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-normal',
   {
     defaultVariants: {
       clickable: false,
@@ -515,7 +515,7 @@ export const ClaudePrototype = () => {
                   className='rounded'
                 />
               </th>
-              <th scope='col' className='px-3 py-3 text-left text-xs text-gray-500 tracking-wider'>
+              <th scope='col' className='px-3 py-3 text-left text-xs text-gray-500'>
                 <div className='relative'>
                   <div className='flex items-center gap-1'>
                     <div className='relative flex-1'>
@@ -528,7 +528,26 @@ export const ClaudePrototype = () => {
                         className='w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
                       />
                     </div>
-                    {filterControls(filters, updateFilter)}
+                    <div className='relative flex overflow-hidden'>
+                      <Badge
+                        type='unsent'
+                        text='unsent only'
+                        selected={filters.sentFilter === 'unsent'}
+                        onClick={() => updateFilter('sentFilter', 'unsent')}
+                      />
+                      <Badge
+                        type='blank'
+                        text='both'
+                        selected={filters.sentFilter === 'all'}
+                        onClick={() => updateFilter('sentFilter', 'all')}
+                      />
+                      <Badge
+                        type='sent'
+                        text='sent only'
+                        selected={filters.sentFilter === 'sent'}
+                        onClick={() => updateFilter('sentFilter', 'sent')}
+                      />
+                    </div>
                   </div>
                 </div>
               </th>
@@ -542,49 +561,6 @@ export const ClaudePrototype = () => {
         </table>
       </div>
     </div>
-  )
-}
-function filterControls(
-  filters: FilterState,
-  updateFilter: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void,
-) {
-  return (
-    <>
-      <div className='relative flex overflow-hidden'>
-        <Badge
-          type='archived'
-          text='show archived'
-          selected={filters.showArchived}
-          onClick={() => updateFilter('showArchived', true)}
-        />
-        <Badge
-          type='hideArchived'
-          text='hide archived'
-          selected={!filters.showArchived}
-          onClick={() => updateFilter('showArchived', false)}
-        />
-      </div>
-      <div className='relative flex overflow-hidden'>
-        <Badge
-          type='unsent'
-          text='unsent only'
-          selected={filters.sentFilter === 'unsent'}
-          onClick={() => updateFilter('sentFilter', 'unsent')}
-        />
-        <Badge
-          type='blank'
-          text='both'
-          selected={filters.sentFilter === 'all'}
-          onClick={() => updateFilter('sentFilter', 'all')}
-        />
-        <Badge
-          type='sent'
-          text='sent only'
-          selected={filters.sentFilter === 'sent'}
-          onClick={() => updateFilter('sentFilter', 'sent')}
-        />
-      </div>
-    </>
   )
 }
 
