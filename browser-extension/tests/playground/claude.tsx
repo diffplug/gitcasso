@@ -3,6 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import {
   Clock,
   Code,
+  Eye,
   EyeOff,
   Image,
   Link,
@@ -518,17 +519,24 @@ export const ClaudePrototype = () => {
                       />
                     </div>
                     <div className='relative flex overflow-hidden gap-1'>
-                      <span
+                      <button
+                        type='button'
+                        onClick={() => updateFilter('showTrashed', !filters.showTrashed)}
                         className={twMerge(
                           statBadge({
-                            type: 'trashed',
+                            clickable: true,
+                            type: filters.showTrashed ? 'trashed' : 'hideTrashed',
                           }),
                           'border',
                         )}
                       >
                         <Trash2 className='w-3 h-3' />
-                        <EyeOff className='w-3 h-3' />
-                      </span>
+                        {filters.showTrashed ? (
+                          <Eye className='w-3 h-3' />
+                        ) : (
+                          <EyeOff className='w-3 h-3' />
+                        )}
+                      </button>
                       <MultiSegment<FilterState['sentFilter']>
                         value={filters.sentFilter}
                         onValueChange={(value) => updateFilter('sentFilter', value)}
@@ -550,23 +558,6 @@ export const ClaudePrototype = () => {
                           },
                         ]}
                       />
-                      {/* 
-                      <MultiSegment<FilterState['showTrashed']>
-                        value={filters.showTrashed}
-                        onValueChange={(value) => updateFilter('showTrashed', value)}
-                        segments={[
-                          {
-                            text: 'show trashed',
-                            type: 'trashed',
-                            value: true,
-                          },
-                          {
-                            text: 'hide trashed',
-                            type: 'hideTrashed',
-                            value: false
-                          },
-                        ]}
-                      /> */}
                     </div>
                   </div>
                 </div>
