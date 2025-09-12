@@ -20,25 +20,30 @@ import type { CommentSpot } from '@/lib/enhancer'
 import type { DraftStats } from '@/lib/enhancers/draftStats'
 
 // CVA configuration for stat badges
-const statBadge = cva('inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs', {
-  variants: {
-    type: {
-      archived: 'bg-gray-50 text-yellow-700',
-      code: 'bg-pink-50 text-pink-700',
-      image: 'bg-purple-50 text-purple-700',
-      link: 'bg-blue-50 text-blue-700',
-      open: 'bg-cyan-50 text-cyan-700',
-      sent: 'bg-green-50 text-green-700',
-      text: 'bg-gray-50 text-gray-700',
-      time: 'bg-gray-50 text-gray-700',
-      unsent: 'bg-amber-100 text-amber-700',
+const statBadge = cva(
+  'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-normal tracking-normal',
+  {
+    variants: {
+      type: {
+        archived: 'bg-gray-50 text-yellow-700',
+        blank: 'bg-transparent text-gray-700',
+        code: 'bg-pink-50 text-pink-700',
+        image: 'bg-purple-50 text-purple-700',
+        link: 'bg-blue-50 text-blue-700',
+        open: 'bg-cyan-50 text-cyan-700',
+        sent: 'bg-green-50 text-green-700',
+        text: 'bg-gray-50 text-gray-700',
+        time: 'bg-gray-50 text-gray-700',
+        unsent: 'bg-amber-100 text-amber-700',
+      },
     },
   },
-})
+)
 
 // Map types to their icons
 const typeIcons = {
   archived: Archive,
+  blank: Archive,
   code: Code,
   image: Image,
   link: Link,
@@ -59,7 +64,7 @@ const Badge = ({ text, type }: BadgeProps) => {
   const Icon = typeIcons[type]
   return (
     <span className={statBadge({ type })}>
-      <Icon className='w-3 h-3' />
+      {type === 'blank' || <Icon className='w-3 h-3' />}
       {text || type}
     </span>
   )
@@ -306,6 +311,7 @@ export const ClaudePrototype = () => {
   const [hasCodeFilter, setHasCodeFilter] = useState(false)
   const [hasImageFilter, setHasImageFilter] = useState(false)
   const [hasLinkFilter, setHasLinkFilter] = useState(false)
+  const [sentFilter, setSentFilter] = useState<'all' | 'sent' | 'unsent'>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, _setSortBy] = useState('edited-newest')
   const [showFilters, setShowFilters] = useState(false)
@@ -320,6 +326,9 @@ export const ClaudePrototype = () => {
     }
     if (hasLinkFilter) {
       filtered = filtered.filter((d) => d.latestDraft.stats.links.length > 0)
+    }
+    if (sentFilter !== 'all') {
+      filtered = filtered.filter((d) => (sentFilter === 'sent' ? d.isSent : !d.isSent))
     }
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
@@ -339,7 +348,7 @@ export const ClaudePrototype = () => {
         break
     }
     return filtered
-  }, [drafts, hasCodeFilter, hasImageFilter, hasLinkFilter, searchQuery, sortBy])
+  }, [drafts, hasCodeFilter, hasImageFilter, hasLinkFilter, sentFilter, searchQuery, sortBy])
 
   const toggleSelection = (id: string) => {
     const newSelected = new Set(selectedIds)
@@ -399,7 +408,7 @@ export const ClaudePrototype = () => {
 
   if (
     filteredDrafts.length === 0 &&
-    (searchQuery || hasCodeFilter || hasImageFilter || hasLinkFilter)
+    (searchQuery || hasCodeFilter || hasImageFilter || hasLinkFilter || sentFilter !== 'all')
   ) {
     return (
       <div className='min-h-screen bg-white'>
@@ -428,6 +437,7 @@ export const ClaudePrototype = () => {
               setHasCodeFilter(false)
               setHasImageFilter(false)
               setHasLinkFilter(false)
+              setSentFilter('all')
               setSearchQuery('')
             }}
             className='text-blue-600 hover:underline'
@@ -483,10 +493,7 @@ export const ClaudePrototype = () => {
                   className='rounded'
                 />
               </th>
-              <th
-                scope='col'
-                className='px-3 py-3 text-left text-xs font-medium text-gray-500 tracking-wider'
-              >
+              <th scope='col' className='px-3 py-3 text-left text-xs text-gray-500 tracking-wider'>
                 <div className='relative'>
                   <div className='flex items-center gap-1'>
                     <div className='relative flex-1'>
@@ -510,34 +517,41 @@ export const ClaudePrototype = () => {
                   </div>
                   {showFilters && (
                     <div className='absolute top-full right-0 mt-1 p-3 bg-white border border-gray-300 rounded-md shadow-lg z-10 min-w-48'>
-                      <div className='space-y-2'>
-                        <label className='flex items-center gap-2 cursor-pointer'>
-                          <input
-                            type='checkbox'
-                            checked={hasLinkFilter}
-                            onChange={(e) => setHasLinkFilter(e.target.checked)}
-                            className='rounded'
-                          />
-                          <Badge type='link' />
-                        </label>
-                        <label className='flex items-center gap-2 cursor-pointer'>
-                          <input
-                            type='checkbox'
-                            checked={hasImageFilter}
-                            onChange={(e) => setHasImageFilter(e.target.checked)}
-                            className='rounded'
-                          />
-                          <Badge type='image' />
-                        </label>
-                        <label className='flex items-center gap-2 cursor-pointer'>
-                          <input
-                            type='checkbox'
-                            checked={hasCodeFilter}
-                            onChange={(e) => setHasCodeFilter(e.target.checked)}
-                            className='rounded'
-                          />
-                          <Badge type='code' />
-                        </label>
+                      <div className='space-y-3'>
+                        <div className='space-y-2'>
+                          <label className='flex items-center gap-2 cursor-pointer'>
+                            <input
+                              type='checkbox'
+                              checked={hasLinkFilter}
+                              onChange={(e) => setHasLinkFilter(e.target.checked)}
+                              className='rounded'
+                            />
+                            <Badge type='link' />
+                          </label>
+                          <label className='flex items-center gap-2 cursor-pointer'>
+                            <input
+                              type='checkbox'
+                              checked={hasImageFilter}
+                              onChange={(e) => setHasImageFilter(e.target.checked)}
+                              className='rounded'
+                            />
+                            <Badge type='image' />
+                          </label>
+                          <label className='flex items-center gap-2 cursor-pointer'>
+                            <input
+                              type='checkbox'
+                              checked={hasCodeFilter}
+                              onChange={(e) => setHasCodeFilter(e.target.checked)}
+                              className='rounded'
+                            />
+                            <Badge type='code' />
+                          </label>
+                        </div>
+                        <div className='flex rounded-md overflow-hidden'>
+                          <Badge type='unsent' />
+                          <Badge type='blank' text='both' />
+                          <Badge type='sent' />
+                        </div>
                       </div>
                     </div>
                   )}
