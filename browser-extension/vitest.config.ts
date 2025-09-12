@@ -1,11 +1,11 @@
-import { defineConfig } from "vitest/config";
-import { WxtVitest } from "wxt/testing";
+import { defineConfig } from 'vitest/config'
+import { WxtVitest } from 'wxt/testing'
 
 export default defineConfig({
   plugins: [WxtVitest()],
   test: {
-    environment: "node",
-    pool: "threads",
+    environment: 'node',
     globals: true,
+    pool: 'threads',
   },
-});
+})
