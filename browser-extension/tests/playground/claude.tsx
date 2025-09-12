@@ -26,6 +26,7 @@ interface FilterState {
   hasCode: boolean
   sentFilter: 'all' | 'sent' | 'unsent'
   searchQuery: string
+  showArchived: boolean
 }
 
 // CVA configuration for stat badges
@@ -340,6 +341,7 @@ export const ClaudePrototype = () => {
     hasLink: false,
     searchQuery: '',
     sentFilter: 'all',
+    showArchived: false,
   })
 
   const updateFilter = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
@@ -357,6 +359,9 @@ export const ClaudePrototype = () => {
     }
     if (filters.hasLink) {
       filtered = filtered.filter((d) => d.latestDraft.stats.links.length > 0)
+    }
+    if (!filters.showArchived) {
+      filtered = filtered.filter((d) => !d.isArchived)
     }
     if (filters.sentFilter !== 'all') {
       filtered = filtered.filter((d) => (filters.sentFilter === 'sent' ? d.isSent : !d.isSent))
@@ -468,6 +473,7 @@ export const ClaudePrototype = () => {
                 hasLink: false,
                 searchQuery: '',
                 sentFilter: 'all',
+                showArchived: true
               })
             }}
             className='text-blue-600 hover:underline'
@@ -561,52 +567,25 @@ export const ClaudePrototype = () => {
   )
 }
 function filterControls(
-  filters: FilterState,
+  _filters: FilterState,
   updateFilter: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void,
 ) {
   return (
     <div className='absolute top-full right-0 mt-1 p-3 bg-white border border-gray-300 rounded-md shadow-lg z-10 min-w-48'>
       <div className='space-y-3'>
-        <div className='space-y-2'>
-          <label className='flex items-center gap-2 cursor-pointer'>
-            <input
-              type='checkbox'
-              checked={filters.hasLink}
-              onChange={(e) => updateFilter('hasLink', e.target.checked)}
-              className='rounded'
-            />
-            <Badge type='link' />
-          </label>
-          <label className='flex items-center gap-2 cursor-pointer'>
-            <input
-              type='checkbox'
-              checked={filters.hasImage}
-              onChange={(e) => updateFilter('hasImage', e.target.checked)}
-              className='rounded'
-            />
-            <Badge type='image' />
-          </label>
-          <label className='flex items-center gap-2 cursor-pointer'>
-            <input
-              type='checkbox'
-              checked={filters.hasCode}
-              onChange={(e) => updateFilter('hasCode', e.target.checked)}
-              className='rounded'
-            />
-            <Badge type='code' />
-          </label>
-        </div>
-        <div className='relative flex rounded-md overflow-hidden'>
-          {/* Sliding indicator */}
-          <div
-            className='absolute top-0 h-0.5 bg-current transition-all duration-200'
-            style={{
-              width: '33.33%',
-              left: filters.sentFilter === 'unsent' ? '0%' :
-                filters.sentFilter === 'all' ? '33.33%' : '66.66%'
-            }}
+        <div className='relative flex overflow-hidden'>
+          <Badge
+            type='archived'
+            text='include'
+            onClick={() => updateFilter('showArchived', true)}
           />
-
+          <Badge
+            type='blank'
+            text='hide archived'
+            onClick={() => updateFilter('showArchived', false)}
+          />
+        </div>
+        <div className='relative flex overflow-hidden'>
           <Badge
             type='unsent'
             onClick={() => updateFilter('sentFilter', 'unsent')}
@@ -619,6 +598,42 @@ function filterControls(
           <Badge
             type='sent'
             onClick={() => updateFilter('sentFilter', 'sent')}
+          />
+        </div>
+        <div className='relative flex overflow-hidden'>
+          <Badge
+            type='link'
+            text='required'
+            onClick={() => updateFilter('hasLink', true)}
+          />
+          <Badge
+            type='blank'
+            text='optional'
+            onClick={() => updateFilter('hasLink', false)}
+          />
+        </div>
+        <div className='relative flex overflow-hidden'>
+          <Badge
+            type='image'
+            text='required'
+            onClick={() => updateFilter('hasImage', true)}
+          />
+          <Badge
+            type='blank'
+            text='optional'
+            onClick={() => updateFilter('hasImage', false)}
+          />
+        </div>
+        <div className='relative flex overflow-hidden'>
+          <Badge
+            type='code'
+            text='required'
+            onClick={() => updateFilter('hasCode', true)}
+          />
+          <Badge
+            type='blank'
+            text='optional'
+            onClick={() => updateFilter('hasCode', false)}
           />
         </div>
       </div>
