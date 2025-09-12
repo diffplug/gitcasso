@@ -528,16 +528,8 @@ export const ClaudePrototype = () => {
                         className='w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
                       />
                     </div>
-                    <button
-                      type='button'
-                      onClick={() => setShowFilters(!showFilters)}
-                      className={`p-1.5 hover:bg-gray-100 rounded ${showFilters ? 'bg-gray-100' : ''}`}
-                      title='Filter options'
-                    >
-                      <Filter className='w-4 h-4 text-gray-600' />
-                    </button>
+                    {filterControls(filters, updateFilter)}
                   </div>
-                  {showFilters && filterControls(filters, updateFilter)}
                 </div>
               </th>
             </tr>
@@ -557,44 +549,42 @@ function filterControls(
   updateFilter: <K extends keyof FilterState>(key: K, value: FilterState[K]) => void,
 ) {
   return (
-    <div className='absolute top-full right-0 mt-1 p-3 bg-white border border-gray-300 rounded-md shadow-lg z-10 min-w-48'>
-      <div className='space-y-1'>
-        <div className='relative flex overflow-hidden'>
-          <Badge
-            type='archived'
-            text='show archived'
-            selected={filters.showArchived}
-            onClick={() => updateFilter('showArchived', true)}
-          />
-          <Badge
-            type='hideArchived'
-            text='hide archived'
-            selected={!filters.showArchived}
-            onClick={() => updateFilter('showArchived', false)}
-          />
-        </div>
-        <div className='relative flex overflow-hidden'>
-          <Badge
-            type='unsent'
-            text='unsent only'
-            selected={filters.sentFilter === 'unsent'}
-            onClick={() => updateFilter('sentFilter', 'unsent')}
-          />
-          <Badge
-            type='blank'
-            text='both'
-            selected={filters.sentFilter === 'all'}
-            onClick={() => updateFilter('sentFilter', 'all')}
-          />
-          <Badge
-            type='sent'
-            text='sent only'
-            selected={filters.sentFilter === 'sent'}
-            onClick={() => updateFilter('sentFilter', 'sent')}
-          />
-        </div>
+    <>
+      <div className='relative flex overflow-hidden'>
+        <Badge
+          type='archived'
+          text='show archived'
+          selected={filters.showArchived}
+          onClick={() => updateFilter('showArchived', true)}
+        />
+        <Badge
+          type='hideArchived'
+          text='hide archived'
+          selected={!filters.showArchived}
+          onClick={() => updateFilter('showArchived', false)}
+        />
       </div>
-    </div>
+      <div className='relative flex overflow-hidden'>
+        <Badge
+          type='unsent'
+          text='unsent only'
+          selected={filters.sentFilter === 'unsent'}
+          onClick={() => updateFilter('sentFilter', 'unsent')}
+        />
+        <Badge
+          type='blank'
+          text='both'
+          selected={filters.sentFilter === 'all'}
+          onClick={() => updateFilter('sentFilter', 'all')}
+        />
+        <Badge
+          type='sent'
+          text='sent only'
+          selected={filters.sentFilter === 'sent'}
+          onClick={() => updateFilter('sentFilter', 'sent')}
+        />
+      </div>
+    </>
   )
 }
 
