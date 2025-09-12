@@ -65,118 +65,202 @@ export interface GitHubPRAddCommentSpot extends CommentSpot {
 }
 */
 
-type DraftType = 'PR' | 'ISSUE' | 'REDDIT'
-type DraftState = 'EDITING' | 'ABANDONED' | 'SENT'
-type TabState = 'OPEN_NOW' | 'CLOSED'
-
-interface BaseDraft extends CommentSpot {
-  charCount: number
-  codeCount: number
-  content: string
-  imageCount: number
-  type: DraftType
-  lastEdit: number
-  linkCount: number
-}
-
-interface GitHubDraft extends BaseDraft {
+interface GitHubSpot extends CommentSpot {
   title: string
   slug: string
   number: number
+  type: 'PR' | 'ISSUE'
 }
 
-interface RedditDraft extends BaseDraft {
+interface RedditSpot extends CommentSpot {
   title: string
   subreddit: string
+  type: 'REDDIT'
 }
 
-interface LatestDraft {
-  spot: BaseDraft
-  draft: string
+interface Draft {
+  content: string
   time: number
-  draftStats: DraftStats
+  stats: DraftStats
 }
 
-type Draft = GitHubDraft | RedditDraft
-
-const isGitHubDraft = (draft: Draft): draft is GitHubDraft => {
-  return draft.type === 'PR' || draft.type === 'ISSUE'
+interface CommentTableRow {
+  spot: GitHubOrReddit
+  latestDraft: Draft
+  isOpenTab: boolean
+  isSent: boolean
+  isArchived: boolean
 }
 
-const isRedditDraft = (draft: Draft): draft is RedditDraft => {
-  return draft.type === 'REDDIT'
+type GitHubOrReddit = GitHubSpot | RedditSpot
+
+const isGitHubDraft = (spot: GitHubOrReddit): spot is GitHubSpot => {
+  return spot.type === 'PR' || spot.type === 'ISSUE'
 }
 
-const generateMockDrafts = (): Draft[] => [
+const isRedditDraft = (spot: GitHubOrReddit): spot is RedditSpot => {
+  return spot.type === 'REDDIT'
+}
+
+const generateMockDrafts = (): CommentTableRow[] => [
   {
-    charCount: 245,
-    codeCount: 3,
-    content:
-      'This PR addresses the memory leak issue reported in #1233. The problem was caused by event listeners not being properly disposed...',
-    imageCount: 2,
-    lastEdit: Date.now() - 1000 * 60 * 30,
-    linkCount: 2,
-    number: 1234,
-    slug: 'microsoft/vscode',
-    title: 'Fix memory leak in extension host',
-    type: 'PR',
-    unique_key: '1',
-  } satisfies GitHubDraft,
+    isArchived: false,
+    isOpenTab: true,
+    isSent: false,
+    latestDraft: {
+      content:
+        'This PR addresses the memory leak issue reported in #1233. The problem was caused by event listeners not being properly disposed...',
+      stats: {
+        charCount: 245,
+        codeBlocks: [
+          { code: 'const listener = () => {}', language: 'typescript' },
+          { code: 'element.removeEventListener()', language: 'javascript' },
+          { code: 'dispose()', language: 'typescript' },
+        ],
+        images: [
+          { url: 'https://example.com/image1.png' },
+          { url: 'https://example.com/image2.png' },
+        ],
+        links: [
+          { text: 'Issue #1233', url: 'https://github.com/microsoft/vscode/issues/1233' },
+          { text: 'Documentation', url: 'https://docs.microsoft.com' },
+        ],
+      },
+      time: Date.now() - 1000 * 60 * 30,
+    },
+    spot: {
+      number: 1234,
+      slug: 'microsoft/vscode',
+      title: 'Fix memory leak in extension host',
+      type: 'PR',
+      unique_key: '1',
+    } satisfies GitHubSpot,
+  },
   {
-    charCount: 180,
-    codeCount: 0,
-    content:
-      "I've been using GitLens for years and it's absolutely essential for my workflow. The inline blame annotations are incredibly helpful when...",
-    imageCount: 0,
-    lastEdit: Date.now() - 1000 * 60 * 60 * 2,
-    linkCount: 1,
-    subreddit: 'programming',
-    title: "Re: What's your favorite VS Code extension?",
-    type: 'REDDIT',
-    unique_key: '2',
-  } satisfies RedditDraft,
+    isArchived: false,
+    isOpenTab: false,
+    isSent: false,
+    latestDraft: {
+      content:
+        "I've been using GitLens for years and it's absolutely essential for my workflow. The inline blame annotations are incredibly helpful when...",
+      stats: {
+        charCount: 180,
+        codeBlocks: [],
+        images: [],
+        links: [
+          {
+            text: 'GitLens',
+            url: 'https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens',
+          },
+        ],
+      },
+      time: Date.now() - 1000 * 60 * 60 * 2,
+    },
+    spot: {
+      subreddit: 'programming',
+      title: "Re: What's your favorite VS Code extension?",
+      type: 'REDDIT',
+      unique_key: '2',
+    } satisfies RedditSpot,
+  },
   {
-    charCount: 456,
-    codeCount: 1,
-    content:
-      "When using useEffect with async functions, the cleanup function doesn't seem to be called correctly in certain edge cases...",
-    imageCount: 0,
-    lastEdit: Date.now() - 1000 * 60 * 60 * 5,
-    linkCount: 0,
-    number: 5678,
-    slug: 'facebook/react',
-    title: 'Unexpected behavior with useEffect cleanup',
-    type: 'ISSUE',
-    unique_key: '3',
-  } satisfies GitHubDraft,
+    isArchived: false,
+    isOpenTab: true,
+    isSent: false,
+    latestDraft: {
+      content:
+        "When using useEffect with async functions, the cleanup function doesn't seem to be called correctly in certain edge cases...",
+      stats: {
+        charCount: 456,
+        codeBlocks: [{ code: 'useEffect(() => { /* async code */ }, [])', language: 'javascript' }],
+        images: [],
+        links: [],
+      },
+      time: Date.now() - 1000 * 60 * 60 * 5,
+    },
+    spot: {
+      number: 5678,
+      slug: 'facebook/react',
+      title: 'Unexpected behavior with useEffect cleanup',
+      type: 'ISSUE',
+      unique_key: '3',
+    } satisfies GitHubSpot,
+  },
   {
-    charCount: 322,
-    codeCount: 0,
-    content:
-      'LGTM! Just a few minor suggestions about the examples in the routing section. Consider adding more context about...',
-    imageCount: 4,
-    lastEdit: Date.now() - 1000 * 60 * 60 * 24,
-    linkCount: 3,
-    number: 9012,
-    slug: 'vercel/next.js',
-    title: 'Update routing documentation',
-    type: 'PR',
-    unique_key: '4',
-  } satisfies GitHubDraft,
+    isArchived: false,
+    isOpenTab: false,
+    isSent: true,
+    latestDraft: {
+      content:
+        'LGTM! Just a few minor suggestions about the examples in the routing section. Consider adding more context about...',
+      stats: {
+        charCount: 322,
+        codeBlocks: [],
+        images: [
+          { url: 'routing-diagram.png' },
+          { url: 'example-1.png' },
+          { url: 'example-2.png' },
+          { url: 'architecture.png' },
+        ],
+        links: [
+          { text: 'Routing docs', url: 'https://nextjs.org/docs/routing' },
+          { text: 'Examples', url: 'https://github.com/vercel/next.js/tree/main/examples' },
+          {
+            text: 'Migration guide',
+            url: 'https://nextjs.org/docs/app/building-your-application/upgrading',
+          },
+        ],
+      },
+      time: Date.now() - 1000 * 60 * 60 * 24,
+    },
+    spot: {
+      number: 9012,
+      slug: 'vercel/next.js',
+      title: 'Update routing documentation',
+      type: 'PR',
+      unique_key: '4',
+    } satisfies GitHubSpot,
+  },
   {
-    charCount: 678,
-    codeCount: 7,
-    content:
-      'This PR implements ESM support in worker threads as discussed in the last TSC meeting. The implementation follows...',
-    imageCount: 1,
-    lastEdit: Date.now() - 1000 * 60 * 60 * 48,
-    linkCount: 5,
-    number: 3456,
-    slug: 'nodejs/node',
-    title: 'Add support for ESM in worker threads',
-    type: 'PR',
-    unique_key: '5',
-  } satisfies GitHubDraft,
+    isArchived: true,
+    isOpenTab: true,
+    isSent: false,
+    latestDraft: {
+      content:
+        'This PR implements ESM support in worker threads as discussed in the last TSC meeting. The implementation follows...',
+      stats: {
+        charCount: 678,
+        codeBlocks: [
+          { code: 'import { Worker } from "worker_threads"', language: 'javascript' },
+          { code: 'new Worker("./worker.mjs", { type: "module" })', language: 'javascript' },
+          { code: 'import { parentPort } from "worker_threads"', language: 'javascript' },
+          { code: 'interface WorkerOptions { type: "module" }', language: 'typescript' },
+          { code: 'await import("./dynamic-module.mjs")', language: 'javascript' },
+          { code: 'export default function workerTask() {}', language: 'javascript' },
+          { code: 'const result = await workerPromise', language: 'javascript' },
+        ],
+        images: [{ alt: 'ESM Worker Architecture', url: 'worker-architecture.png' }],
+        links: [
+          {
+            text: 'TSC Meeting Notes',
+            url: 'https://github.com/nodejs/TSC/blob/main/meetings/2023-11-01.md',
+          },
+          { text: 'ESM Spec', url: 'https://tc39.es/ecma262/' },
+          { text: 'Worker Threads docs', url: 'https://nodejs.org/api/worker_threads.html' },
+          { text: 'Implementation guide', url: 'https://nodejs.org/api/esm.html' },
+          { text: 'Related issue', url: 'https://github.com/nodejs/node/issues/30682' },
+        ],
+      },
+      time: Date.now() - 1000 * 60 * 60 * 48,
+    },
+    spot: {
+      number: 3456,
+      slug: 'nodejs/node',
+      title: 'Add support for ESM in worker threads',
+      type: 'PR',
+      unique_key: '5',
+    } satisfies GitHubSpot,
+  },
 ]
 
 // Helper function for relative time
@@ -212,27 +296,29 @@ export const ClaudePrototype = () => {
   const filteredDrafts = useMemo(() => {
     let filtered = [...drafts]
     if (hasCodeFilter) {
-      filtered = filtered.filter((d) => d.codeCount > 0)
+      filtered = filtered.filter((d) => d.latestDraft.stats.codeBlocks.length > 0)
     }
     if (hasImageFilter) {
-      filtered = filtered.filter((d) => d.imageCount > 0)
+      filtered = filtered.filter((d) => d.latestDraft.stats.images.length > 0)
     }
     if (hasLinkFilter) {
-      filtered = filtered.filter((d) => d.linkCount > 0)
+      filtered = filtered.filter((d) => d.latestDraft.stats.links.length > 0)
     }
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
       filtered = filtered.filter((d) =>
-        Object.values(d).some((value) => String(value).toLowerCase().includes(query)),
+        [d.spot.title, d.latestDraft.content, (d.spot as any).slug, (d.spot as any).subreddit].some(
+          (value) => value && String(value).toLowerCase().includes(query),
+        ),
       )
     }
     // Sort
     switch (sortBy) {
       case 'edited-newest':
-        filtered.sort((a, b) => b.lastEdit - a.lastEdit)
+        filtered.sort((a, b) => b.latestDraft.time - a.latestDraft.time)
         break
       case 'edited-oldest':
-        filtered.sort((a, b) => a.lastEdit - b.lastEdit)
+        filtered.sort((a, b) => a.latestDraft.time - b.latestDraft.time)
         break
     }
     return filtered
@@ -252,7 +338,7 @@ export const ClaudePrototype = () => {
     if (selectedIds.size === filteredDrafts.length && filteredDrafts.length > 0) {
       setSelectedIds(new Set())
     } else {
-      setSelectedIds(new Set(filteredDrafts.map((d) => d.unique_key)))
+      setSelectedIds(new Set(filteredDrafts.map((d) => d.spot.unique_key)))
     }
   }
 
@@ -260,13 +346,13 @@ export const ClaudePrototype = () => {
     window.open(url, '_blank')
   }
 
-  const handleTrash = (draft: { charCount: number; id: string }) => {
-    if (draft.charCount > 20) {
+  const handleTrash = (row: CommentTableRow) => {
+    if (row.latestDraft.stats.charCount > 20) {
       if (confirm('Are you sure you want to discard this draft?')) {
-        console.log('Trashing draft:', draft.id)
+        console.log('Trashing draft:', row.spot.unique_key)
       }
     } else {
-      console.log('Trashing draft:', draft.id)
+      console.log('Trashing draft:', row.spot.unique_key)
     }
   }
 
@@ -443,8 +529,8 @@ export const ClaudePrototype = () => {
             </tr>
           </thead>
           <tbody className='divide-y divide-gray-200'>
-            {filteredDrafts.map((draft) =>
-              commentRow(draft, selectedIds, toggleSelection, handleOpen, handleTrash),
+            {filteredDrafts.map((row) =>
+              commentRow(row, selectedIds, toggleSelection, handleOpen, handleTrash),
             )}
           </tbody>
         </table>
@@ -453,19 +539,19 @@ export const ClaudePrototype = () => {
   )
 }
 function commentRow(
-  draft: Draft,
+  row: CommentTableRow,
   selectedIds: Set<unknown>,
   toggleSelection: (id: string) => void,
   _handleOpen: (url: string) => void,
-  _handleTrash: (draft: { charCount: number; id: string }) => void,
+  _handleTrash: (row: CommentTableRow) => void,
 ) {
   return (
-    <tr key={draft.unique_key} className='hover:bg-gray-50'>
+    <tr key={row.spot.unique_key} className='hover:bg-gray-50'>
       <td className='px-3 py-3'>
         <input
           type='checkbox'
-          checked={selectedIds.has(draft.unique_key)}
-          onChange={() => toggleSelection(draft.unique_key)}
+          checked={selectedIds.has(row.spot.unique_key)}
+          onChange={() => toggleSelection(row.spot.unique_key)}
           className='rounded'
         />
       </td>
@@ -475,9 +561,9 @@ function commentRow(
           <div className='flex items-center justify-between gap-1.5 text-xs text-gray-600'>
             <div className='flex items-center gap-1.5 min-w-0 flex-1'>
               <span className='w-4 h-4 flex items-center justify-center flex-shrink-0'>
-                {draft.type === 'PR' && <GitPullRequestIcon size={16} />}
-                {draft.type === 'ISSUE' && <IssueOpenedIcon size={16} />}
-                {draft.type === 'REDDIT' && (
+                {row.spot.type === 'PR' && <GitPullRequestIcon size={16} />}
+                {row.spot.type === 'ISSUE' && <IssueOpenedIcon size={16} />}
+                {row.spot.type === 'REDDIT' && (
                   <img
                     src='https://styles.redditmedia.com/t5_2fwo/styles/communityIcon_1bqa1ibfp8q11.png?width=128&frame=1&auto=webp&s=400b33e7080aa4996c405a96b3872a12f0e3b68d'
                     alt='Reddit'
@@ -486,38 +572,44 @@ function commentRow(
                 )}
               </span>
 
-              {isGitHubDraft(draft) && (
+              {isGitHubDraft(row.spot) && (
                 <>
-                  #{draft.number}
+                  #{row.spot.number}
                   <a href='TODO' className='hover:underline truncate'>
-                    {draft.slug}
+                    {row.spot.slug}
                   </a>
                 </>
               )}
-              {isRedditDraft(draft) && (
+              {isRedditDraft(row.spot) && (
                 <a href={'TODO'} className='hover:underline truncate'>
-                  r/{draft.subreddit}
+                  r/{row.spot.subreddit}
                 </a>
               )}
             </div>
             <div className='flex items-center gap-1 flex-shrink-0'>
-              {draft.linkCount > 0 && <Badge type='link' text={draft.linkCount} />}
-              {draft.imageCount > 0 && <Badge type='image' text={draft.imageCount} />}
-              {draft.codeCount > 0 && <Badge type='code' text={draft.codeCount} />}
-              <Badge type='text' text={draft.charCount} />
-              <Badge type='time' text={timeAgo(draft.lastEdit)} />
+              {row.latestDraft.stats.links.length > 0 && (
+                <Badge type='link' text={row.latestDraft.stats.links.length} />
+              )}
+              {row.latestDraft.stats.images.length > 0 && (
+                <Badge type='image' text={row.latestDraft.stats.images.length} />
+              )}
+              {row.latestDraft.stats.codeBlocks.length > 0 && (
+                <Badge type='code' text={row.latestDraft.stats.codeBlocks.length} />
+              )}
+              <Badge type='text' text={row.latestDraft.stats.charCount} />
+              <Badge type='time' text={timeAgo(row.latestDraft.time)} />
             </div>
           </div>
 
           {/* Title */}
           <div className='text-sm truncate hover:underline'>
             <a href='TODO' className='font-medium'>
-              {draft.title}
+              {row.spot.title}
             </a>
           </div>
           {/* Draft */}
           <div className='text-sm truncate'>
-            <span className='text-gray-500'>{draft.content.substring(0, 100)}…</span>
+            <span className='text-gray-500'>{row.latestDraft.content.substring(0, 100)}…</span>
           </div>
         </div>
       </td>
