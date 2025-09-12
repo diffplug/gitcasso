@@ -443,67 +443,25 @@ export const ClaudePrototype = () => {
     }
   }
 
-  // Empty states
-  if (drafts.length === 0) {
-    return (
-      <div className='min-h-screen bg-white p-8'>
-        <div className='max-w-4xl mx-auto text-center py-16'>
-          <h2 className='text-2xl font-semibold mb-4'>No comments open</h2>
-          <p className='text-gray-600 mb-6'>
-            Your drafts will appear here when you start typing in comment boxes across GitHub and
-            Reddit.
-          </p>
-          <div className='space-y-2'>
-            <button type='button' className='text-blue-600 hover:underline'>
-              How it works
-            </button>
-            <span className='mx-2'>·</span>
-            <button type='button' className='text-blue-600 hover:underline'>
-              Check permissions
-            </button>
-          </div>
-        </div>
-      </div>
-    )
+  const clearFilters = () => {
+    setFilters({
+      searchQuery: '',
+      sentFilter: 'both',
+      showTrashed: true,
+    })
   }
 
-  if (filteredDrafts.length === 0 && (filters.searchQuery || filters.sentFilter !== 'both')) {
-    return (
-      <div className='min-h-screen bg-white'>
-        <div className='p-6 border-b-gray-300'>
-          {/* Keep the header controls visible */}
-          <div className='flex flex-wrap gap-3 items-center'>
-            {/* Search */}
-            <div className='relative flex-1 max-w-xs'>
-              <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400' />
-              <input
-                type='text'
-                placeholder='Search drafts...'
-                value={filters.searchQuery}
-                onChange={(e) => updateFilter('searchQuery', e.target.value)}
-                className='w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-sm text-sm font-normal'
-              />
-            </div>
-          </div>
-        </div>
+  const getTableBody = () => {
+    if (drafts.length === 0) {
+      return <EmptyState />
+    }
 
-        <div className='text-center py-16'>
-          <p className='text-gray-600 mb-4'>No matches found</p>
-          <button
-            type='button'
-            onClick={() => {
-              setFilters({
-                searchQuery: '',
-                sentFilter: 'both',
-                showTrashed: true,
-              })
-            }}
-            className='text-blue-600 hover:underline'
-          >
-            Clear filters
-          </button>
-        </div>
-      </div>
+    if (filteredDrafts.length === 0 && (filters.searchQuery || filters.sentFilter !== 'both')) {
+      return <NoMatchesState onClearFilters={clearFilters} />
+    }
+
+    return filteredDrafts.map((row) =>
+      commentRow(row, selectedIds, toggleSelection, handleOpen, handleTrash),
     )
   }
 
@@ -530,7 +488,7 @@ export const ClaudePrototype = () => {
 
       {/* Table */}
       <div className='overflow-x-auto'>
-        <table className='w-full table-fixed'>
+        <table className='w-full table-fixed table-fixed'>
           <colgroup>
             <col className='w-10' />
             <col />
@@ -550,13 +508,13 @@ export const ClaudePrototype = () => {
                 <div className='relative'>
                   <div className='flex items-center gap-1'>
                     <div className='relative flex-1'>
-                      <Search className='absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400' />
+                      <Search className='absolute left-1 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400' />
                       <input
                         type='text'
                         placeholder='Search drafts...'
                         value={filters.searchQuery}
                         onChange={(e) => updateFilter('searchQuery', e.target.value)}
-                        className='w-full pl-9 pr-3 h-5 border border-gray-300 rounded-sm text-sm font-normal focus:outline-none focus:border-blue-500'
+                        className='w-full pl-5 pr-3 h-5 border border-gray-300 rounded-sm text-sm font-normal focus:outline-none focus:border-blue-500'
                       />
                     </div>
                     <div className='relative flex overflow-hidden gap-1'>
@@ -615,11 +573,7 @@ export const ClaudePrototype = () => {
               </th>
             </tr>
           </thead>
-          <tbody className='divide-y divide-gray-200'>
-            {filteredDrafts.map((row) =>
-              commentRow(row, selectedIds, toggleSelection, handleOpen, handleTrash),
-            )}
-          </tbody>
+          <tbody className='divide-y divide-gray-200'>{getTableBody()}</tbody>
         </table>
       </div>
     </div>
@@ -707,3 +661,30 @@ function commentRow(
     </tr>
   )
 }
+
+const EmptyState = () => (
+  <div className='max-w-4xl mx-auto text-center py-16'>
+    <h2 className='text-2xl font-semibold mb-4'>No comments open</h2>
+    <p className='text-gray-600 mb-6'>
+      Your drafts will appear here when you start typing in comment boxes across GitHub and Reddit.
+    </p>
+    <div className='space-y-2'>
+      <button type='button' className='text-blue-600 hover:underline'>
+        How it works
+      </button>
+      <span className='mx-2'>·</span>
+      <button type='button' className='text-blue-600 hover:underline'>
+        Check permissions
+      </button>
+    </div>
+  </div>
+)
+
+const NoMatchesState = ({ onClearFilters }: { onClearFilters: () => void }) => (
+  <div className='text-center py-16'>
+    <p className='text-gray-600 mb-4'>No matches found</p>
+    <button type='button' onClick={onClearFilters} className='text-blue-600 hover:underline'>
+      Clear filters
+    </button>
+  </div>
+)
