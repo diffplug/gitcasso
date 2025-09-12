@@ -101,14 +101,15 @@ const Badge = ({ text, type }: BadgeProps) => {
 interface Segment {
   text?: string
   type: keyof typeof typeIcons
-  onClick: () => void
-  selected: boolean
+  value: string
 }
 interface MultiSegmentProps {
   segments: Segment[]
+  value: string
+  onValueChange: (value: string) => void
 }
 
-const MultiSegment = ({ segments }: MultiSegmentProps) => {
+const MultiSegment = ({ segments, value, onValueChange }: MultiSegmentProps) => {
   return (
     <div className="inline-flex items-center gap-0">
       {segments.map((segment, index) => {
@@ -118,10 +119,10 @@ const MultiSegment = ({ segments }: MultiSegmentProps) => {
             key={index}
             className={statBadge({
               clickable: true,
-              selected: segment.selected,
+              selected: value === segment.value,
               type: segment.type,
             })}
-            onClick={segment.onClick}
+            onClick={() => onValueChange(segment.value)}
             type="button"
           >
             {segment.type === 'blank' || <Icon className='w-3 h-3' />}
@@ -557,26 +558,26 @@ export const ClaudePrototype = () => {
                       />
                     </div>
                     <div className='relative flex overflow-hidden'>
-                      <MultiSegment segments={[
-                        {
-                          type: 'unsent',
-                          text: '',
-                          selected: filters.sentFilter === 'unsent',
-                          onClick: () => updateFilter('sentFilter', 'unsent')
-                        },
-                        {
-                          type: 'blank',
-                          text: 'both',
-                          selected: filters.sentFilter === 'all',
-                          onClick: () => updateFilter('sentFilter', 'all')
-                        },
-                        {
-                          type: 'sent',
-                          text: ' ',
-                          selected: filters.sentFilter === 'sent',
-                          onClick: () => updateFilter('sentFilter', 'sent')
-                        }
-                      ]} />
+                      <MultiSegment
+                        value={filters.sentFilter}
+                        onValueChange={(value) => updateFilter('sentFilter', value as 'all' | 'sent' | 'unsent')}
+                        segments={[
+                          {
+                            type: 'unsent',
+                            text: ' ',
+                            value: 'unsent'
+                          },
+                          {
+                            type: 'blank',
+                            text: 'both',
+                            value: 'all'
+                          },
+                          {
+                            type: 'sent',
+                            text: ' ',
+                            value: 'sent'
+                          }
+                        ]} />
                     </div>
                   </div>
                 </div>
