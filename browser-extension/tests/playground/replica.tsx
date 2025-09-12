@@ -9,6 +9,7 @@ const gh_pr: GitHubPRAddCommentSpot = {
   domain: 'github.com',
   number: 517,
   slug: 'diffplug/selfie',
+  title: 'wowza',
   type: 'GH_PR_ADD_COMMENT',
   unique_key: 'github.com:diffplug/selfie:517',
 }
@@ -16,6 +17,7 @@ const gh_issue: GitHubIssueAddCommentSpot = {
   domain: 'github.com',
   number: 523,
   slug: 'diffplug/selfie',
+  title: 'whoa',
   type: 'GH_ISSUE_ADD_COMMENT',
   unique_key: 'github.com:diffplug/selfie:523',
 }

@@ -19,6 +19,8 @@ import { useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import type { CommentSpot } from '@/lib/enhancer'
 import type { DraftStats } from '@/lib/enhancers/draftStats'
+import type { GitHubIssueAddCommentSpot } from '@/lib/enhancers/github/githubIssueAddComment'
+import type { GitHubPRAddCommentSpot } from '@/lib/enhancers/github/githubPRAddComment'
 
 interface FilterState {
   sentFilter: 'both' | 'sent' | 'unsent'
@@ -146,30 +148,6 @@ const MultiSegment = <T,>({ segments, value, onValueChange }: MultiSegmentProps<
   )
 }
 
-/*
-interface GitHubIssueAddCommentSpot extends CommentSpot {
-  type: 'GH_ISSUE_ADD_COMMENT'
-  domain: 'string'
-  slug: string // owner/repo
-  number: number // issue number, undefined for new issues
-  title: string
-}
-export interface GitHubPRAddCommentSpot extends CommentSpot {
-  type: 'GH_PR_ADD_COMMENT' // Override to narrow from string to specific union
-  domain: string
-  slug: string // owner/repo
-  number: number // issue/PR number, undefined for new issues and PRs
-  title: string
-}
-*/
-
-interface GitHubSpot extends CommentSpot {
-  title: string
-  slug: string
-  number: number
-  type: 'PR' | 'ISSUE'
-}
-
 interface RedditSpot extends CommentSpot {
   title: string
   subreddit: string
@@ -190,10 +168,10 @@ interface CommentTableRow {
   isTrashed: boolean
 }
 
-type GitHubOrReddit = GitHubSpot | RedditSpot
+type GitHubOrReddit = GitHubIssueAddCommentSpot | GitHubPRAddCommentSpot | RedditSpot
 
-const isGitHubDraft = (spot: GitHubOrReddit): spot is GitHubSpot => {
-  return spot.type === 'PR' || spot.type === 'ISSUE'
+const isGitHubDraft = (spot: GitHubOrReddit): spot is GitHubIssueAddCommentSpot => {
+  return spot.type === 'GH_PR_ADD_COMMENT' || spot.type === 'GH_ISSUE_ADD_COMMENT'
 }
 
 const isRedditDraft = (spot: GitHubOrReddit): spot is RedditSpot => {
@@ -227,12 +205,13 @@ const generateMockDrafts = (): CommentTableRow[] => [
       time: Date.now() - 1000 * 60 * 30,
     },
     spot: {
+      domain: 'github.com',
       number: 1234,
       slug: 'microsoft/vscode',
       title: "Fix memory leak in extension host (why is this so hard! It's been months!)",
-      type: 'PR',
+      type: 'GH_PR_ADD_COMMENT',
       unique_key: '1',
-    } satisfies GitHubSpot,
+    } satisfies GitHubPRAddCommentSpot,
   },
   {
     isOpenTab: false,
@@ -277,12 +256,13 @@ const generateMockDrafts = (): CommentTableRow[] => [
       time: Date.now() - 1000 * 60 * 60 * 5,
     },
     spot: {
+      domain: 'github.com',
       number: 5678,
       slug: 'facebook/react',
       title: 'Unexpected behavior with useEffect cleanup',
-      type: 'ISSUE',
+      type: 'GH_ISSUE_ADD_COMMENT',
       unique_key: '3',
-    } satisfies GitHubSpot,
+    } satisfies GitHubIssueAddCommentSpot,
   },
   {
     isOpenTab: false,
@@ -312,12 +292,13 @@ const generateMockDrafts = (): CommentTableRow[] => [
       time: Date.now() - 1000 * 60 * 60 * 24,
     },
     spot: {
+      domain: 'github',
       number: 9012,
       slug: 'vercel/next.js',
       title: 'Update routing documentation',
-      type: 'PR',
+      type: 'GH_PR_ADD_COMMENT',
       unique_key: '4',
-    } satisfies GitHubSpot,
+    } satisfies GitHubPRAddCommentSpot,
   },
   {
     isOpenTab: true,
@@ -352,12 +333,13 @@ const generateMockDrafts = (): CommentTableRow[] => [
       time: Date.now() - 1000 * 60 * 60 * 48,
     },
     spot: {
+      domain: 'github.com',
       number: 3456,
       slug: 'nodejs/node',
       title: 'Add support for ESM in worker threads',
-      type: 'PR',
+      type: 'GH_PR_ADD_COMMENT',
       unique_key: '5',
-    } satisfies GitHubSpot,
+    } satisfies GitHubPRAddCommentSpot,
   },
 ]
 
@@ -609,8 +591,8 @@ function commentRow(
           <div className='flex items-center justify-between gap-1.5 text-xs text-gray-600'>
             <div className='flex items-center gap-1.5 min-w-0 flex-1'>
               <span className='w-4 h-4 flex items-center justify-center flex-shrink-0'>
-                {row.spot.type === 'PR' && <GitPullRequestIcon size={16} />}
-                {row.spot.type === 'ISSUE' && <IssueOpenedIcon size={16} />}
+                {row.spot.type === 'GH_PR_ADD_COMMENT' && <GitPullRequestIcon size={16} />}
+                {row.spot.type === 'GH_ISSUE_ADD_COMMENT' && <IssueOpenedIcon size={16} />}
                 {row.spot.type === 'REDDIT' && (
                   <img
                     src='https://styles.redditmedia.com/t5_2fwo/styles/communityIcon_1bqa1ibfp8q11.png?width=128&frame=1&auto=webp&s=400b33e7080aa4996c405a96b3872a12f0e3b68d'

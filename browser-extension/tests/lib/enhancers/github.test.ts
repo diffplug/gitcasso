@@ -17,6 +17,7 @@ describe('github', () => {
         "domain": "github.com",
         "number": 517,
         "slug": "diffplug/selfie",
+        "title": "TODO_TITLE",
         "type": "GH_PR_ADD_COMMENT",
         "unique_key": "github.com:diffplug/selfie:517",
       }
@@ -47,6 +48,7 @@ describe('github', () => {
         "domain": "github.com",
         "number": 523,
         "slug": "diffplug/selfie",
+        "title": "TODO_TITLE",
         "type": "GH_ISSUE_ADD_COMMENT",
         "unique_key": "github.com:diffplug/selfie:523",
       }

@@ -7,6 +7,7 @@ import { githubHighlighter } from './githubHighlighter'
 
 export interface GitHubPRAddCommentSpot extends CommentSpot {
   type: 'GH_PR_ADD_COMMENT' // Override to narrow from string to specific union
+  title: string
   domain: string
   slug: string // owner/repo
   number: number // issue/PR number, undefined for new issues and PRs
@@ -36,10 +37,12 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     const slug = `${owner}/${repo}`
     const number = parseInt(numberStr!, 10)
     const unique_key = `github.com:${slug}:${number}`
+    const title = 'TODO_TITLE'
     return {
       domain: 'github.com',
       number,
       slug,
+      title,
       type: 'GH_PR_ADD_COMMENT',
       unique_key,
     }

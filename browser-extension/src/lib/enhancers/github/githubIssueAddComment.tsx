@@ -7,6 +7,7 @@ import { githubHighlighter } from './githubHighlighter'
 
 export interface GitHubIssueAddCommentSpot extends CommentSpot {
   type: 'GH_ISSUE_ADD_COMMENT'
+  title: string
   domain: string
   slug: string // owner/repo
   number: number // issue number, undefined for new issues
@@ -32,10 +33,12 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
     const slug = `${owner}/${repo}`
     const number = parseInt(numberStr!, 10)
     const unique_key = `github.com:${slug}:${number}`
+    const title = 'TODO_TITLE'
     return {
       domain: 'github.com',
       number,
       slug,
+      title,
       type: 'GH_ISSUE_ADD_COMMENT',
       unique_key,
     }
