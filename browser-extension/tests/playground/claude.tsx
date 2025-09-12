@@ -1,9 +1,52 @@
 //import { DraftStats } from '@/lib/enhancers/draftStats'
-import { CommentSpot } from '@/lib/enhancer'
-import { DraftStats } from '@/lib/enhancers/draftStats'
+
 import { GitPullRequestIcon, IssueOpenedIcon } from '@primer/octicons-react'
+import { cva, type VariantProps } from 'class-variance-authority'
 import { Clock, Code, Filter, Image, Link, Search, TextSelect } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import type { CommentSpot } from '@/lib/enhancer'
+import type { DraftStats } from '@/lib/enhancers/draftStats'
+
+// CVA configuration for stat badges
+const statBadge = cva('inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs', {
+  defaultVariants: {
+    type: 'text',
+  },
+  variants: {
+    type: {
+      code: 'bg-pink-50 text-pink-700',
+      image: 'bg-purple-50 text-purple-700',
+      link: 'bg-blue-50 text-blue-700',
+      text: 'bg-gray-50 text-gray-700',
+      time: 'bg-gray-50 text-gray-700',
+    },
+  },
+})
+
+// Map types to their icons
+const typeIcons = {
+  code: Code,
+  image: Image,
+  link: Link,
+  text: TextSelect,
+  time: Clock,
+} as const
+
+// StatBadge component
+type BadgeProps = VariantProps<typeof statBadge> & {
+  text: number | string
+  type: keyof typeof typeIcons
+}
+
+const Badge = ({ text, type }: BadgeProps) => {
+  const Icon = typeIcons[type]
+  return (
+    <span className={statBadge({ type })}>
+      <Icon className='w-3 h-3' />
+      {text}
+    </span>
+  )
+}
 
 /*
 interface GitHubIssueAddCommentSpot extends CommentSpot {
@@ -48,8 +91,8 @@ interface RedditDraft extends BaseDraft {
 }
 
 interface LatestDraft {
-  spot: BaseDraft,
-  draft: string,
+  spot: BaseDraft
+  draft: string
   time: number
   draftStats: DraftStats
 }
@@ -70,7 +113,6 @@ const generateMockDrafts = (): Draft[] => [
     codeCount: 3,
     content:
       'This PR addresses the memory leak issue reported in #1233. The problem was caused by event listeners not being properly disposed...',
-    unique_key: '1',
     imageCount: 2,
     lastEdit: Date.now() - 1000 * 60 * 30,
     linkCount: 2,
@@ -78,26 +120,26 @@ const generateMockDrafts = (): Draft[] => [
     slug: 'microsoft/vscode',
     title: 'Fix memory leak in extension host',
     type: 'PR',
+    unique_key: '1',
   } satisfies GitHubDraft,
   {
     charCount: 180,
     codeCount: 0,
     content:
       "I've been using GitLens for years and it's absolutely essential for my workflow. The inline blame annotations are incredibly helpful when...",
-    unique_key: '2',
     imageCount: 0,
     lastEdit: Date.now() - 1000 * 60 * 60 * 2,
     linkCount: 1,
     subreddit: 'programming',
     title: "Re: What's your favorite VS Code extension?",
     type: 'REDDIT',
+    unique_key: '2',
   } satisfies RedditDraft,
   {
     charCount: 456,
     codeCount: 1,
     content:
       "When using useEffect with async functions, the cleanup function doesn't seem to be called correctly in certain edge cases...",
-    unique_key: '3',
     imageCount: 0,
     lastEdit: Date.now() - 1000 * 60 * 60 * 5,
     linkCount: 0,
@@ -105,13 +147,13 @@ const generateMockDrafts = (): Draft[] => [
     slug: 'facebook/react',
     title: 'Unexpected behavior with useEffect cleanup',
     type: 'ISSUE',
+    unique_key: '3',
   } satisfies GitHubDraft,
   {
     charCount: 322,
     codeCount: 0,
     content:
       'LGTM! Just a few minor suggestions about the examples in the routing section. Consider adding more context about...',
-    unique_key: '4',
     imageCount: 4,
     lastEdit: Date.now() - 1000 * 60 * 60 * 24,
     linkCount: 3,
@@ -119,13 +161,13 @@ const generateMockDrafts = (): Draft[] => [
     slug: 'vercel/next.js',
     title: 'Update routing documentation',
     type: 'PR',
+    unique_key: '4',
   } satisfies GitHubDraft,
   {
     charCount: 678,
     codeCount: 7,
     content:
       'This PR implements ESM support in worker threads as discussed in the last TSC meeting. The implementation follows...',
-    unique_key: '5',
     imageCount: 1,
     lastEdit: Date.now() - 1000 * 60 * 60 * 48,
     linkCount: 5,
@@ -133,6 +175,7 @@ const generateMockDrafts = (): Draft[] => [
     slug: 'nodejs/node',
     title: 'Add support for ESM in worker threads',
     type: 'PR',
+    unique_key: '5',
   } satisfies GitHubDraft,
 ]
 
@@ -372,10 +415,7 @@ export const ClaudePrototype = () => {
                             onChange={(e) => setHasLinkFilter(e.target.checked)}
                             className='rounded'
                           />
-                          <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-700'>
-                            <Link className='w-3 h-3' />
-                            links
-                          </span>
+                          <Badge type='link' text='links' />
                         </label>
                         <label className='flex items-center gap-2 cursor-pointer'>
                           <input
@@ -384,10 +424,7 @@ export const ClaudePrototype = () => {
                             onChange={(e) => setHasImageFilter(e.target.checked)}
                             className='rounded'
                           />
-                          <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-purple-50 text-purple-700'>
-                            <Image className='w-3 h-3' />
-                            images
-                          </span>
+                          <Badge type='image' text='images' />
                         </label>
                         <label className='flex items-center gap-2 cursor-pointer'>
                           <input
@@ -396,10 +433,7 @@ export const ClaudePrototype = () => {
                             onChange={(e) => setHasCodeFilter(e.target.checked)}
                             className='rounded'
                           />
-                          <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-pink-50 text-pink-700'>
-                            <Code className='w-3 h-3' />
-                            code
-                          </span>
+                          <Badge type='code' text='code' />
                         </label>
                       </div>
                     </div>
@@ -467,32 +501,11 @@ function commentRow(
               )}
             </div>
             <div className='flex items-center gap-1 flex-shrink-0'>
-              {draft.linkCount > 0 && (
-                <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-700'>
-                  <Link className='w-3 h-3' />
-                  {draft.linkCount}
-                </span>
-              )}
-              {draft.imageCount > 0 && (
-                <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-purple-50 text-purple-700'>
-                  <Image className='w-3 h-3' />
-                  {draft.imageCount}
-                </span>
-              )}
-              {draft.codeCount > 0 && (
-                <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-pink-50 text-pink-700'>
-                  <Code className='w-3 h-3' />
-                  {draft.codeCount}
-                </span>
-              )}
-              <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-gray-50 text-gray-700'>
-                <TextSelect className='w-3 h-3' />
-                {draft.charCount}
-              </span>
-              <span className='inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-gray-50 text-gray-700'>
-                <Clock className='w-3 h-3' />
-                {timeAgo(draft.lastEdit)}
-              </span>
+              {draft.linkCount > 0 && <Badge type='link' text={draft.linkCount} />}
+              {draft.imageCount > 0 && <Badge type='image' text={draft.imageCount} />}
+              {draft.codeCount > 0 && <Badge type='code' text={draft.codeCount} />}
+              <Badge type='text' text={draft.charCount} />
+              <Badge type='time' text={timeAgo(draft.lastEdit)} />
             </div>
           </div>
 
