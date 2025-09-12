@@ -46,17 +46,12 @@ const statBadge = cva(
         unsent: 'bg-amber-100 text-amber-700',
       },
       clickable: {
-        true: 'cursor-pointer border border-transparent hover:border-opacity-50',
-        false: '',
-      },
-      selected: {
-        true: 'border-opacity-100',
+        true: 'cursor-pointer border border-transparent hover:border-current',
         false: '',
       },
     },
     defaultVariants: {
       clickable: false,
-      selected: false,
     },
   },
 )
@@ -80,10 +75,9 @@ type BadgeProps = VariantProps<typeof statBadge> & {
   type: keyof typeof typeIcons
   text?: number | string
   onClick?: () => void
-  isSelected?: boolean
 }
 
-const Badge = ({ text, type, onClick, isSelected }: BadgeProps) => {
+const Badge = ({ text, type, onClick }: BadgeProps) => {
   const Icon = typeIcons[type]
   const Component = onClick ? 'button' : 'span'
 
@@ -91,8 +85,7 @@ const Badge = ({ text, type, onClick, isSelected }: BadgeProps) => {
     <Component
       className={twMerge(statBadge({
         type,
-        clickable: !!onClick,
-        selected: !!isSelected
+        clickable: !!onClick
       }))}
       onClick={onClick}
       {...(onClick && { type: 'button' })}
@@ -603,22 +596,29 @@ function filterControls(
             <Badge type='code' />
           </label>
         </div>
-        <div className='flex rounded-md overflow-hidden'>
+        <div className='relative flex rounded-md overflow-hidden'>
+          {/* Sliding indicator */}
+          <div
+            className='absolute top-0 h-0.5 bg-current transition-all duration-200'
+            style={{
+              width: '33.33%',
+              left: filters.sentFilter === 'unsent' ? '0%' :
+                filters.sentFilter === 'all' ? '33.33%' : '66.66%'
+            }}
+          />
+
           <Badge
             type='unsent'
             onClick={() => updateFilter('sentFilter', 'unsent')}
-            isSelected={filters.sentFilter === 'unsent'}
           />
           <Badge
             type='blank'
             text='both'
             onClick={() => updateFilter('sentFilter', 'all')}
-            isSelected={filters.sentFilter === 'all'}
           />
           <Badge
             type='sent'
             onClick={() => updateFilter('sentFilter', 'sent')}
-            isSelected={filters.sentFilter === 'sent'}
           />
         </div>
       </div>
