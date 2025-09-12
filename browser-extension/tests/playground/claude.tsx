@@ -11,7 +11,7 @@ import {
   Monitor,
   Search,
   TextSelect,
-  Trash,
+  Trash2,
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
@@ -41,16 +41,16 @@ const statBadge = cva(
         true: '!border-solid !border-current',
       },
       type: {
-        trashed: 'bg-gray-50 text-yellow-700',
         blank: 'bg-transparent text-gray-700',
         code: 'bg-pink-50 text-pink-700',
-        hideArchived: 'bg-transparent text-gray-700',
+        hideTrashed: 'bg-transparent text-gray-700',
         image: 'bg-purple-50 text-purple-700',
         link: 'bg-blue-50 text-blue-700',
         open: 'bg-cyan-50 text-cyan-700',
         sent: 'bg-green-50 text-green-700',
         text: 'bg-gray-50 text-gray-700',
         time: 'bg-gray-50 text-gray-700',
+        trashed: 'bg-gray-50 text-yellow-700',
         unsent: 'bg-amber-100 text-amber-700',
       },
     },
@@ -59,16 +59,16 @@ const statBadge = cva(
 
 // Map types to their icons
 const typeIcons = {
-  trashed: Trash,
   blank: Code,
   code: Code,
-  hideArchived: EyeOff,
+  hideTrashed: EyeOff,
   image: Image,
   link: Link,
   open: Monitor,
   sent: MailCheck,
   text: TextSelect,
   time: Clock,
+  trashed: Trash2,
   unsent: MessageSquareDashed,
 } as const
 
@@ -198,9 +198,9 @@ const isRedditDraft = (spot: GitHubOrReddit): spot is RedditSpot => {
 
 const generateMockDrafts = (): CommentTableRow[] => [
   {
-    isTrashed: false,
     isOpenTab: true,
     isSent: false,
+    isTrashed: false,
     latestDraft: {
       content:
         'This PR addresses the memory leak issue reported in #1233. The problem was caused by event listeners not being properly disposed...',
@@ -231,9 +231,9 @@ const generateMockDrafts = (): CommentTableRow[] => [
     } satisfies GitHubSpot,
   },
   {
-    isTrashed: false,
     isOpenTab: false,
     isSent: false,
+    isTrashed: false,
     latestDraft: {
       content:
         "I've been using GitLens for years and it's absolutely essential for my workflow. The inline blame annotations are incredibly helpful when...",
@@ -258,9 +258,9 @@ const generateMockDrafts = (): CommentTableRow[] => [
     } satisfies RedditSpot,
   },
   {
-    isTrashed: false,
     isOpenTab: true,
     isSent: false,
+    isTrashed: false,
     latestDraft: {
       content:
         "When using useEffect with async functions, the cleanup function doesn't seem to be called correctly in certain edge cases...",
@@ -281,9 +281,9 @@ const generateMockDrafts = (): CommentTableRow[] => [
     } satisfies GitHubSpot,
   },
   {
-    isTrashed: false,
     isOpenTab: false,
     isSent: true,
+    isTrashed: false,
     latestDraft: {
       content:
         'LGTM! Just a few minor suggestions about the examples in the routing section. Consider adding more context about...',
@@ -316,9 +316,9 @@ const generateMockDrafts = (): CommentTableRow[] => [
     } satisfies GitHubSpot,
   },
   {
-    isTrashed: true,
     isOpenTab: true,
     isSent: false,
+    isTrashed: true,
     latestDraft: {
       content:
         'This PR implements ESM support in worker threads as discussed in the last TSC meeting. The implementation follows...',
@@ -470,7 +470,7 @@ export const ClaudePrototype = () => {
   if (filteredDrafts.length === 0 && (filters.searchQuery || filters.sentFilter !== 'both')) {
     return (
       <div className='min-h-screen bg-white'>
-        <div className='p-6 border-b'>
+        <div className='p-6 border-b-gray-300'>
           {/* Keep the header controls visible */}
           <div className='flex flex-wrap gap-3 items-center'>
             {/* Search */}
@@ -481,7 +481,7 @@ export const ClaudePrototype = () => {
                 placeholder='Search drafts...'
                 value={filters.searchQuery}
                 onChange={(e) => updateFilter('searchQuery', e.target.value)}
-                className='w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md text-sm'
+                className='w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-sm text-sm font-normal'
               />
             </div>
           </div>
@@ -535,7 +535,7 @@ export const ClaudePrototype = () => {
             <col className='w-10' />
             <col />
           </colgroup>
-          <thead className='border-b'>
+          <thead className='border-b border-gray-400'>
             <tr>
               <th scope='col' className='px-3 py-3'>
                 <input
@@ -556,10 +556,21 @@ export const ClaudePrototype = () => {
                         placeholder='Search drafts...'
                         value={filters.searchQuery}
                         onChange={(e) => updateFilter('searchQuery', e.target.value)}
-                        className='w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'
+                        className='w-full pl-9 pr-3 h-5 border border-gray-300 rounded-sm text-sm font-normal focus:outline-none focus:border-blue-500'
                       />
                     </div>
-                    <div className='relative flex overflow-hidden'>
+                    <div className='relative flex overflow-hidden gap-1'>
+                      <span
+                        className={twMerge(
+                          statBadge({
+                            type: 'trashed',
+                          }),
+                          'border',
+                        )}
+                      >
+                        <Trash2 className='w-3 h-3' />
+                        <EyeOff className='w-3 h-3' />
+                      </span>
                       <MultiSegment<FilterState['sentFilter']>
                         value={filters.sentFilter}
                         onValueChange={(value) => updateFilter('sentFilter', value)}
@@ -581,6 +592,23 @@ export const ClaudePrototype = () => {
                           },
                         ]}
                       />
+                      {/* 
+                      <MultiSegment<FilterState['showTrashed']>
+                        value={filters.showTrashed}
+                        onValueChange={(value) => updateFilter('showTrashed', value)}
+                        segments={[
+                          {
+                            text: 'show trashed',
+                            type: 'trashed',
+                            value: true,
+                          },
+                          {
+                            text: 'hide trashed',
+                            type: 'hideTrashed',
+                            value: false
+                          },
+                        ]}
+                      /> */}
                     </div>
                   </div>
                 </div>
