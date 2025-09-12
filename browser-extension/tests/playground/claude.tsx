@@ -44,6 +44,18 @@ const statBadge = cva(
         time: 'bg-gray-50 text-gray-700',
         unsent: 'bg-amber-100 text-amber-700',
       },
+      clickable: {
+        true: 'cursor-pointer border border-transparent hover:border-blue-500 hover:border-opacity-50  transition-colors',
+        false: '',
+      },
+      selected: {
+        true: 'border-blue-500 border-opacity-100',
+        false: '',
+      },
+    },
+    defaultVariants: {
+      clickable: false,
+      selected: false,
     },
   },
 )
@@ -66,15 +78,27 @@ const typeIcons = {
 type BadgeProps = VariantProps<typeof statBadge> & {
   type: keyof typeof typeIcons
   text?: number | string
+  onClick?: () => void
+  isSelected?: boolean
 }
 
-const Badge = ({ text, type }: BadgeProps) => {
+const Badge = ({ text, type, onClick, isSelected }: BadgeProps) => {
   const Icon = typeIcons[type]
+  const Component = onClick ? 'button' : 'span'
+
   return (
-    <span className={statBadge({ type })}>
+    <Component
+      className={statBadge({
+        type,
+        clickable: !!onClick,
+        selected: !!isSelected
+      })}
+      onClick={onClick}
+      {...(onClick && { type: 'button' })}
+    >
       {type === 'blank' || <Icon className='w-3 h-3' />}
       {text || type}
-    </span>
+    </Component>
   )
 }
 
@@ -579,9 +603,22 @@ function filterControls(
           </label>
         </div>
         <div className='flex rounded-md overflow-hidden'>
-          <Badge type='unsent' />
-          <Badge type='blank' text='both' />
-          <Badge type='sent' />
+          <Badge
+            type='unsent'
+            onClick={() => updateFilter('sentFilter', 'unsent')}
+            isSelected={filters.sentFilter === 'unsent'}
+          />
+          <Badge
+            type='blank'
+            text='both'
+            onClick={() => updateFilter('sentFilter', 'all')}
+            isSelected={filters.sentFilter === 'all'}
+          />
+          <Badge
+            type='sent'
+            onClick={() => updateFilter('sentFilter', 'sent')}
+            isSelected={filters.sentFilter === 'sent'}
+          />
         </div>
       </div>
     </div>
