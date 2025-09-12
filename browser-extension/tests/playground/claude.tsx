@@ -19,7 +19,7 @@ import type { CommentSpot } from '@/lib/enhancer'
 import type { DraftStats } from '@/lib/enhancers/draftStats'
 
 interface FilterState {
-  sentFilter: 'all' | 'sent' | 'unsent'
+  sentFilter: 'both' | 'sent' | 'unsent'
   searchQuery: string
   showArchived: boolean
 }
@@ -94,18 +94,18 @@ const Badge = ({ text, type }: BadgeProps) => {
   )
 }
 
-interface Segment {
+interface Segment<T> {
   text?: string
   type: keyof typeof typeIcons
-  value: string
+  value: T
 }
-interface MultiSegmentProps {
-  segments: Segment[]
-  value: string
-  onValueChange: (value: string) => void
+interface MultiSegmentProps<T> {
+  segments: Segment<T>[]
+  value: T
+  onValueChange: (value: T) => void
 }
 
-const MultiSegment = ({ segments, value, onValueChange }: MultiSegmentProps) => {
+const MultiSegment = <T,>({ segments, value, onValueChange }: MultiSegmentProps<T>) => {
   return (
     <div className='inline-flex items-center gap-0'>
       {segments.map((segment, index) => {
@@ -124,7 +124,7 @@ const MultiSegment = ({ segments, value, onValueChange }: MultiSegmentProps) => 
 
         return (
           <button
-            key={segment.value}
+            key={String(segment.value)}
             className={`${statBadge({
               clickable: true,
               selected: value === segment.value,
@@ -382,7 +382,7 @@ export const ClaudePrototype = () => {
   const [selectedIds, setSelectedIds] = useState(new Set())
   const [filters, setFilters] = useState<FilterState>({
     searchQuery: '',
-    sentFilter: 'all',
+    sentFilter: 'both',
     showArchived: false,
   })
 
@@ -395,7 +395,7 @@ export const ClaudePrototype = () => {
     if (!filters.showArchived) {
       filtered = filtered.filter((d) => !d.isArchived)
     }
-    if (filters.sentFilter !== 'all') {
+    if (filters.sentFilter !== 'both') {
       filtered = filtered.filter((d) => (filters.sentFilter === 'sent' ? d.isSent : !d.isSent))
     }
     if (filters.searchQuery) {
@@ -467,7 +467,7 @@ export const ClaudePrototype = () => {
     )
   }
 
-  if (filteredDrafts.length === 0 && (filters.searchQuery || filters.sentFilter !== 'all')) {
+  if (filteredDrafts.length === 0 && (filters.searchQuery || filters.sentFilter !== 'both')) {
     return (
       <div className='min-h-screen bg-white'>
         <div className='p-6 border-b'>
@@ -494,7 +494,7 @@ export const ClaudePrototype = () => {
             onClick={() => {
               setFilters({
                 searchQuery: '',
-                sentFilter: 'all',
+                sentFilter: 'both',
                 showArchived: true,
               })
             }}
@@ -565,11 +565,9 @@ export const ClaudePrototype = () => {
                       />
                     </div>
                     <div className='relative flex overflow-hidden'>
-                      <MultiSegment
+                      <MultiSegment<FilterState['sentFilter']>
                         value={filters.sentFilter}
-                        onValueChange={(value) =>
-                          updateFilter('sentFilter', value as 'all' | 'sent' | 'unsent')
-                        }
+                        onValueChange={(value) => updateFilter('sentFilter', value)}
                         segments={[
                           {
                             text: '',
@@ -579,7 +577,7 @@ export const ClaudePrototype = () => {
                           {
                             text: 'both',
                             type: 'blank',
-                            value: 'all',
+                            value: 'both',
                           },
                           {
                             text: '',
