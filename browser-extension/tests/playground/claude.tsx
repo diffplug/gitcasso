@@ -41,7 +41,7 @@ const statBadge = cva(
       },
       selected: {
         false: '',
-        true: 'border-solid border-current',
+        true: '!border-solid !border-current',
       },
       type: {
         archived: 'bg-gray-50 text-yellow-700',
@@ -564,7 +564,7 @@ export const ClaudePrototype = () => {
                         segments={[
                           {
                             type: 'unsent',
-                            text: ' ',
+                            text: '',
                             value: 'unsent'
                           },
                           {
@@ -574,7 +574,7 @@ export const ClaudePrototype = () => {
                           },
                           {
                             type: 'sent',
-                            text: ' ',
+                            text: '',
                             value: 'sent'
                           }
                         ]} />
