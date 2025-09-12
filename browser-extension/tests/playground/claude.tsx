@@ -29,7 +29,7 @@ interface FilterState {
 
 // CVA configuration for stat badges
 const statBadge = cva(
-  'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-normal',
+  'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-normal h-5',
   {
     defaultVariants: {
       clickable: false,
