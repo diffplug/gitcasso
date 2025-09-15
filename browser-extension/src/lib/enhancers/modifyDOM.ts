@@ -26,5 +26,23 @@ export function modifyDOM(overtypeInput: HTMLTextAreaElement): HTMLElement {
     attributes: true,
   })
 
+  // Find the button that contains the text "Preview"
+  const writePreviewTabs = Array.from(
+    (overtypeContainer.firstElementChild as HTMLElement).querySelectorAll('button'),
+  )
+  const writeTab = writePreviewTabs.find((button) => button.textContent.includes('Write'))
+  const previewTab = writePreviewTabs.find((button) => button.textContent.includes('Preview'))
+
+  if (writeTab && previewTab) {
+    // Hide the textarea when the user is on the "Preview" tab
+    writeTab.addEventListener('click', () => {
+      overtypeWrapper.style.display = 'inline-block'
+    })
+
+    previewTab.addEventListener('click', () => {
+      overtypeWrapper.style.display = 'none'
+    })
+  }
+
   return overtypeContainer.parentElement!.closest('div')!
 }

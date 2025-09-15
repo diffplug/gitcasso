@@ -1,0 +1,72 @@
+import OverType, { type OverTypeInstance } from 'overtype'
+import type { CommentEnhancer, CommentSpot } from '../../enhancer'
+import { logger } from '../../logger'
+import { modifyDOM } from '../modifyDOM'
+import { githubHighlighter } from './githubHighlighter'
+
+interface GitHubPRNewCommentSpot extends CommentSpot {
+  type: 'GH_PR_NEW_COMMENT'
+  domain: string
+  slug: string // owner/repo/base-branch/compare-branch
+}
+
+export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCommentSpot> {
+  forSpotTypes(): string[] {
+    return ['GH_PR_NEW_COMMENT']
+  }
+
+  tryToEnhance(_textarea: HTMLTextAreaElement): GitHubPRNewCommentSpot | null {
+    if (document.querySelector('meta[name="hostname"]')?.getAttribute('content') !== 'github.com') {
+      return null
+    }
+
+    // /owner/repo/compare/feature/more-enhancers?expand=1
+    // or /owner/repo/compare/feat/issue-static-and-dynamic...feature/more-enhancers?expand=1
+    logger.info(`${this.constructor.name} examing url`, window.location.pathname)
+
+    const match = window.location.pathname.match(
+      /^\/([^/]+)\/([^/]+)\/compare\/(?:([^.?]+)\.\.\.)?([^?]+)/,
+    )
+    logger.info(`${this.constructor.name} found match`, window.location.pathname, match)
+
+    if (!match) return null
+    const [, owner, repo, baseBranch, compareBranch] = match
+    const slug = baseBranch
+      ? `${owner}/${repo}/${baseBranch}...${compareBranch}`
+      : `${owner}/${repo}/${compareBranch}`
+    const unique_key = `github.com:${slug}`
+    return {
+      domain: 'github.com',
+      slug,
+      type: 'GH_PR_NEW_COMMENT',
+      unique_key,
+    }
+  }
+
+  prepareForFirstEnhancement(): void {
+    OverType.setCodeHighlighter(githubHighlighter)
+  }
+
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubPRNewCommentSpot): OverTypeInstance {
+    const overtypeContainer = modifyDOM(textArea)
+    return new OverType(overtypeContainer, {
+      autoResize: true,
+      minHeight: '250px',
+      padding: 'var(--base-size-16)',
+      placeholder: 'Type your description here...',
+    })[0]!
+  }
+
+  tableTitle(spot: GitHubPRNewCommentSpot): string {
+    const { slug } = spot
+    return `${slug} New Issue`
+  }
+
+  tableIcon(_: GitHubPRNewCommentSpot): string {
+    return '🔄' // PR icon TODO: icon urls in /public
+  }
+
+  buildUrl(spot: GitHubPRNewCommentSpot): string {
+    return `https://${spot.domain}/${spot.slug}/issue/new`
+  }
+}
