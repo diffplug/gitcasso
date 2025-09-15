@@ -2,7 +2,9 @@ import type { OverTypeInstance } from 'overtype'
 import OverType from 'overtype'
 import type { CommentEnhancer, CommentSpot } from './enhancer'
 import { GitHubIssueAddCommentEnhancer } from './enhancers/github/githubIssueAddComment'
+import { GitHubIssueNewCommentEnhancer } from './enhancers/github/githubIssueNewComment'
 import { GitHubPRAddCommentEnhancer } from './enhancers/github/githubPRAddComment'
+import { GitHubPRNewCommentEnhancer } from './enhancers/github/githubPRNewComment'
 
 export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
   textarea: HTMLTextAreaElement
@@ -19,7 +21,9 @@ export class EnhancerRegistry {
   constructor() {
     // Register all available handlers
     this.register(new GitHubIssueAddCommentEnhancer())
+    this.register(new GitHubIssueNewCommentEnhancer())
     this.register(new GitHubPRAddCommentEnhancer())
+    this.register(new GitHubPRNewCommentEnhancer())
     const textColor = 'rgb(31, 35, 40)'
     const headingColor = 'rgb(174, 52, 151)'
     OverType.setTheme({

@@ -41,7 +41,7 @@ export { expect }
 export function usingHar(harKey: keyof typeof PAGES) {
   return {
     it: (name: string, fn: () => void | Promise<void>) => {
-      return baseTest(name, async () => {
+      return baseTest(`${harKey}:${name}`, async () => {
         // Setup HAR DOM before test
         await setupHarDOM(harKey)
 
