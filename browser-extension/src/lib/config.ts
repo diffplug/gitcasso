@@ -8,8 +8,7 @@ export type LogLevel = (typeof LOG_LEVELS)[number]
 
 export const CONFIG = {
   ADDED_OVERTYPE_CLASS: 'gitcasso-overtype',
-
   EXTENSION_NAME: 'gitcasso', // decorates logs
-  LOG_LEVEL: 'INFO' satisfies LogLevel,
+  LOG_LEVEL: 'DEBUG' satisfies LogLevel,
   MODE: 'PROD' satisfies ModeType,
 } as const
