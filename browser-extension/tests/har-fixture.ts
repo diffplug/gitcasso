@@ -1,5 +1,12 @@
 import { vi } from 'vitest'
 
+// Mock MutationObserver for tests
+global.MutationObserver = vi.fn().mockImplementation(() => ({
+  disconnect: vi.fn(),
+  observe: vi.fn(),
+  takeRecords: vi.fn(() => []),
+}))
+
 // Mock the OverType editor component
 vi.mock('overtype', () => {
   const mockConstructor = vi.fn().mockImplementation(() => [
@@ -15,6 +22,7 @@ vi.mock('overtype', () => {
     },
   ])
   ;(mockConstructor as any).setCodeHighlighter = vi.fn()
+  ;(mockConstructor as any).setTheme = vi.fn()
   return {
     default: mockConstructor,
   }
