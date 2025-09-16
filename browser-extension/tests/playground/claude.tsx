@@ -2,7 +2,7 @@ import { Eye, EyeOff, Search, Settings, Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import Badge from '@/components/Badge'
-import { statBadge, typeIcons } from '@/components/design'
+import { badgeCVA, typeIcons } from '@/components/design'
 import type { CommentTableRow } from '@/entrypoints/background'
 import type { FilterState } from '@/entrypoints/popup/popup'
 import { EnhancerRegistry } from '@/lib/registries'
@@ -39,7 +39,7 @@ const MultiSegment = <T,>({ segments, value, onValueChange }: MultiSegmentProps<
         return (
           <button
             key={String(segment.value)}
-            className={`${statBadge({
+            className={`${badgeCVA({
               clickable: true,
               selected: value === segment.value,
               type: segment.type,
@@ -237,7 +237,7 @@ export const ClaudePrototype = () => {
                         type='button'
                         onClick={() => updateFilter('showTrashed', !filters.showTrashed)}
                         className={twMerge(
-                          statBadge({
+                          badgeCVA({
                             clickable: true,
                             type: filters.showTrashed ? 'trashed' : 'hideTrashed',
                           }),
@@ -275,7 +275,7 @@ export const ClaudePrototype = () => {
                       <button
                         type='button'
                         className={twMerge(
-                          statBadge({
+                          badgeCVA({
                             clickable: true,
                             type: 'settings',
                           }),

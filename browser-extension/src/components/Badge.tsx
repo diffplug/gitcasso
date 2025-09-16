@@ -1,8 +1,8 @@
 import type { VariantProps } from 'class-variance-authority'
 import { twMerge } from 'tailwind-merge'
-import { statBadge, typeIcons } from '@/components/design'
+import { badgeCVA, typeIcons } from '@/components/design'
 
-export type BadgeProps = VariantProps<typeof statBadge> & {
+export type BadgeProps = VariantProps<typeof badgeCVA> & {
   type: keyof typeof typeIcons
   text?: number | string
 }
@@ -12,7 +12,7 @@ const Badge = ({ text, type }: BadgeProps) => {
   return (
     <span
       className={twMerge(
-        statBadge({
+        badgeCVA({
           type,
         }),
       )}

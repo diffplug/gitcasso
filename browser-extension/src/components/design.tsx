@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 
 // CVA configuration for stat badges
-export const statBadge = cva(
+export const badgeCVA = cva(
   'inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-normal h-5',
   {
     defaultVariants: {
