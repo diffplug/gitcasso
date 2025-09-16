@@ -1,4 +1,3 @@
-import { GitPullRequestIcon, IssueOpenedIcon } from '@primer/octicons-react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import {
   Clock,
@@ -18,9 +17,8 @@ import {
 import { useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import type { CommentTableRow } from '@/entrypoints/background'
-import type { CommentSpot } from '@/lib/enhancer'
-import type { GitHubIssueAddCommentSpot } from '@/lib/enhancers/github/githubIssueAddComment'
-import { generateMockDrafts, type RedditSpot } from './replicaData'
+import { EnhancerRegistry } from '@/lib/registries'
+import { generateMockDrafts } from './replicaData'
 
 interface FilterState {
   sentFilter: 'both' | 'sent' | 'unsent'
@@ -179,13 +177,6 @@ function* allLeafValues(obj: any, visited = new Set()): Generator<string> {
       yield* allLeafValues(obj[key], visited)
     }
   }
-}
-
-function isGitHubDraft(spot: CommentSpot): spot is GitHubIssueAddCommentSpot {
-  return spot.type === 'GH_PR_ADD_COMMENT' || spot.type === 'GH_ISSUE_ADD_COMMENT'
-}
-function isRedditDraft(spot: CommentSpot): spot is RedditSpot {
-  return spot.type === 'REDDIT'
 }
 
 export const ClaudePrototype = () => {
@@ -396,6 +387,7 @@ export const ClaudePrototype = () => {
   )
 }
 
+const enhancers = new EnhancerRegistry()
 function commentRow(
   row: CommentTableRow,
   selectedIds: Set<unknown>,
@@ -403,6 +395,7 @@ function commentRow(
   _handleOpen: (url: string) => void,
   _handleTrash: (row: CommentTableRow) => void,
 ) {
+  const enhancer = enhancers.enhancerFor(row.spot)
   return (
     <tr key={row.spot.unique_key} className='hover:bg-gray-50'>
       <td className='px-3 py-3'>
@@ -418,31 +411,7 @@ function commentRow(
           {/* Context line */}
           <div className='flex items-center justify-between gap-1.5 text-xs text-gray-600'>
             <div className='flex items-center gap-1.5 min-w-0 flex-1'>
-              <span className='w-4 h-4 flex items-center justify-center flex-shrink-0'>
-                {row.spot.type === 'GH_PR_ADD_COMMENT' && <GitPullRequestIcon size={16} />}
-                {row.spot.type === 'GH_ISSUE_ADD_COMMENT' && <IssueOpenedIcon size={16} />}
-                {row.spot.type === 'REDDIT' && (
-                  <img
-                    src='https://styles.redditmedia.com/t5_2fwo/styles/communityIcon_1bqa1ibfp8q11.png?width=128&frame=1&auto=webp&s=400b33e7080aa4996c405a96b3872a12f0e3b68d'
-                    alt='Reddit'
-                    className='w-4 h-4 rounded-full'
-                  />
-                )}
-              </span>
-
-              {isGitHubDraft(row.spot) && (
-                <>
-                  #{row.spot.number}
-                  <a href='TODO' className='hover:underline truncate'>
-                    {row.spot.slug}
-                  </a>
-                </>
-              )}
-              {isRedditDraft(row.spot) && (
-                <a href={'TODO'} className='hover:underline truncate'>
-                  r/{row.spot.subreddit}
-                </a>
-              )}
+              {enhancer.tableUpperDecoration(row.spot)}
             </div>
             <div className='flex items-center gap-1 flex-shrink-0'>
               {row.latestDraft.stats.links.length > 0 && (
@@ -463,7 +432,7 @@ function commentRow(
           {/* Title */}
           <div className='flex items-center gap-1'>
             <a href='TODO' className='text-sm font-medium  hover:underline truncate'>
-              TODO_title
+              {enhancer.tableTitle(row.spot)}
             </a>
             <Badge type={row.isSent ? 'sent' : 'unsent'} />
             {row.isTrashed && <Badge type='trashed' />}

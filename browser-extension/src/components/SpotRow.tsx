@@ -34,7 +34,9 @@ export function SpotRow({
 
   return (
     <TableRow className={cn('cursor-pointer', className)} onClick={onClick}>
-      <TableCell className={cellClassName}>{enhancer.tableRow(commentState.spot)}</TableCell>
+      <TableCell className={cellClassName}>
+        {enhancer.tableUpperDecoration(commentState.spot)}
+      </TableCell>
     </TableRow>
   )
 }

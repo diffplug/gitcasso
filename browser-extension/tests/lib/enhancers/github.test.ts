@@ -22,7 +22,9 @@ describe('github', () => {
         "unique_key": "github.com:diffplug/selfie:517",
       }
     `)
-    expect(enhancedTextarea?.enhancer.tableRow(enhancedTextarea.spot)).toMatchInlineSnapshot(`
+    expect(
+      enhancedTextarea?.enhancer.tableUpperDecoration(enhancedTextarea.spot),
+    ).toMatchInlineSnapshot(`
       <React.Fragment>
         <span
           className="font-mono text-sm text-muted-foreground"
@@ -67,20 +69,26 @@ describe('github', () => {
       }
     `)
     // Test the tableRow method
-    expect(enhancedTextarea?.enhancer.tableRow(enhancedTextarea.spot)).toMatchInlineSnapshot(`
-      <span>
+    expect(
+      enhancedTextarea?.enhancer.tableUpperDecoration(enhancedTextarea.spot),
+    ).toMatchInlineSnapshot(`
+      <React.Fragment>
         <span
-          className="font-mono text-sm text-muted-foreground"
+          className="w-4 h-4 flex items-center justify-center flex-shrink-0"
+        >
+          <IssueOpenedIcon
+            size={16}
+          />
+        </span>
+        #
+        523
+        <a
+          className="hover:underline truncate"
+          href="https://github.com/diffplug/selfie"
         >
           diffplug/selfie
-        </span>
-        <span
-          className="ml-2 font-medium"
-        >
-          Issue #
-          523
-        </span>
-      </span>
+        </a>
+      </React.Fragment>
     `)
   })
   usingHar('gh_new_issue').it('should create the correct spot object', async () => {

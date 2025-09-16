@@ -57,7 +57,7 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
     })[0]!
   }
 
-  tableRow(spot: GitHubPRNewCommentSpot): React.ReactNode {
+  tableUpperDecoration(spot: GitHubPRNewCommentSpot): React.ReactNode {
     const { slug } = spot
     return (
       <>
@@ -65,6 +65,10 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
         <span className='font-mono text-sm text-muted-foreground'> {slug} </span>
       </>
     )
+  }
+
+  tableTitle(_spot: GitHubPRNewCommentSpot): string {
+    return 'TITLE_TODO'
   }
 
   buildUrl(spot: GitHubPRNewCommentSpot): string {

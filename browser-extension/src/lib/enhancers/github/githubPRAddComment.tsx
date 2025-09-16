@@ -62,7 +62,7 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     })[0]!
   }
 
-  tableRow(spot: GitHubPRAddCommentSpot): React.ReactNode {
+  tableUpperDecoration(spot: GitHubPRAddCommentSpot): React.ReactNode {
     const { slug, number } = spot
     return (
       <>
@@ -70,5 +70,9 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
         <span className='ml-2 font-medium'>PR #{number}</span>
       </>
     )
+  }
+
+  tableTitle(_spot: GitHubPRAddCommentSpot): string {
+    return 'TITLE_TODO'
   }
 }

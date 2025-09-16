@@ -37,5 +37,7 @@ export interface CommentEnhancer<Spot extends CommentSpot = CommentSpot> {
    */
   enhance(textarea: HTMLTextAreaElement, spot: Spot): OverTypeInstance
   /** Returns a ReactNode which will be displayed in the table row. */
-  tableRow(spot: Spot): ReactNode
+  tableUpperDecoration(spot: Spot): ReactNode
+  /** The default title of a row */
+  tableTitle(spot: Spot): string
 }
