@@ -65,10 +65,10 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
   tableRow(spot: GitHubPRAddCommentSpot): React.ReactNode {
     const { slug, number } = spot
     return (
-      <span>
+      <>
         <span className='font-mono text-sm text-muted-foreground'>{slug}</span>
         <span className='ml-2 font-medium'>PR #{number}</span>
-      </span>
+      </>
     )
   }
 }
