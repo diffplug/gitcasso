@@ -14,7 +14,6 @@ export default defineConfig({
       '@': path.resolve('./src'),
     },
   },
-  root: 'tests/playground',
   server: {
     host: true,
     open: true,
