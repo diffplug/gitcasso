@@ -70,6 +70,7 @@ export class EnhancerRegistry {
             this.preparedEnhancers.add(enhancer)
           }
           const overtype = enhancer.enhance(textarea, spot)
+          this.handleDelayedValueInjection(overtype)
           return { enhancer, overtype, spot, textarea }
         }
       } catch (error) {
@@ -77,6 +78,24 @@ export class EnhancerRegistry {
       }
     }
     return null
+  }
+
+  private handleDelayedValueInjection(overtype: OverTypeInstance): void {
+    // GitHub sometimes injects textarea content after a delay
+    // We need to trigger OverType to update its preview after such injections
+    // https://github.com/diffplug/gitcasso/issues/46
+    setTimeout(() => {
+      overtype.updatePreview()
+    }, 100)
+    setTimeout(() => {
+      overtype.updatePreview()
+    }, 200)
+    setTimeout(() => {
+      overtype.updatePreview()
+    }, 400)
+    setTimeout(() => {
+      overtype.updatePreview()
+    }, 8000)
   }
 
   getEnhancerCount(): number {

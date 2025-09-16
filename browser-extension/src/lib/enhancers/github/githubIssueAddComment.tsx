@@ -4,6 +4,7 @@ import type React from 'react'
 import type { CommentEnhancer, CommentSpot } from '@/lib/enhancer'
 import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
+import { commonGithubOptions } from './ghOptions'
 import { githubHighlighter } from './githubHighlighter'
 
 export interface GitHubIssueAddCommentSpot extends CommentSpot {
@@ -52,9 +53,8 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
   enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueAddCommentSpot): OverTypeInstance {
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
-      autoResize: true,
+      ...commonGithubOptions,
       minHeight: '100px',
-      padding: 'var(--base-size-16)',
       placeholder: 'Use Markdown to format your comment',
     })[0]!
   }
