@@ -2,6 +2,7 @@ import OverType, { type OverTypeInstance } from 'overtype'
 import type { CommentEnhancer, CommentSpot } from '../../enhancer'
 import { logger } from '../../logger'
 import { modifyDOM } from '../modifyDOM'
+import { commonGithubOptions } from './ghOptions'
 import { githubHighlighter } from './githubHighlighter'
 
 interface GitHubPRNewCommentSpot extends CommentSpot {
@@ -50,9 +51,8 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
   enhance(textArea: HTMLTextAreaElement, _spot: GitHubPRNewCommentSpot): OverTypeInstance {
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
-      autoResize: true,
+      ...commonGithubOptions,
       minHeight: '250px',
-      padding: 'var(--base-size-16)',
       placeholder: 'Type your description here...',
     })[0]!
   }
