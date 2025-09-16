@@ -32,6 +32,12 @@ function switchToTab(tabId: number, windowId: number): void {
 
 const enhancers = new EnhancerRegistry()
 
+export interface FilterState {
+  sentFilter: 'both' | 'sent' | 'unsent'
+  searchQuery: string
+  showTrashed: boolean
+}
+
 function PopupApp() {
   const [spots, setSpots] = React.useState<CommentState[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
