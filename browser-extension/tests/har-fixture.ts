@@ -18,6 +18,7 @@ vi.mock('overtype', () => {
       preview: document.createElement('div'),
       setValue: vi.fn(),
       textarea: document.createElement('textarea'),
+      updatePreview: vi.fn(),
       wrapper: document.createElement('div'),
     },
   ])
