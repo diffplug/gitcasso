@@ -47,6 +47,9 @@
         "noUnusedVariables": "error",
         "useValidTypeof": "error"
       },
+      "nursery": {
+        "useSortedClasses": "error"
+      },
       "recommended": true,
       "style": {
         "noDefaultExport": "off",

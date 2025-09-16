@@ -109,18 +109,18 @@ export function PopupRoot({ drafts }: PopupRootProps) {
     <div className='bg-white'>
       {/* Bulk actions bar - floating popup */}
       {selectedIds.size > 0 && (
-        <div className='fixed bottom-6 left-1/2 transform -translate-x-1/2 p-3 bg-blue-50 rounded-md shadow-lg border border-blue-200 flex items-center gap-3 z-50'>
-          <span className='text-sm font-medium'>{selectedIds.size} selected</span>
-          <button type='button' className='text-sm text-blue-600 hover:underline'>
+        <div className='-translate-x-1/2 fixed bottom-6 left-1/2 z-50 flex transform items-center gap-3 rounded-md border border-blue-200 bg-blue-50 p-3 shadow-lg'>
+          <span className='font-medium text-sm'>{selectedIds.size} selected</span>
+          <button type='button' className='text-blue-600 text-sm hover:underline'>
             Copy
           </button>
-          <button type='button' className='text-sm text-blue-600 hover:underline'>
+          <button type='button' className='text-blue-600 text-sm hover:underline'>
             Preview
           </button>
-          <button type='button' className='text-sm text-blue-600 hover:underline'>
+          <button type='button' className='text-blue-600 text-sm hover:underline'>
             Discard
           </button>
-          <button type='button' className='text-sm text-blue-600 hover:underline'>
+          <button type='button' className='text-blue-600 text-sm hover:underline'>
             Open
           </button>
         </div>
@@ -133,7 +133,7 @@ export function PopupRoot({ drafts }: PopupRootProps) {
             <col className='w-10' />
             <col />
           </colgroup>
-          <thead className='border-b border-gray-400'>
+          <thead className='border-gray-400 border-b'>
             <tr>
               <th scope='col' className='px-3 py-3'>
                 <input
@@ -144,20 +144,20 @@ export function PopupRoot({ drafts }: PopupRootProps) {
                   className='rounded'
                 />
               </th>
-              <th scope='col' className='px-3 py-3 text-left text-xs text-gray-500'>
+              <th scope='col' className='px-3 py-3 text-left text-gray-500 text-xs'>
                 <div className='relative'>
                   <div className='flex items-center gap-1'>
                     <div className='relative flex-1'>
-                      <Search className='absolute left-1 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400' />
+                      <Search className='-translate-y-1/2 absolute top-1/2 left-1 h-4 w-4 text-gray-400' />
                       <input
                         type='text'
                         placeholder='Search drafts...'
                         value={filters.searchQuery}
                         onChange={(e) => updateFilter('searchQuery', e.target.value)}
-                        className='w-full pl-5 pr-3 h-5 border border-gray-300 rounded-sm text-sm font-normal focus:outline-none focus:border-blue-500'
+                        className='h-5 w-full rounded-sm border border-gray-300 pr-3 pl-5 font-normal text-sm focus:border-blue-500 focus:outline-none'
                       />
                     </div>
-                    <div className='relative flex overflow-hidden gap-1'>
+                    <div className='relative flex gap-1 overflow-hidden'>
                       <button
                         type='button'
                         onClick={() => updateFilter('showTrashed', !filters.showTrashed)}
@@ -169,11 +169,11 @@ export function PopupRoot({ drafts }: PopupRootProps) {
                           'border',
                         )}
                       >
-                        <Trash2 className='w-3 h-3' />
+                        <Trash2 className='h-3 w-3' />
                         {filters.showTrashed ? (
-                          <Eye className='w-3 h-3' />
+                          <Eye className='h-3 w-3' />
                         ) : (
-                          <EyeOff className='w-3 h-3' />
+                          <EyeOff className='h-3 w-3' />
                         )}
                       </button>
                       <MultiSegment<FilterState['sentFilter']>
@@ -207,7 +207,7 @@ export function PopupRoot({ drafts }: PopupRootProps) {
                           'border',
                         )}
                       >
-                        <Settings className='w-3 h-3' />
+                        <Settings className='h-3 w-3' />
                       </button>
                     </div>
                   </div>
@@ -244,11 +244,11 @@ function commentRow(
       <td className='px-3 py-3'>
         <div className='space-y-1'>
           {/* Context line */}
-          <div className='flex items-center justify-between gap-1.5 text-xs text-gray-600'>
-            <div className='flex items-center gap-1.5 min-w-0 flex-1'>
+          <div className='flex items-center justify-between gap-1.5 text-gray-600 text-xs'>
+            <div className='flex min-w-0 flex-1 items-center gap-1.5'>
               {enhancer.tableUpperDecoration(row.spot)}
             </div>
-            <div className='flex items-center gap-1 flex-shrink-0'>
+            <div className='flex flex-shrink-0 items-center gap-1'>
               {row.latestDraft.stats.links.length > 0 && (
                 <Badge type='link' text={row.latestDraft.stats.links.length} />
               )}
@@ -266,14 +266,14 @@ function commentRow(
 
           {/* Title */}
           <div className='flex items-center gap-1'>
-            <a href='TODO' className='text-sm font-medium  hover:underline truncate'>
+            <a href='TODO' className='truncate font-medium text-sm hover:underline'>
               {enhancer.tableTitle(row.spot)}
             </a>
             <Badge type={row.isSent ? 'sent' : 'unsent'} />
             {row.isTrashed && <Badge type='trashed' />}
           </div>
           {/* Draft */}
-          <div className='text-sm truncate'>
+          <div className='truncate text-sm'>
             <span className='text-gray-500'>{row.latestDraft.content.substring(0, 100)}…</span>
           </div>
         </div>
@@ -283,9 +283,9 @@ function commentRow(
 }
 
 const EmptyState = () => (
-  <div className='max-w-4xl mx-auto text-center py-16'>
-    <h2 className='text-2xl font-semibold mb-4'>No comments open</h2>
-    <p className='text-gray-600 mb-6'>
+  <div className='mx-auto max-w-4xl py-16 text-center'>
+    <h2 className='mb-4 font-semibold text-2xl'>No comments open</h2>
+    <p className='mb-6 text-gray-600'>
       Your drafts will appear here when you start typing in comment boxes across GitHub and Reddit.
     </p>
     <div className='space-y-2'>
@@ -301,8 +301,8 @@ const EmptyState = () => (
 )
 
 const NoMatchesState = ({ onClearFilters }: { onClearFilters: () => void }) => (
-  <div className='text-center py-16'>
-    <p className='text-gray-600 mb-4'>No matches found</p>
+  <div className='py-16 text-center'>
+    <p className='mb-4 text-gray-600'>No matches found</p>
     <button type='button' onClick={onClearFilters} className='text-blue-600 hover:underline'>
       Clear filters
     </button>

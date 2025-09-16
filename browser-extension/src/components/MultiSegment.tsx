@@ -39,7 +39,7 @@ const MultiSegment = <T,>({ segments, value, onValueChange }: MultiSegmentProps<
             onClick={() => onValueChange(segment.value)}
             type='button'
           >
-            {segment.type === 'blank' || <Icon className='w-3 h-3' />}
+            {segment.type === 'blank' || <Icon className='h-3 w-3' />}
             {segment.text}
           </button>
         )

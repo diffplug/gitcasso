@@ -62,7 +62,7 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
     return (
       <>
         <span>New PR</span>
-        <span className='font-mono text-sm text-muted-foreground'> {slug} </span>
+        <span className='font-mono text-muted-foreground text-sm'> {slug} </span>
       </>
     )
   }

@@ -8,7 +8,7 @@ export class CommentEnhancerMissing implements CommentEnhancer {
     return (
       <button
         type='button'
-        className='relative inline-block border-none bg-transparent p-0 text-left cursor-pointer underline'
+        className='relative inline-block cursor-pointer border-none bg-transparent p-0 text-left underline'
         style={{
           display: 'inline-block',
           position: 'relative',
@@ -24,10 +24,10 @@ export class CommentEnhancerMissing implements CommentEnhancer {
       >
         hover for json
         <div
-          className='popup absolute top-full left-0 bg-gray-100 border border-gray-300 rounded shadow-lg p-2 z-50 min-w-[320px]'
+          className='popup absolute top-full left-0 z-50 min-w-[320px] rounded border border-gray-300 bg-gray-100 p-2 shadow-lg'
           style={{ display: 'none' }}
         >
-          <pre className='m-0 text-xs font-mono select-text cursor-text whitespace-pre-wrap break-words'>
+          <pre className='m-0 cursor-text select-text whitespace-pre-wrap break-words font-mono text-xs'>
             {JSON.stringify(spot, null, 2)}
           </pre>
         </div>

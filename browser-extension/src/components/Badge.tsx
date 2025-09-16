@@ -17,7 +17,7 @@ const Badge = ({ text, type }: BadgeProps) => {
         }),
       )}
     >
-      {type === 'blank' || <Icon className='w-3 h-3' />}
+      {type === 'blank' || <Icon className='h-3 w-3' />}
       {text || type}
     </span>
   )

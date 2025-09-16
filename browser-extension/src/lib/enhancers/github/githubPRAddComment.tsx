@@ -67,7 +67,7 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     const { slug, number } = spot
     return (
       <>
-        <span className='font-mono text-sm text-muted-foreground'>{slug}</span>
+        <span className='font-mono text-muted-foreground text-sm'>{slug}</span>
         <span className='ml-2 font-medium'>PR #{number}</span>
       </>
     )

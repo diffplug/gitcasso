@@ -57,7 +57,7 @@ export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssu
     return (
       <>
         <span>New Issue</span>
-        <span className='font-mono text-sm text-muted-foreground'> {slug} </span>
+        <span className='font-mono text-muted-foreground text-sm'> {slug} </span>
       </>
     )
   }

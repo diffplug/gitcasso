@@ -62,11 +62,11 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
   tableUpperDecoration(spot: GitHubIssueAddCommentSpot): React.ReactNode {
     return (
       <>
-        <span className='w-4 h-4 flex items-center justify-center flex-shrink-0'>
+        <span className='flex h-4 w-4 flex-shrink-0 items-center justify-center'>
           <IssueOpenedIcon size={16} />
         </span>
         #{spot.number}
-        <a href={`https://${spot.domain}/${spot.slug}`} className='hover:underline truncate'>
+        <a href={`https://${spot.domain}/${spot.slug}`} className='truncate hover:underline'>
           {spot.slug}
         </a>
       </>
