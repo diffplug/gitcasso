@@ -1,34 +1,12 @@
-import type { VariantProps } from 'class-variance-authority'
 import { Eye, EyeOff, Search, Settings, Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
+import Badge from '@/components/Badge'
 import { statBadge, typeIcons } from '@/components/design'
 import type { CommentTableRow } from '@/entrypoints/background'
 import type { FilterState } from '@/entrypoints/popup/popup'
 import { EnhancerRegistry } from '@/lib/registries'
 import { generateMockDrafts } from './replicaData'
-
-// StatBadge component
-export type BadgeProps = VariantProps<typeof statBadge> & {
-  type: keyof typeof typeIcons
-  text?: number | string
-}
-
-const Badge = ({ text, type }: BadgeProps) => {
-  const Icon = typeIcons[type]
-  return (
-    <span
-      className={twMerge(
-        statBadge({
-          type,
-        }),
-      )}
-    >
-      {type === 'blank' || <Icon className='w-3 h-3' />}
-      {text || type}
-    </span>
-  )
-}
 
 interface Segment<T> {
   text?: string
