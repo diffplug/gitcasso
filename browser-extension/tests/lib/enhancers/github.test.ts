@@ -27,7 +27,7 @@ describe('github', () => {
     ).toMatchInlineSnapshot(`
       <React.Fragment>
         <span
-          className="font-mono text-sm text-muted-foreground"
+          className="font-mono text-muted-foreground text-sm"
         >
           diffplug/selfie
         </span>
@@ -74,7 +74,7 @@ describe('github', () => {
     ).toMatchInlineSnapshot(`
       <React.Fragment>
         <span
-          className="w-4 h-4 flex items-center justify-center flex-shrink-0"
+          className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
         >
           <IssueOpenedIcon
             size={16}
@@ -83,7 +83,7 @@ describe('github', () => {
         #
         523
         <a
-          className="hover:underline truncate"
+          className="truncate hover:underline"
           href="https://github.com/diffplug/selfie"
         >
           diffplug/selfie
