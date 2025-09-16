@@ -9,6 +9,8 @@ export interface RedditSpot extends CommentSpot {
   type: 'REDDIT'
 }
 
+const withSpot = <T extends CommentSpot>(spot: T): T => spot
+
 export const generateMockDrafts = (): CommentTableRow[] => [
   {
     isOpenTab: true,
@@ -35,14 +37,14 @@ export const generateMockDrafts = (): CommentTableRow[] => [
       },
       time: Date.now() - 1000 * 60 * 30,
     },
-    spot: {
+    spot: withSpot({
       domain: 'github.com',
       number: 1234,
       slug: 'microsoft/vscode',
       title: "Fix memory leak in extension host (why is this so hard! It's been months!)",
       type: 'GH_PR_ADD_COMMENT',
       unique_key: '1',
-    } satisfies GitHubPRAddCommentSpot,
+    } satisfies GitHubPRAddCommentSpot),
   },
   {
     isOpenTab: false,
@@ -64,12 +66,12 @@ export const generateMockDrafts = (): CommentTableRow[] => [
       },
       time: Date.now() - 1000 * 60 * 60 * 2,
     },
-    spot: {
+    spot: withSpot({
       subreddit: 'programming',
       title: "Re: What's your favorite VS Code extension?",
       type: 'REDDIT',
       unique_key: '2',
-    } satisfies RedditSpot,
+    } satisfies RedditSpot),
   },
   {
     isOpenTab: true,
@@ -86,14 +88,14 @@ export const generateMockDrafts = (): CommentTableRow[] => [
       },
       time: Date.now() - 1000 * 60 * 60 * 5,
     },
-    spot: {
+    spot: withSpot({
       domain: 'github.com',
       number: 5678,
       slug: 'facebook/react',
       title: 'Unexpected behavior with useEffect cleanup',
       type: 'GH_ISSUE_ADD_COMMENT',
       unique_key: '3',
-    } satisfies GitHubIssueAddCommentSpot,
+    } satisfies GitHubIssueAddCommentSpot),
   },
   {
     isOpenTab: false,
@@ -122,14 +124,14 @@ export const generateMockDrafts = (): CommentTableRow[] => [
       },
       time: Date.now() - 1000 * 60 * 60 * 24,
     },
-    spot: {
+    spot: withSpot({
       domain: 'github',
       number: 9012,
       slug: 'vercel/next.js',
       title: 'Update routing documentation',
       type: 'GH_PR_ADD_COMMENT',
       unique_key: '4',
-    } satisfies GitHubPRAddCommentSpot,
+    } satisfies GitHubPRAddCommentSpot),
   },
   {
     isOpenTab: true,
@@ -163,13 +165,13 @@ export const generateMockDrafts = (): CommentTableRow[] => [
       },
       time: Date.now() - 1000 * 60 * 60 * 48,
     },
-    spot: {
+    spot: withSpot({
       domain: 'github.com',
       number: 3456,
       slug: 'nodejs/node',
       title: 'Add support for ESM in worker threads',
       type: 'GH_PR_ADD_COMMENT',
       unique_key: '5',
-    } satisfies GitHubPRAddCommentSpot,
+    } satisfies GitHubPRAddCommentSpot),
   },
 ]
