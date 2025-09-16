@@ -1,4 +1,5 @@
 import type { CommentEvent, CommentSpot } from '@/lib/enhancer'
+import type { DraftStats } from '@/lib/enhancers/draftStats'
 import type { GetOpenSpotsResponse, ToBackgroundMessage } from '@/lib/messages'
 import {
   CLOSE_MESSAGE_PORT,
@@ -16,6 +17,18 @@ export interface CommentState {
   tab: Tab
   spot: CommentSpot
   drafts: [number, string][]
+}
+interface Draft {
+  content: string
+  time: number
+  stats: DraftStats
+}
+export interface CommentTableRow {
+  spot: CommentSpot,
+  latestDraft: Draft
+  isOpenTab: boolean
+  isSent: boolean
+  isTrashed: boolean
 }
 
 export const openSpots = new Map<string, CommentState>()
@@ -52,6 +65,7 @@ export function handlePopupMessage(
 ): typeof CLOSE_MESSAGE_PORT | typeof KEEP_PORT_OPEN {
   if (isGetOpenSpotsMessage(message)) {
     const spots: CommentState[] = Array.from(openSpots.values())
+
     const response: GetOpenSpotsResponse = { spots }
     sendResponse(response)
     return KEEP_PORT_OPEN

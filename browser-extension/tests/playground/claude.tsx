@@ -18,11 +18,12 @@ import {
 import { useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import {
-  type CommentTableRow,
   generateMockDrafts,
-  isGitHubDraft,
-  isRedditDraft,
+  RedditSpot
 } from './replicaData'
+import type { CommentTableRow } from '@/entrypoints/background'
+import { CommentSpot } from '@/lib/enhancer'
+import { GitHubIssueAddCommentSpot } from '@/lib/enhancers/github/githubIssueAddComment'
 
 interface FilterState {
   sentFilter: 'both' | 'sent' | 'unsent'
@@ -151,7 +152,7 @@ const MultiSegment = <T,>({ segments, value, onValueChange }: MultiSegmentProps<
 }
 
 // Helper function for relative time
-const timeAgo = (date: Date | number) => {
+function timeAgo(date: Date | number): string {
   const timestamp = typeof date === 'number' ? date : date.getTime()
   const seconds = Math.floor((Date.now() - timestamp) / 1000)
   const intervals = [
@@ -168,6 +169,26 @@ const timeAgo = (date: Date | number) => {
     if (v >= 1) return `${v}${i.label}`
   }
   return 'just now'
+}
+
+/** Returns all leaf values of an arbitrary object as strings. */
+function* allLeafValues(obj: any, visited = new Set()): Generator<string> {
+  if (visited.has(obj) || obj == null) return
+  if (typeof obj === 'string') yield obj
+  else if (typeof obj === 'number') yield String(obj)
+  else if (typeof obj === 'object') {
+    visited.add(obj)
+    for (const key in obj) {
+      yield* allLeafValues(obj[key], visited)
+    }
+  }
+}
+
+function isGitHubDraft(spot: CommentSpot): spot is GitHubIssueAddCommentSpot {
+  return spot.type === 'GH_PR_ADD_COMMENT' || spot.type === 'GH_ISSUE_ADD_COMMENT'
+}
+function isRedditDraft(spot: CommentSpot): spot is RedditSpot {
+  return spot.type === 'REDDIT'
 }
 
 export const ClaudePrototype = () => {
@@ -193,11 +214,14 @@ export const ClaudePrototype = () => {
     }
     if (filters.searchQuery) {
       const query = filters.searchQuery.toLowerCase()
-      filtered = filtered.filter((d) =>
-        [d.spot.title, d.latestDraft.content, (d.spot as any).slug, (d.spot as any).subreddit].some(
-          (value) => value && String(value).toLowerCase().includes(query),
-        ),
-      )
+      filtered = filtered.filter((d) => {
+        for (const value of allLeafValues(d)) {
+          if (value.toLowerCase().includes(query)) {
+            return true // Early exit on first match
+          }
+        }
+        return false
+      })
     }
     // sort by newest
     filtered.sort((a, b) => b.latestDraft.time - a.latestDraft.time)
@@ -442,7 +466,7 @@ function commentRow(
           {/* Title */}
           <div className='flex items-center gap-1'>
             <a href='TODO' className='text-sm font-medium  hover:underline truncate'>
-              {row.spot.title}
+              TODO_title
             </a>
             <Badge type={row.isSent ? 'sent' : 'unsent'} />
             {row.isTrashed && <Badge type='trashed' />}

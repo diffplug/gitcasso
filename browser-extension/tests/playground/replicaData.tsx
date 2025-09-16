@@ -1,32 +1,14 @@
 import type { CommentSpot } from '@/lib/enhancer'
-import type { DraftStats } from '@/lib/enhancers/draftStats'
+import type { CommentTableRow } from '@/entrypoints/background'
 import type { GitHubIssueAddCommentSpot } from '@/lib/enhancers/github/githubIssueAddComment'
 import type { GitHubPRAddCommentSpot } from '@/lib/enhancers/github/githubPRAddComment'
 
-interface RedditSpot extends CommentSpot {
+export interface RedditSpot extends CommentSpot {
   title: string
   subreddit: string
   type: 'REDDIT'
 }
-interface Draft {
-  content: string
-  time: number
-  stats: DraftStats
-}
-export interface CommentTableRow {
-  spot: GitHubOrReddit
-  latestDraft: Draft
-  isOpenTab: boolean
-  isSent: boolean
-  isTrashed: boolean
-}
-type GitHubOrReddit = GitHubIssueAddCommentSpot | GitHubPRAddCommentSpot | RedditSpot
-export const isGitHubDraft = (spot: GitHubOrReddit): spot is GitHubIssueAddCommentSpot => {
-  return spot.type === 'GH_PR_ADD_COMMENT' || spot.type === 'GH_ISSUE_ADD_COMMENT'
-}
-export const isRedditDraft = (spot: GitHubOrReddit): spot is RedditSpot => {
-  return spot.type === 'REDDIT'
-}
+
 export const generateMockDrafts = (): CommentTableRow[] => [
   {
     isOpenTab: true,
