@@ -1,5 +1,5 @@
-import type { CommentSpot } from '@/lib/enhancer'
 import type { CommentTableRow } from '@/entrypoints/background'
+import type { CommentSpot } from '@/lib/enhancer'
 import type { GitHubIssueAddCommentSpot } from '@/lib/enhancers/github/githubIssueAddComment'
 import type { GitHubPRAddCommentSpot } from '@/lib/enhancers/github/githubPRAddComment'
 

@@ -17,13 +17,10 @@ import {
 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
-import {
-  generateMockDrafts,
-  RedditSpot
-} from './replicaData'
 import type { CommentTableRow } from '@/entrypoints/background'
-import { CommentSpot } from '@/lib/enhancer'
-import { GitHubIssueAddCommentSpot } from '@/lib/enhancers/github/githubIssueAddComment'
+import type { CommentSpot } from '@/lib/enhancer'
+import type { GitHubIssueAddCommentSpot } from '@/lib/enhancers/github/githubIssueAddComment'
+import { generateMockDrafts, type RedditSpot } from './replicaData'
 
 interface FilterState {
   sentFilter: 'both' | 'sent' | 'unsent'

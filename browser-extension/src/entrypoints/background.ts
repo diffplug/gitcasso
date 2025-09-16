@@ -24,7 +24,7 @@ interface Draft {
   stats: DraftStats
 }
 export interface CommentTableRow {
-  spot: CommentSpot,
+  spot: CommentSpot
   latestDraft: Draft
   isOpenTab: boolean
   isSent: boolean

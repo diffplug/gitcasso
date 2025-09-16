@@ -23,7 +23,7 @@ describe('github', () => {
       }
     `)
     expect(enhancedTextarea?.enhancer.tableRow(enhancedTextarea.spot)).toMatchInlineSnapshot(`
-      <span>
+      <React.Fragment>
         <span
           className="font-mono text-sm text-muted-foreground"
         >
@@ -35,7 +35,7 @@ describe('github', () => {
           PR #
           517
         </span>
-      </span>
+      </React.Fragment>
     `)
   })
   usingHar('gh_new_pr').it('should create the correct spot object', async () => {
