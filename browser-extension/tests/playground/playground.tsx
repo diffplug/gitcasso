@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import '@/entrypoints/popup/style.css'
-import './style.css'
+import './playground-styles.css'
 import { ClaudePrototype } from './claude'
 import { Replica } from './replica'
 
@@ -30,11 +30,10 @@ const App = () => {
                 key={mode}
                 type='button'
                 onClick={() => setActiveComponent(mode as Mode)}
-                className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                  activeComponent === mode
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeComponent === mode
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
               >
                 {config.label}
               </button>
