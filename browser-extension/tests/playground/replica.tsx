@@ -1,9 +1,8 @@
-import { SpotTable } from '@/components/SpotTable'
-import type { CommentStorage } from '@/entrypoints/background'
+import { PopupRoot } from '@/components/PopupRoot'
+import type { CommentStorage, CommentTableRow } from '@/entrypoints/background'
 import type { CommentSpot } from '@/lib/enhancer'
 import type { GitHubIssueAddCommentSpot } from '@/lib/enhancers/github/githubIssueAddComment'
 import type { GitHubPRAddCommentSpot } from '@/lib/enhancers/github/githubPRAddComment'
-import { EnhancerRegistry } from '@/lib/registries'
 
 const gh_pr: GitHubPRAddCommentSpot = {
   domain: 'github.com',
@@ -38,28 +37,27 @@ const sampleSpots: CommentStorage[] = spots.map((spot) => {
 })
 
 export function Replica() {
-  const handleSpotClick = (spot: CommentStorage) => {
-    alert(`Clicked: ${spot.spot.type}\nTab: ${spot.tab.tabId}`)
-  }
-
-  const enhancers = new EnhancerRegistry()
-
   return (
-    <div className='w-full'>
-      <h2 className='mb-4 text-lg font-semibold text-foreground'>Open Comment Spots</h2>
-
-      <div className='border rounded-md'>
-        <SpotTable
-          spots={sampleSpots}
-          enhancerRegistry={enhancers}
-          onSpotClick={handleSpotClick}
-          headerClassName='p-3 font-medium text-muted-foreground'
-          rowClassName='transition-colors hover:bg-muted/50 border-b border-border/40'
-          cellClassName='p-3'
-          emptyStateMessage='No open comment spots'
-          showHeader={true}
-        />
-      </div>
-    </div>
+    <PopupRoot
+      drafts={sampleSpots.map((storage) => {
+        const row: CommentTableRow = {
+          isOpenTab: true,
+          isSent: true,
+          isTrashed: false,
+          latestDraft: {
+            content: 'lorum ipsum',
+            stats: {
+              charCount: 99,
+              codeBlocks: [],
+              images: [],
+              links: [],
+            },
+            time: 0,
+          },
+          spot: storage.spot,
+        }
+        return row
+      })}
+    ></PopupRoot>
   )
 }
