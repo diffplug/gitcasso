@@ -17,7 +17,7 @@ async function getOpenSpots(): Promise<CommentTableRow[]> {
     const message: GetOpenSpotsMessage = { type: 'GET_OPEN_SPOTS' }
     const response = (await browser.runtime.sendMessage(message)) as GetTableRowsResponse
     logger.debug('Received response:', response)
-    return response.rows || []
+    return response.rows
   } catch (error) {
     logger.error('Error sending message to background:', error)
     return []
