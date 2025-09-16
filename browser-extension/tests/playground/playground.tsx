@@ -30,10 +30,11 @@ const App = () => {
                 key={mode}
                 type='button'
                 onClick={() => setActiveComponent(mode as Mode)}
-                className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeComponent === mode
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
+                className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
+                  activeComponent === mode
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
               >
                 {config.label}
               </button>
