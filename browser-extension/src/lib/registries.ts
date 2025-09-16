@@ -1,6 +1,7 @@
 import type { OverTypeInstance } from 'overtype'
 import OverType from 'overtype'
 import type { CommentEnhancer, CommentSpot } from './enhancer'
+import { CommentEnhancerMissing } from './enhancers/CommentEnhancerMissing'
 import { GitHubIssueAddCommentEnhancer } from './enhancers/github/githubIssueAddComment'
 import { GitHubIssueNewCommentEnhancer } from './enhancers/github/githubIssueNewComment'
 import { GitHubPRAddCommentEnhancer } from './enhancers/github/githubPRAddComment'
@@ -55,7 +56,7 @@ export class EnhancerRegistry {
   }
 
   enhancerFor<T extends CommentSpot>(spot: T): CommentEnhancer<T> {
-    return this.byType.get(spot.type)! as CommentEnhancer<T>
+    return (this.byType.get(spot.type) || new CommentEnhancerMissing()) as CommentEnhancer<T>
   }
 
   tryToEnhance(textarea: HTMLTextAreaElement): EnhancedTextarea | null {
