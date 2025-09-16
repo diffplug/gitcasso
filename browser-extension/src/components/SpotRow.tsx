@@ -1,10 +1,10 @@
 import { TableCell, TableRow } from '@/components/ui/table'
-import type { CommentState } from '@/entrypoints/background'
+import type { CommentStorage } from '@/entrypoints/background'
 import type { EnhancerRegistry } from '@/lib/registries'
 import { cn } from '@/lib/utils'
 
 interface SpotRowProps {
-  commentState: CommentState
+  commentState: CommentStorage
   enhancerRegistry: EnhancerRegistry
   onClick: () => void
   className?: string

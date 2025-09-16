@@ -1,12 +1,12 @@
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import type { CommentState } from '@/entrypoints/background'
+import type { CommentStorage } from '@/entrypoints/background'
 import type { EnhancerRegistry } from '@/lib/registries'
 import { SpotRow } from './SpotRow'
 
 interface SpotTableProps {
-  spots: CommentState[]
+  spots: CommentStorage[]
   enhancerRegistry: EnhancerRegistry
-  onSpotClick: (spot: CommentState) => void
+  onSpotClick: (spot: CommentStorage) => void
   title?: string
   description?: string
   headerText?: string

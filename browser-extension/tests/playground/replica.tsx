@@ -1,5 +1,5 @@
 import { SpotTable } from '@/components/SpotTable'
-import type { CommentState } from '@/entrypoints/background'
+import type { CommentStorage } from '@/entrypoints/background'
 import type { CommentSpot } from '@/lib/enhancer'
 import type { GitHubIssueAddCommentSpot } from '@/lib/enhancers/github/githubIssueAddComment'
 import type { GitHubPRAddCommentSpot } from '@/lib/enhancers/github/githubPRAddComment'
@@ -23,20 +23,22 @@ const gh_issue: GitHubIssueAddCommentSpot = {
 }
 
 const spots: CommentSpot[] = [gh_pr, gh_issue]
-const sampleSpots: CommentState[] = spots.map((spot) => {
-  const state: CommentState = {
+const sampleSpots: CommentStorage[] = spots.map((spot) => {
+  const state: CommentStorage = {
     drafts: [[0, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.']],
+    sentOn: null,
     spot,
     tab: {
       tabId: 123,
       windowId: 456,
     },
+    trashedOn: null,
   }
   return state
 })
 
 export function Replica() {
-  const handleSpotClick = (spot: CommentState) => {
+  const handleSpotClick = (spot: CommentStorage) => {
     alert(`Clicked: ${spot.spot.type}\nTab: ${spot.tab.tabId}`)
   }
 

@@ -31,6 +31,7 @@ describe('Background Event Handler', () => {
             "test-key",
             {
               "drafts": [],
+              "sentOn": null,
               "spot": {
                 "type": "TEST_SPOT",
                 "unique_key": "test-key",
@@ -39,6 +40,7 @@ describe('Background Event Handler', () => {
                 "tabId": 123,
                 "windowId": 456,
               },
+              "trashedOn": null,
             },
           ],
         ]
