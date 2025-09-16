@@ -1,24 +1,39 @@
-import type { CommentDraft, CommentEvent, CommentSpot } from '../lib/enhancer'
-import type { GetOpenSpotsResponse, ToBackgroundMessage } from '../lib/messages'
+import type { CommentEvent, CommentSpot } from '@/lib/enhancer'
+import { type DraftStats, statsFor } from '@/lib/enhancers/draftStats'
+import type { GetTableRowsResponse, ToBackgroundMessage } from '@/lib/messages'
 import {
   CLOSE_MESSAGE_PORT,
   isContentToBackgroundMessage,
   isGetOpenSpotsMessage,
   isSwitchToTabMessage,
   KEEP_PORT_OPEN,
-} from '../lib/messages'
+} from '@/lib/messages'
 
 export interface Tab {
   tabId: number
   windowId: number
 }
-export interface CommentState {
+export interface CommentStorage {
   tab: Tab
   spot: CommentSpot
-  drafts: [number, CommentDraft][]
+  drafts: [number, string][]
+  sentOn: number | null
+  trashedOn: number | null
+}
+interface Draft {
+  content: string
+  time: number
+  stats: DraftStats
+}
+export interface CommentTableRow {
+  spot: CommentSpot
+  latestDraft: Draft
+  isOpenTab: boolean
+  isSent: boolean
+  isTrashed: boolean
 }
 
-export const openSpots = new Map<string, CommentState>()
+export const openSpots = new Map<string, CommentStorage>()
 
 export function handleCommentEvent(message: CommentEvent, sender: any): boolean {
   if (
@@ -27,14 +42,15 @@ export function handleCommentEvent(message: CommentEvent, sender: any): boolean 
     sender.tab?.windowId
   ) {
     if (message.type === 'ENHANCED') {
-      const tab: Tab = {
-        tabId: sender.tab.id,
-        windowId: sender.tab.windowId,
-      }
-      const commentState: CommentState = {
+      const commentState: CommentStorage = {
         drafts: [],
+        sentOn: null,
         spot: message.spot,
-        tab,
+        tab: {
+          tabId: sender.tab.id,
+          windowId: sender.tab.windowId,
+        },
+        trashedOn: null,
       }
       openSpots.set(message.spot.unique_key, commentState)
     } else if (message.type === 'DESTROYED') {
@@ -52,11 +68,22 @@ export function handlePopupMessage(
   sendResponse: (response: any) => void,
 ): typeof CLOSE_MESSAGE_PORT | typeof KEEP_PORT_OPEN {
   if (isGetOpenSpotsMessage(message)) {
-    const spots: CommentState[] = []
-    for (const [, commentState] of openSpots) {
-      spots.push(commentState)
-    }
-    const response: GetOpenSpotsResponse = { spots }
+    const rows: CommentTableRow[] = Array.from(openSpots.values()).map((storage) => {
+      const [time, content] = storage.drafts.at(-1)!
+      const row: CommentTableRow = {
+        isOpenTab: true,
+        isSent: storage.sentOn != null,
+        isTrashed: storage.trashedOn != null,
+        latestDraft: {
+          content,
+          stats: statsFor(content),
+          time,
+        },
+        spot: storage.spot,
+      }
+      return row
+    })
+    const response: GetTableRowsResponse = { rows }
     sendResponse(response)
     return KEEP_PORT_OPEN
   } else if (isSwitchToTabMessage(message)) {

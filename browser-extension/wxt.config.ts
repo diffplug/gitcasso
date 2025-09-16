@@ -1,3 +1,6 @@
+import path from 'node:path'
+import tailwindcss from '@tailwindcss/vite'
+import react from '@vitejs/plugin-react'
 import { defineConfig } from 'wxt'
 
 export default defineConfig({
@@ -16,6 +19,14 @@ export default defineConfig({
   },
   modules: ['@wxt-dev/webextension-polyfill'],
   srcDir: 'src',
+  vite: () => ({
+    plugins: [react(), tailwindcss()],
+    resolve: {
+      alias: {
+        '@': path.resolve('./src'),
+      },
+    },
+  }),
   webExt: {
     disabled: true,
   },

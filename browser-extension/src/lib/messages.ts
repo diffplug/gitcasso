@@ -1,4 +1,5 @@
-import type { CommentDraft, CommentEvent, CommentSpot } from './enhancer'
+import type { CommentTableRow } from '@/entrypoints/background'
+import type { CommentEvent } from './enhancer'
 
 // Message handler response types
 export const CLOSE_MESSAGE_PORT = false as const // No response will be sent
@@ -24,15 +25,8 @@ export type PopupToBackgroundMessage = GetOpenSpotsMessage | SwitchToTabMessage
 export type ToBackgroundMessage = ContentToBackgroundMessage | PopupToBackgroundMessage
 
 // Background -> Popup responses
-export interface GetOpenSpotsResponse {
-  spots: Array<{
-    tab: {
-      tabId: number
-      windowId: number
-    }
-    spot: CommentSpot
-    drafts: Array<[number, CommentDraft]>
-  }>
+export interface GetTableRowsResponse {
+  rows: CommentTableRow[]
 }
 
 // Type guard functions
@@ -76,5 +70,5 @@ export type BackgroundMessageHandler = (
 export type PopupMessageSender = {
   sendMessage<T extends PopupToBackgroundMessage>(
     message: T,
-  ): Promise<T extends GetOpenSpotsMessage ? GetOpenSpotsResponse : void>
+  ): Promise<T extends GetOpenSpotsMessage ? GetTableRowsResponse : void>
 }

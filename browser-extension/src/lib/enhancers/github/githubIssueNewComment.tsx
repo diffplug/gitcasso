@@ -52,13 +52,18 @@ export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssu
     })[0]!
   }
 
-  tableTitle(spot: GitHubIssueNewCommentSpot): string {
+  tableUpperDecoration(spot: GitHubIssueNewCommentSpot): React.ReactNode {
     const { slug } = spot
-    return `${slug} New Issue`
+    return (
+      <>
+        <span>New Issue</span>
+        <span className='font-mono text-muted-foreground text-sm'> {slug} </span>
+      </>
+    )
   }
 
-  tableIcon(_: GitHubIssueNewCommentSpot): string {
-    return '🔄' // PR icon TODO: icon urls in /public
+  tableTitle(_spot: GitHubIssueNewCommentSpot): string {
+    return 'New Issue'
   }
 
   buildUrl(spot: GitHubIssueNewCommentSpot): string {

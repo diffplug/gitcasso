@@ -47,6 +47,9 @@
         "noUnusedVariables": "error",
         "useValidTypeof": "error"
       },
+      "nursery": {
+        "useSortedClasses": "error"
+      },
       "recommended": true,
       "style": {
         "noDefaultExport": "off",
@@ -60,12 +63,14 @@
         "useTemplate": "error"
       },
       "suspicious": {
+        "noAssignInExpressions": "off",
         "noConsole": {
           "options": {
             "allow": ["assert", "error", "info", "warn"]
           }
         },
         "noExplicitAny": "off",
+        "noUnknownAtRules": "off",
         "noVar": "error"
       }
     }

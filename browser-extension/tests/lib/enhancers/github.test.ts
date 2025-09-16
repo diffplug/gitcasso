@@ -11,14 +11,33 @@ describe('github', () => {
     const textareas = document.querySelectorAll('textarea')
     expect(textareas.length).toBe(2)
     expect(enhancers.tryToEnhance(textareas[0]!)).toBeNull()
-    expect(enhancers.tryToEnhance(textareas[1]!)?.spot).toMatchInlineSnapshot(`
+    const enhancedTextarea = enhancers.tryToEnhance(textareas[1]!)
+    expect(enhancedTextarea?.spot).toMatchInlineSnapshot(`
       {
         "domain": "github.com",
         "number": 517,
         "slug": "diffplug/selfie",
+        "title": "TODO_TITLE",
         "type": "GH_PR_ADD_COMMENT",
         "unique_key": "github.com:diffplug/selfie:517",
       }
+    `)
+    expect(
+      enhancedTextarea?.enhancer.tableUpperDecoration(enhancedTextarea.spot),
+    ).toMatchInlineSnapshot(`
+      <React.Fragment>
+        <span
+          className="font-mono text-muted-foreground text-sm"
+        >
+          diffplug/selfie
+        </span>
+        <span
+          className="ml-2 font-medium"
+        >
+          PR #
+          517
+        </span>
+      </React.Fragment>
     `)
   })
   usingHar('gh_new_pr').it('should create the correct spot object', async () => {
@@ -38,14 +57,38 @@ describe('github', () => {
     const enhancers = new EnhancerRegistry()
     const textareas = document.querySelectorAll('textarea')
     expect(textareas.length).toBe(1)
-    expect(enhancers.tryToEnhance(textareas[0]!)?.spot).toMatchInlineSnapshot(`
+    const enhancedTextarea = enhancers.tryToEnhance(textareas[0]!)
+    expect(enhancedTextarea?.spot).toMatchInlineSnapshot(`
       {
         "domain": "github.com",
         "number": 523,
         "slug": "diffplug/selfie",
+        "title": "TODO_TITLE",
         "type": "GH_ISSUE_ADD_COMMENT",
         "unique_key": "github.com:diffplug/selfie:523",
       }
+    `)
+    // Test the tableRow method
+    expect(
+      enhancedTextarea?.enhancer.tableUpperDecoration(enhancedTextarea.spot),
+    ).toMatchInlineSnapshot(`
+      <React.Fragment>
+        <span
+          className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
+        >
+          <IssueOpenedIcon
+            size={16}
+          />
+        </span>
+        #
+        523
+        <a
+          className="truncate hover:underline"
+          href="https://github.com/diffplug/selfie"
+        >
+          diffplug/selfie
+        </a>
+      </React.Fragment>
     `)
   })
   usingHar('gh_new_issue').it('should create the correct spot object', async () => {

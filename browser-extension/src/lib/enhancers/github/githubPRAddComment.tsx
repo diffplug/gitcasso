@@ -1,12 +1,14 @@
 import OverType, { type OverTypeInstance } from 'overtype'
-import type { CommentEnhancer, CommentSpot } from '../../enhancer'
-import { logger } from '../../logger'
+import type React from 'react'
+import type { CommentEnhancer, CommentSpot } from '@/lib/enhancer'
+import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGithubOptions } from './ghOptions'
 import { githubHighlighter } from './githubHighlighter'
 
-interface GitHubPRAddCommentSpot extends CommentSpot {
+export interface GitHubPRAddCommentSpot extends CommentSpot {
   type: 'GH_PR_ADD_COMMENT' // Override to narrow from string to specific union
+  title: string
   domain: string
   slug: string // owner/repo
   number: number // issue/PR number, undefined for new issues and PRs
@@ -36,10 +38,12 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     const slug = `${owner}/${repo}`
     const number = parseInt(numberStr!, 10)
     const unique_key = `github.com:${slug}:${number}`
+    const title = 'TODO_TITLE'
     return {
       domain: 'github.com',
       number,
       slug,
+      title,
       type: 'GH_PR_ADD_COMMENT',
       unique_key,
     }
@@ -59,16 +63,17 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     })[0]!
   }
 
-  tableTitle(spot: GitHubPRAddCommentSpot): string {
+  tableUpperDecoration(spot: GitHubPRAddCommentSpot): React.ReactNode {
     const { slug, number } = spot
-    return `${slug} PR #${number}`
+    return (
+      <>
+        <span className='font-mono text-muted-foreground text-sm'>{slug}</span>
+        <span className='ml-2 font-medium'>PR #{number}</span>
+      </>
+    )
   }
 
-  tableIcon(_: GitHubPRAddCommentSpot): string {
-    return '🔄' // PR icon TODO: icon urls in /public
-  }
-
-  buildUrl(spot: GitHubPRAddCommentSpot): string {
-    return `https://${spot.domain}/${spot.slug}/pull/${spot.number}`
+  tableTitle(_spot: GitHubPRAddCommentSpot): string {
+    return 'TITLE_TODO'
   }
 }

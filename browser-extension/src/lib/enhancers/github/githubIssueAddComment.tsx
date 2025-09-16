@@ -1,12 +1,15 @@
+import { IssueOpenedIcon } from '@primer/octicons-react'
 import OverType, { type OverTypeInstance } from 'overtype'
-import type { CommentEnhancer, CommentSpot } from '../../enhancer'
-import { logger } from '../../logger'
+import type React from 'react'
+import type { CommentEnhancer, CommentSpot } from '@/lib/enhancer'
+import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGithubOptions } from './ghOptions'
 import { githubHighlighter } from './githubHighlighter'
 
-interface GitHubIssueAddCommentSpot extends CommentSpot {
+export interface GitHubIssueAddCommentSpot extends CommentSpot {
   type: 'GH_ISSUE_ADD_COMMENT'
+  title: string
   domain: string
   slug: string // owner/repo
   number: number // issue number, undefined for new issues
@@ -32,10 +35,12 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
     const slug = `${owner}/${repo}`
     const number = parseInt(numberStr!, 10)
     const unique_key = `github.com:${slug}:${number}`
+    const title = 'TODO_TITLE'
     return {
       domain: 'github.com',
       number,
       slug,
+      title,
       type: 'GH_ISSUE_ADD_COMMENT',
       unique_key,
     }
@@ -54,16 +59,21 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
     })[0]!
   }
 
-  tableTitle(spot: GitHubIssueAddCommentSpot): string {
-    const { slug, number } = spot
-    return `${slug} Issue #${number}`
+  tableUpperDecoration(spot: GitHubIssueAddCommentSpot): React.ReactNode {
+    return (
+      <>
+        <span className='flex h-4 w-4 flex-shrink-0 items-center justify-center'>
+          <IssueOpenedIcon size={16} />
+        </span>
+        #{spot.number}
+        <a href={`https://${spot.domain}/${spot.slug}`} className='truncate hover:underline'>
+          {spot.slug}
+        </a>
+      </>
+    )
   }
 
-  tableIcon(_: GitHubIssueAddCommentSpot): string {
-    return '🔄' // PR icon TODO: icon urls in /public
-  }
-
-  buildUrl(spot: GitHubIssueAddCommentSpot): string {
-    return `https://${spot.domain}/${spot.slug}/issue/${spot.number}`
+  tableTitle(_spot: GitHubIssueAddCommentSpot): string {
+    return 'TITLE_TODO'
   }
 }

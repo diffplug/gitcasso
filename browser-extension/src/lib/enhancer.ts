@@ -1,4 +1,5 @@
 import type { OverTypeInstance } from 'overtype'
+import type { ReactNode } from 'react'
 
 /**
  * Stores enough info about the location of a draft to:
@@ -10,17 +11,12 @@ export interface CommentSpot {
   type: string
 }
 
-export interface CommentDraft {
-  title?: string
-  body: string
-}
-
 export type CommentEventType = 'ENHANCED' | 'LOST_FOCUS' | 'DESTROYED'
 
 export interface CommentEvent {
   type: CommentEventType
   spot: CommentSpot
-  draft?: CommentDraft
+  draft?: string
 }
 
 /** Wraps the textareas of a given platform with Gitcasso's enhancements. */
@@ -40,7 +36,8 @@ export interface CommentEnhancer<Spot extends CommentSpot = CommentSpot> {
    * exactly once since pageload before this gets called.
    */
   enhance(textarea: HTMLTextAreaElement, spot: Spot): OverTypeInstance
-
-  tableIcon(spot: Spot): string
+  /** Returns a ReactNode which will be displayed in the table row. */
+  tableUpperDecoration(spot: Spot): ReactNode
+  /** The default title of a row */
   tableTitle(spot: Spot): string
 }

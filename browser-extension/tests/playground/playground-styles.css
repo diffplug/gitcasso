@@ -1,0 +1,28 @@
+/* Playground-specific styles - popup styles are imported via popup/style.css */
+
+/* Override body styles for playground layout */
+body {
+  margin: 0;
+  padding: 2rem;
+  background: #f8fafc;
+  min-height: 100vh;
+  width: auto; /* Override popup's fixed width for playground */
+}
+
+#root {
+  max-width: 1200px;
+  margin: 0;
+}
+
+/* Popup simulator frame */
+.popup-frame {
+  width: var(--popup-width);
+  height: var(--popup-height);
+  font-size: 14px;
+  line-height: 1.4;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  margin: 0 auto;
+}
