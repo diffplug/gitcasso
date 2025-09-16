@@ -1,5 +1,5 @@
-import type { VariantProps } from 'class-variance-authority'
 import { twMerge } from 'tailwind-merge'
+import type { VariantProps } from 'tailwind-variants'
 import { badgeCVA, typeIcons } from '@/components/design'
 
 export type BadgeProps = VariantProps<typeof badgeCVA> & {
