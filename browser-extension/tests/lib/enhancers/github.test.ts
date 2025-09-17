@@ -69,26 +69,8 @@ describe('github', () => {
     expect(enhancements(document)).toMatchInlineSnapshot(`
       [
         {
-          "for": "id=feedback name=feedback className=form-control width-full mb-2 overtype-input",
-          "spot": {
-            "domain": "github.com",
-            "slug": "diffplug/selfie/main...cavia-porcellus:selfie:main",
-            "type": "GH_PR_NEW_COMMENT",
-            "unique_key": "github.com:diffplug/selfie/main...cavia-porcellus:selfie:main",
-          },
-          "title": "TITLE_TODO",
-          "upperDecoration": <React.Fragment>
-            <span>
-              New PR
-            </span>
-            <span
-              className="font-mono text-muted-foreground text-sm"
-            >
-               
-              diffplug/selfie/main...cavia-porcellus:selfie:main
-               
-            </span>
-          </React.Fragment>,
+          "for": "id=feedback name=feedback className=form-control width-full mb-2",
+          "spot": "NO_SPOT",
         },
         {
           "for": "id=pull_request_body name=pull_request[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit FormControl-textarea CommentBox-input js-size-to-fit size-to-fit js-session-resumable js-saved-reply-shortcut-comment-field CommentBox-input--large overtype-input",
