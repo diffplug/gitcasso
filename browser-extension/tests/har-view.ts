@@ -338,38 +338,82 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
               );
 
               // Patch the content script to track CommentSpots globally
-              patchedCode = patchedCode.replace(
-                /sendEventToBackground\\('ENHANCED', spot\\)/g,
-                \`sendEventToBackground('ENHANCED', spot);
-                 window.gitcassoCommentSpots = window.gitcassoCommentSpots || [];
-                 window.gitcassoCommentSpots.push({...spot, timestamp: Date.now(), action: 'ENHANCED'});\`
-              );
+              console.log('Original code length:', code.length);
+              console.log('Code sample around sendEventToBackground:',
+                code.match(/sendEventToBackground[^;}]{0,100}/g) || 'No matches found');
 
-              patchedCode = patchedCode.replace(
-                /sendEventToBackground\\('DESTROYED', spot\\)/g,
-                \`sendEventToBackground('DESTROYED', spot);
-                 window.gitcassoCommentSpots = window.gitcassoCommentSpots || [];
-                 window.gitcassoCommentSpots.push({...spot, timestamp: Date.now(), action: 'DESTROYED'});\`
-              );
+              // More flexible regex to match both quote styles and variations
+              const enhancedMatches = patchedCode.match(/sendEventToBackground\\(['"](ENHANCED)['"], ?spot\\)/g);
+              const destroyedMatches = patchedCode.match(/sendEventToBackground\\(['"](DESTROYED)['"], ?spot\\)/g);
+              console.log('ENHANCED matches found:', enhancedMatches?.length || 0);
+              console.log('DESTROYED matches found:', destroyedMatches?.length || 0);
+
+              // Remove complex function patching - we'll use sendMessage interception instead
+              console.log('Skipping function patching, using sendMessage interception for CommentSpot tracking');
+
+              // Verify patches were applied
+              const functionPatchMatches = patchedCode.match(/window\\.gitcassoCommentSpots.*action: type/g);
+              console.log('Function patches applied:', functionPatchMatches?.length || 0);
+              if (functionPatchMatches && functionPatchMatches.length > 0) {
+                console.log('sendEventToBackground function successfully patched for CommentSpot tracking');
+              } else {
+                console.warn('Failed to patch sendEventToBackground function');
+              }
               
               // Mock necessary APIs before executing
               window.chrome = window.chrome || {
                 runtime: {
                   getURL: (path) => 'chrome-extension://gitcasso-test/' + path,
                   onMessage: { addListener: () => {} },
-                  sendMessage: () => Promise.resolve(),
+                  sendMessage: (message) => {
+                    console.log('Mock sendMessage called with:', message);
+                    return Promise.resolve();
+                  },
                   id: 'gitcasso-test'
                 }
               };
-              window.browser = window.chrome;
+              window.browser = window.browser || {
+                runtime: {
+                  getURL: (path) => 'chrome-extension://gitcasso-test/' + path,
+                  onMessage: { addListener: () => {} },
+                  sendMessage: (message) => {
+                    console.log('Mock browser.runtime.sendMessage called with:', message);
+
+                    // Track CommentSpots when they're sent via sendMessage
+                    if (message && message.spot && message.type) {
+                      try {
+                        window.gitcassoCommentSpots = window.gitcassoCommentSpots || [];
+                        const trackingData = Object.assign({}, message.spot, {
+                          timestamp: Date.now(),
+                          action: message.type
+                        });
+                        window.gitcassoCommentSpots.push(trackingData);
+                        console.log('CommentSpot captured via sendMessage:', trackingData);
+                        console.log('Total CommentSpots tracked:', window.gitcassoCommentSpots.length);
+                      } catch (e) {
+                        console.error('Failed to track CommentSpot via sendMessage:', e);
+                      }
+                    }
+
+                    return Promise.resolve();
+                  },
+                  id: 'gitcasso-test'
+                }
+              };
 
               // Create a global registry to track comment spots for debugging
               window.gitcassoCommentSpots = window.gitcassoCommentSpots || [];
               
-              // Execute the patched script
-              const script = document.createElement('script');
-              script.textContent = patchedCode;
-              document.head.appendChild(script);
+              // Execute the patched script with error handling
+              try {
+                const script = document.createElement('script');
+                script.textContent = patchedCode;
+                document.head.appendChild(script);
+                console.log('Content script executed successfully');
+              } catch (error) {
+                console.error('Failed to execute patched content script:', error);
+                console.log('First 1000 chars of patched code:', patchedCode.substring(0, 1000));
+              }
               
               console.log('Gitcasso content script loaded with location patching for:', '${urlParts.href}');
             })
@@ -487,9 +531,16 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
           function updateCommentSpotDisplay() {
             const spots = window.gitcassoGetCommentSpots ? window.gitcassoGetCommentSpots() : [];
 
+            // Debug logging
+            if (window.gitcassoCommentSpots) {
+              console.log('Raw gitcassoCommentSpots array:', window.gitcassoCommentSpots);
+            }
+            console.log('Spots for display:', spots);
+            console.log('All textareas on page:', document.querySelectorAll('textarea').length);
+
             const content = spots.length > 0
               ? \`<div style="font-weight: bold; margin-bottom: 8px; color: #333;">CommentSpots (\${spots.length}):</div><pre style="margin: 0; white-space: pre-wrap;">\${JSON.stringify(spots, null, 2)}</pre>\`
-              : '<div style="color: #666; font-style: italic;">No CommentSpots detected yet...</div>';
+              : '<div style="color: #666; font-style: italic;">No CommentSpots detected yet...<br><small>Textareas found: ' + document.querySelectorAll('textarea').length + '</small></div>';
 
             commentSpotDisplay.innerHTML = content;
           }
