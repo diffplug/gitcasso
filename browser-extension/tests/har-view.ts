@@ -332,11 +332,10 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
               console.log('Fetched content script, patching webextension-polyfill...');
               
               // Replace the problematic webextension-polyfill error check
-              let patchedCode = code.replace(
+              const patchedCode = code.replace(
                 /throw new Error\\("This script should only be loaded in a browser extension\\."/g,
                 'console.warn("Webextension-polyfill check bypassed for HAR testing"'
               );
-
               // Mock necessary APIs before executing
               window.chrome = window.chrome || {
                 runtime: {
@@ -347,14 +346,10 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
                 }
               };
               window.browser = window.chrome;
-
-
               // Execute the patched script
               const script = document.createElement('script');
               script.textContent = patchedCode;
               document.head.appendChild(script);
-
-              
               console.log('Gitcasso content script loaded with location patching for:', '${urlParts.href}');
             })
             .catch(error => {

@@ -6,15 +6,14 @@ import { EnhancerRegistry, TextareaRegistry } from '../lib/registries'
 const enhancers = new EnhancerRegistry()
 const enhancedTextareas = new TextareaRegistry()
 
-// Expose for debugging in har:view
-;(window as any).gitcassoTextareaRegistry = enhancedTextareas
+  // Expose for debugging in har:view
+  ; (window as any).gitcassoTextareaRegistry = enhancedTextareas
 
 function sendEventToBackground(type: 'ENHANCED' | 'DESTROYED', spot: CommentSpot): void {
   const message: CommentEvent = {
     spot,
     type,
   }
-
   browser.runtime.sendMessage(message).catch((error) => {
     logger.debug('Failed to send event to background:', error)
   })
