@@ -62,8 +62,8 @@
     "test": "vitest run",
     "playground": "vite --config vite.playground.config.ts",
     "playground:build": "vite build --config vite.playground.config.ts",
-    "har:record": "tsx tests/har-record.ts",
-    "har:view": "tsx tests/har-view.ts"
+    "corpus:record:har": "tsx tests/har-record.ts",
+    "corpus:view": "tsx tests/corpus-view.ts"
   },
   "type": "module",
   "version": "0.0.1"

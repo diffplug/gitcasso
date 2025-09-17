@@ -1,13 +1,14 @@
 /**
- * HAR Page Viewer Test Server
+ * Corpus Viewer Test Server
  *
- * This Express server serves recorded HAR files as live web pages for testing.
+ * This Express server serves recorded corpus files (both HAR and HTML) as live web pages for testing.
  * It provides two viewing modes: 'clean' (original page) and 'gitcasso' (with extension injected).
  *
  * Key components:
- * - Loads HAR files from ./har/ directory based on PAGES index in `./har/_har_index.ts`
- * - Patches URLs in HTML to serve assets locally from HAR data
- * - Handles asset serving by matching HAR entries to requested paths
+ * - Loads HAR files from ./corpus/har/ and HTML files from ./corpus/html/ based on CORPUS index in `./_corpus-index.ts`
+ * - For HAR: Patches URLs in HTML to serve assets locally from HAR data
+ * - For HTML: Serves SingleFile-captured HTML directly (assets already inlined)
+ * - Handles asset serving by matching HAR entries to requested paths (HAR corpus only)
  *
  * Development notes:
  * - Injects Gitcasso content script in 'gitcasso' mode with location patching
@@ -26,7 +27,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
 import type { Har } from 'har-format'
-import { PAGES } from './har/_har-index'
+import { CORPUS, type CorpusEntry } from './corpus/_corpus-index'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -36,11 +37,11 @@ const PORT = 3001
 app.use(express.json())
 
 // Store HAR json
-const harCache = new Map<keyof typeof PAGES, Har>()
+const harCache = new Map<string, Har>()
 
 // Extract URL parts for location patching
-function getUrlParts(key: keyof typeof PAGES) {
-  const originalUrl = PAGES[key]
+function getUrlParts(key: string) {
+  const originalUrl = CORPUS[key].url
   const url = new URL(originalUrl)
   return {
     host: url.host,
@@ -51,42 +52,42 @@ function getUrlParts(key: keyof typeof PAGES) {
 }
 
 // Load and cache HAR file
-async function loadHar(key: keyof typeof PAGES): Promise<Har> {
+async function loadHar(key: string): Promise<Har> {
   if (harCache.has(key)) {
     return harCache.get(key)!
   }
 
-  const harPath = path.join(__dirname, 'har', `${key}.har`)
+  const harPath = path.join(__dirname, 'corpus', 'har', `${key}.har`)
   const harContent = await fs.readFile(harPath, 'utf-8')
   const harData = JSON.parse(harContent)
   harCache.set(key, harData)
   return harData
 }
 
-// Add redirect routes for each PAGES URL to handle refreshes
-Object.entries(PAGES).forEach(([key, url]) => {
-  const urlObj = new URL(url)
+// Add redirect routes for each CORPUS URL to handle refreshes
+Object.entries(CORPUS).forEach(([key, entry]) => {
+  const urlObj = new URL(entry.url)
   app.get(urlObj.pathname, (_req, res) => {
-    res.redirect(`/har/${key}/gitcasso`)
+    res.redirect(`/corpus/${key}/gitcasso`)
   })
 })
 
-// List available HAR files
+// List available corpus files
 app.get('/', async (_req, res) => {
   try {
-    const harDir = path.join(__dirname, 'har')
-    const files = await fs.readdir(harDir)
-    const harFiles = files.filter((file) => file.endsWith('.har'))
-
-    const links = harFiles
-      .map((file) => {
-        const basename = path.basename(file, '.har')
+    const links = Object.entries(CORPUS)
+      .map(([key, entry]) => {
+        const description = entry.description ? `<div style="color: #666; font-size: 0.9em; margin-top: 5px;">${entry.description}</div>` : ''
         return `
         <li>
-          <div style="margin-bottom: 10px; font-weight: bold; color: #555;">${basename}</div>
+          <div style="margin-bottom: 10px;">
+            <div style="font-weight: bold; color: #555;">${key}</div>
+            <div style="font-size: 0.9em; color: #888;">${entry.type.toUpperCase()}</div>
+            ${description}
+          </div>
           <div style="display: flex; gap: 10px;">
-            <a href="/har/${basename}/clean" style="flex: 1; text-align: center;">🔍 Clean</a>
-            <a href="/har/${basename}/gitcasso" style="flex: 1; text-align: center;">🚀 Gitcasso</a>
+            <a href="/corpus/${key}/clean" style="flex: 1; text-align: center;">🔍 Clean</a>
+            <a href="/corpus/${key}/gitcasso" style="flex: 1; text-align: center;">🚀 Gitcasso</a>
           </div>
         </li>
       `
@@ -97,23 +98,23 @@ app.get('/', async (_req, res) => {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>HAR Page Viewer</title>
+    <title>Corpus Viewer</title>
     <style>
-        body { 
+        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 700px; 
-            margin: 50px auto; 
+            max-width: 700px;
+            margin: 50px auto;
             padding: 20px;
         }
         h1 { color: #333; }
         ul { list-style: none; padding: 0; }
         li { margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; }
-        a { 
-            display: block; 
-            padding: 12px 20px; 
-            background: #fff; 
-            text-decoration: none; 
-            color: #333; 
+        a {
+            display: block;
+            padding: 12px 20px;
+            background: #fff;
+            text-decoration: none;
+            color: #333;
             border-radius: 6px;
             border: 1px solid #dee2e6;
             transition: all 0.2s;
@@ -123,83 +124,107 @@ app.get('/', async (_req, res) => {
     </style>
 </head>
 <body>
-    <h1>📄 HAR Page Viewer</h1>
+    <h1>📄 Corpus Viewer</h1>
     <p>Select a recorded page to view:</p>
     <ul>${links}</ul>
+    <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007acc;">
+        <h3>Corpus Types</h3>
+        <p><strong>HAR:</strong> Automated network captures of initial page loads</p>
+        <p><strong>HTML:</strong> Manual SingleFile captures of post-interaction states</p>
+    </div>
 </body>
 </html>
     `)
   } catch (_error) {
-    res.status(500).send('Error listing HAR files')
+    res.status(500).send('Error listing corpus files')
   }
 })
 
-// Serve the main HTML page from HAR
-app.get('/har/:key/:mode(clean|gitcasso)', async (req, res) => {
+// Serve the main page from corpus
+app.get('/corpus/:key/:mode(clean|gitcasso)', async (req, res) => {
   try {
-    // biome-ignore lint/complexity/useLiteralKeys: type comes from path string
-    const key = req.params['key'] as keyof typeof PAGES
-    // biome-ignore lint/complexity/useLiteralKeys: type comes from path string
-    const mode = req.params['mode'] as 'clean' | 'gitcasso'
-    if (!(key in PAGES)) {
-      return res.status(400).send('Invalid key - not found in PAGES')
+    const key = req.params.key
+    const mode = req.params.mode as 'clean' | 'gitcasso'
+
+    if (!(key in CORPUS)) {
+      return res.status(400).send('Invalid key - not found in CORPUS')
     }
 
-    // Find the main HTML response
-    const harData = await loadHar(key)
-    const originalUrl = PAGES[key]
-    const mainEntry =
-      harData.log.entries.find(
-        (entry) =>
-          entry.request.url === originalUrl &&
-          entry.response.content.mimeType?.includes('text/html') &&
-          entry.response.content.text,
-      ) ||
-      harData.log.entries.find(
-        (entry) =>
-          entry.response.status === 200 &&
-          entry.response.content.mimeType?.includes('text/html') &&
-          entry.response.content.text,
-      )
-    if (!mainEntry) {
-      return res.status(404).send('No HTML content found in HAR file')
-    }
+    const entry = CORPUS[key]
 
-    // Extract all domains from HAR entries for dynamic replacement
-    const domains = new Set<string>()
-    harData.log.entries.forEach((entry) => {
-      try {
-        const url = new URL(entry.request.url)
-        domains.add(url.hostname)
-      } catch {
-        // Skip invalid URLs
+    if (entry.type === 'har') {
+      // Handle HAR corpus
+      const harData = await loadHar(key)
+      const originalUrl = entry.url
+      const mainEntry =
+        harData.log.entries.find(
+          (entry) =>
+            entry.request.url === originalUrl &&
+            entry.response.content.mimeType?.includes('text/html') &&
+            entry.response.content.text,
+        ) ||
+        harData.log.entries.find(
+          (entry) =>
+            entry.response.status === 200 &&
+            entry.response.content.mimeType?.includes('text/html') &&
+            entry.response.content.text,
+        )
+      if (!mainEntry) {
+        return res.status(404).send('No HTML content found in HAR file')
       }
-    })
 
-    // Replace external URLs with local asset URLs
-    let html = mainEntry.response.content.text!
-    domains.forEach((domain) => {
-      const escapedDomain = domain.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-      const regex = new RegExp(`https?://${escapedDomain}`, 'g')
-      html = html.replace(regex, `/asset/${key}`)
-    })
-    if (mode === 'gitcasso') {
-      html = injectGitcassoScript(key, html)
+      // Extract all domains from HAR entries for dynamic replacement
+      const domains = new Set<string>()
+      harData.log.entries.forEach((entry) => {
+        try {
+          const url = new URL(entry.request.url)
+          domains.add(url.hostname)
+        } catch {
+          // Skip invalid URLs
+        }
+      })
+
+      // Replace external URLs with local asset URLs
+      let html = mainEntry.response.content.text!
+      domains.forEach((domain) => {
+        const escapedDomain = domain.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+        const regex = new RegExp(`https?://${escapedDomain}`, 'g')
+        html = html.replace(regex, `/asset/${key}`)
+      })
+      if (mode === 'gitcasso') {
+        html = injectGitcassoScript(key, html)
+      }
+      return res.send(html)
+    } else if (entry.type === 'html') {
+      // Handle HTML corpus
+      const htmlPath = path.join(__dirname, 'corpus', 'html', `${key}.html`)
+      let html = await fs.readFile(htmlPath, 'utf-8')
+      if (mode === 'gitcasso') {
+        html = injectGitcassoScript(key, html)
+      }
+      return res.send(html)
+    } else {
+      return res.status(400).send('Unknown corpus type')
     }
-    return res.send(html)
   } catch (error) {
     console.error('Error serving page:', error)
     return res.status(500).send('Error loading page')
   }
 })
 
-// Serve assets from HAR file
+// Serve assets from HAR file (only for HAR corpus)
 app.get('/asset/:key/*', async (req, res) => {
   try {
-    const key = req.params.key as keyof typeof PAGES
-    if (!(key in PAGES)) {
-      return res.status(400).send('Invalid key - not found in PAGES')
+    const key = req.params.key
+    if (!(key in CORPUS)) {
+      return res.status(400).send('Invalid key - not found in CORPUS')
     }
+
+    const entry = CORPUS[key]
+    if (entry.type !== 'har') {
+      return res.status(400).send('Asset serving only available for HAR corpus')
+    }
+
     const assetPath = (req.params as any)[0] as string
 
     const harData = await loadHar(key)
@@ -244,6 +269,7 @@ app.get('/asset/:key/*', async (req, res) => {
     return res.status(404).send('Asset not found')
   }
 })
+
 // Serve extension assets from filesystem
 app.use('/chrome-mv3-dev', express.static(path.join(__dirname, '..', '.output', 'chrome-mv3-dev')))
 
@@ -252,7 +278,7 @@ app.post('/rebuild', async (_req, res) => {
   try {
     console.log('Rebuild triggered via API')
 
-    // Run pnpm run rebuild:dev
+    // Run pnpm run build:dev
     const buildProcess = spawn('pnpm', ['run', 'build:dev'], {
       cwd: path.join(__dirname, '..', '..'),
       stdio: ['pipe', 'pipe', 'pipe'],
@@ -304,11 +330,11 @@ app.post('/rebuild', async (_req, res) => {
 })
 
 app.listen(PORT, () => {
-  console.log(`HAR Page Viewer running at http://localhost:${PORT}`)
+  console.log(`Corpus Viewer running at http://localhost:${PORT}`)
   console.log('Click the links to view recorded pages')
 })
 
-function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
+function injectGitcassoScript(key: string, html: string) {
   const urlParts = getUrlParts(key)
 
   // Inject patched content script with location patching
@@ -326,7 +352,7 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
               // Replace the problematic webextension-polyfill error check
               let patchedCode = code.replace(
                 'throw new Error("This script should only be loaded in a browser extension.")',
-                'console.warn("Webextension-polyfill check bypassed for HAR testing")'
+                'console.warn("Webextension-polyfill check bypassed for corpus testing")'
               );
               window.gitcassoMockLocation = {
                 host: '${urlParts.host}',
@@ -345,7 +371,7 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
             .catch(error => {
               console.error('Failed to load and patch content script:', error);
             });
-          
+
           // Create floating rebuild button
           const rebuildButton = document.createElement('div');
           rebuildButton.id = 'gitcasso-rebuild-btn';
@@ -371,35 +397,35 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
             transition: all 0.2s ease;
             font-family: system-ui, -apple-system, sans-serif;
           \`;
-          
+
           rebuildButton.addEventListener('mouseenter', () => {
             rebuildButton.style.transform = 'scale(1.1)';
             rebuildButton.style.backgroundColor = '#005a9e';
           });
-          
+
           rebuildButton.addEventListener('mouseleave', () => {
             rebuildButton.style.transform = 'scale(1)';
             rebuildButton.style.backgroundColor = '#007acc';
           });
-          
+
           rebuildButton.addEventListener('click', async () => {
             try {
               rebuildButton.innerHTML = '⏳';
               rebuildButton.style.backgroundColor = '#ffa500';
               rebuildButton.title = 'Rebuilding...';
-              
+
               const response = await fetch('/rebuild', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
               });
-              
+
               const result = await response.json();
-              
+
               if (result.success) {
                 rebuildButton.innerHTML = '✅';
                 rebuildButton.style.backgroundColor = '#28a745';
                 rebuildButton.title = 'Build successful! Reloading...';
-                
+
                 setTimeout(() => {
                   location.reload(true);
                 }, 1000);
@@ -407,7 +433,7 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
                 rebuildButton.innerHTML = '❌';
                 rebuildButton.style.backgroundColor = '#dc3545';
                 rebuildButton.title = 'Build failed: ' + (result.error || result.message);
-                
+
                 setTimeout(() => {
                   rebuildButton.innerHTML = '🔄';
                   rebuildButton.style.backgroundColor = '#007acc';
@@ -419,7 +445,7 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
               rebuildButton.innerHTML = '❌';
               rebuildButton.style.backgroundColor = '#dc3545';
               rebuildButton.title = 'Network error: ' + error.message;
-              
+
               setTimeout(() => {
                 rebuildButton.innerHTML = '🔄';
                 rebuildButton.style.backgroundColor = '#007acc';
@@ -427,7 +453,7 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
               }, 3000);
             }
           });
-          
+
           document.body.appendChild(rebuildButton);
 
           // Create CommentSpot display
