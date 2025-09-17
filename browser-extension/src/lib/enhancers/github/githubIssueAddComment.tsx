@@ -27,7 +27,7 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
     if (textarea.id === 'feedback') {
       return null
     }
-    if (location.domain !== 'github.com') {
+    if (location.host !== 'github.com') {
       return null
     }
 
@@ -44,7 +44,7 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
     const unique_key = `github.com:${slug}:${number}`
     const title = 'TODO_TITLE'
     return {
-      domain: location.domain,
+      domain: location.host,
       number,
       slug,
       title,

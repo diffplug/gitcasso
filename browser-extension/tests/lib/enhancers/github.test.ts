@@ -10,7 +10,7 @@ const enhancers = new EnhancerRegistry()
 function enhancements(document: Document, window: Window) {
   const textareas = document.querySelectorAll('textarea')
   const location: StrippedLocation = {
-    domain: window.location.host,
+    host: window.location.host,
     pathname: window.location.pathname,
   }
   const spotsFound = []

@@ -334,7 +334,7 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
                 /function detectLocation(): StrippedLocation {[sS]*?}/,
                 'function detectLocation() {\\n' +
                 '  return {\\n' +
-                '    domain: \\'${urlParts.host}\\',\\n' +
+                '    host: \\'${urlParts.host}\\',\\n' +
                 '    pathname: \\'${urlParts.pathname}\\'\\n' +
                 '  };\\n' +
                 '}'

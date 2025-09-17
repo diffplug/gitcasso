@@ -24,7 +24,7 @@ export interface CommentEvent {
  * Avoids dependency on global window/location objects for better testability.
  */
 export interface StrippedLocation {
-  domain: string
+  host: string
   pathname: string
 }
 

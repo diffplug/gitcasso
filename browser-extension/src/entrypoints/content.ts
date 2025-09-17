@@ -11,7 +11,7 @@ const enhancedTextareas = new TextareaRegistry()
 
 function detectLocation(): StrippedLocation {
   return {
-    domain: window.location.host,
+    host: window.location.host,
     pathname: window.location.pathname,
   }
 }

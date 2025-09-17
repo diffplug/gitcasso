@@ -20,7 +20,7 @@ export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssu
     _textarea: HTMLTextAreaElement,
     location: StrippedLocation,
   ): GitHubIssueNewCommentSpot | null {
-    if (location.domain !== 'github.com') {
+    if (location.host !== 'github.com') {
       return null
     }
 
@@ -35,7 +35,7 @@ export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssu
     const slug = `${owner}/${repo}`
     const unique_key = `github.com:${slug}:new`
     return {
-      domain: location.domain,
+      domain: location.host,
       slug,
       type: 'GH_ISSUE_NEW_COMMENT',
       unique_key,

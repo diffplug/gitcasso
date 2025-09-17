@@ -24,7 +24,7 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     location: StrippedLocation,
   ): GitHubPRAddCommentSpot | null {
     // Only handle github.com domains TODO: identify GitHub Enterprise somehow
-    if (location.domain !== 'github.com' || _textarea.id !== 'new_comment_field') {
+    if (location.host !== 'github.com' || _textarea.id !== 'new_comment_field') {
       return null
     }
 
@@ -40,7 +40,7 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     const unique_key = `github.com:${slug}:${number}`
     const title = 'TODO_TITLE'
     return {
-      domain: location.domain,
+      domain: location.host,
       number,
       slug,
       title,

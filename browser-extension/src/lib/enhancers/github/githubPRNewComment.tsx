@@ -23,7 +23,7 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
     if (textarea.id === 'feedback') {
       return null
     }
-    if (location.domain !== 'github.com') {
+    if (location.host !== 'github.com') {
       return null
     }
 
@@ -43,7 +43,7 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
       : `${owner}/${repo}/${compareBranch}`
     const unique_key = `github.com:${slug}`
     return {
-      domain: location.domain,
+      domain: location.host,
       slug,
       type: 'GH_PR_NEW_COMMENT',
       unique_key,
