@@ -132,4 +132,8 @@ export class TextareaRegistry {
   get(textarea: HTMLTextAreaElement): EnhancedTextarea | undefined {
     return this.textareas.get(textarea)
   }
+
+  getAllEnhanced(): EnhancedTextarea[] {
+    return Array.from(this.textareas.values())
+  }
 }

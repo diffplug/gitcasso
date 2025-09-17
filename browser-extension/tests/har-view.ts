@@ -337,115 +337,23 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
                 'console.warn("Webextension-polyfill check bypassed for HAR testing"'
               );
 
-              // Patch the content script to track CommentSpots globally
-              console.log('Original code length:', code.length);
-              console.log('Code sample around sendEventToBackground:',
-                code.match(/sendEventToBackground[^;}]{0,100}/g) || 'No matches found');
-
-              // More flexible regex to match both quote styles and variations
-              const enhancedMatches = patchedCode.match(/sendEventToBackground\\(['"](ENHANCED)['"], ?spot\\)/g);
-              const destroyedMatches = patchedCode.match(/sendEventToBackground\\(['"](DESTROYED)['"], ?spot\\)/g);
-              console.log('ENHANCED matches found:', enhancedMatches?.length || 0);
-              console.log('DESTROYED matches found:', destroyedMatches?.length || 0);
-
-              // Remove complex function patching - we'll use sendMessage interception instead
-              console.log('Skipping function patching, using sendMessage interception for CommentSpot tracking');
-
-              // Verify patches were applied
-              const functionPatchMatches = patchedCode.match(/window\\.gitcassoCommentSpots.*action: type/g);
-              console.log('Function patches applied:', functionPatchMatches?.length || 0);
-              if (functionPatchMatches && functionPatchMatches.length > 0) {
-                console.log('sendEventToBackground function successfully patched for CommentSpot tracking');
-              } else {
-                console.warn('Failed to patch sendEventToBackground function');
-              }
-              
-
               // Mock necessary APIs before executing
               window.chrome = window.chrome || {
                 runtime: {
                   getURL: (path) => 'chrome-extension://gitcasso-test/' + path,
                   onMessage: { addListener: () => {} },
-                  sendMessage: (message) => {
-                    console.log('Mock sendMessage called with:', message);
-                    return Promise.resolve();
-                  },
+                  sendMessage: () => Promise.resolve(),
                   id: 'gitcasso-test'
                 }
               };
-              window.browser = window.browser || {
-                runtime: {
-                  getURL: (path) => 'chrome-extension://gitcasso-test/' + path,
-                  onMessage: { addListener: () => {} },
-                  sendMessage: (message) => {
-                    console.log('Mock browser.runtime.sendMessage called with:', message);
+              window.browser = window.chrome;
 
-                    // Track CommentSpots when they're sent via sendMessage
-                    if (message && message.spot && message.type) {
-                      try {
-                        window.gitcassoCommentSpots = window.gitcassoCommentSpots || [];
 
-                        // Capture textarea debugging info here instead of in production code
-                        let textareaInfo = null;
-                        if (message.type === 'ENHANCED' && window.gitcassoTextareaRegistry) {
-                          const textareas = document.querySelectorAll('textarea');
-                          for (const textarea of textareas) {
-                            const enhanced = window.gitcassoTextareaRegistry.get(textarea);
-                            if (enhanced && enhanced.spot.unique_key === message.spot.unique_key) {
-                              const rect = textarea.getBoundingClientRect();
-                              textareaInfo = {
-                                id: textarea.id || '',
-                                name: textarea.name || '',
-                                className: textarea.className || '',
-                                tagName: textarea.tagName,
-                                placeholder: textarea.placeholder || '',
-                                value: textarea.value ? textarea.value.substring(0, 50) + '...' : '',
-                                parentElement: textarea.parentElement ? textarea.parentElement.tagName + (textarea.parentElement.className ? '.' + textarea.parentElement.className : '') : '',
-                                position: {
-                                  top: rect.top,
-                                  left: rect.left,
-                                  width: rect.width,
-                                  height: rect.height
-                                }
-                              };
-                              break;
-                            }
-                          }
-                        }
+              // Execute the patched script
+              const script = document.createElement('script');
+              script.textContent = patchedCode;
+              document.head.appendChild(script);
 
-                        const trackingData = Object.assign({}, message.spot, {
-                          timestamp: Date.now(),
-                          action: message.type,
-                          textareaInfo
-                        });
-
-                        window.gitcassoCommentSpots.push(trackingData);
-                        console.log('CommentSpot captured via sendMessage:', trackingData);
-                        console.log('Total CommentSpots tracked:', window.gitcassoCommentSpots.length);
-                      } catch (e) {
-                        console.error('Failed to track CommentSpot via sendMessage:', e);
-                      }
-                    }
-
-                    return Promise.resolve();
-                  },
-                  id: 'gitcasso-test'
-                }
-              };
-
-              // Create a global registry to track comment spots for debugging
-              window.gitcassoCommentSpots = window.gitcassoCommentSpots || [];
-
-              // Execute the patched script with error handling
-              try {
-                const script = document.createElement('script');
-                script.textContent = patchedCode;
-                document.head.appendChild(script);
-                console.log('Content script executed successfully');
-              } catch (error) {
-                console.error('Failed to execute patched content script:', error);
-                console.log('First 1000 chars of patched code:', patchedCode.substring(0, 1000));
-              }
               
               console.log('Gitcasso content script loaded with location patching for:', '${urlParts.href}');
             })
@@ -571,30 +479,44 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
             empty: 'color: #666; font-style: italic;'
           };
 
-          function formatSpot(spot, index) {
-            const { textareaInfo, ...spotData } = spot;
+          function formatSpot(enhanced, index) {
+            const { textarea, spot } = enhanced;
+            const rect = textarea.getBoundingClientRect();
+            const textareaInfo = {
+              id: textarea.id || '',
+              name: textarea.name || '',
+              className: textarea.className || '',
+              tagName: textarea.tagName,
+              placeholder: textarea.placeholder || '',
+              value: textarea.value ? textarea.value.substring(0, 50) + '...' : '',
+              parentElement: textarea.parentElement ? textarea.parentElement.tagName + (textarea.parentElement.className ? '.' + textarea.parentElement.className : '') : '',
+              position: {
+                top: rect.top,
+                left: rect.left,
+                width: rect.width,
+                height: rect.height
+              }
+            };
+
             return \`
               <div style="\${styles.spotContainer}">
                 <div style="\${styles.spotTitle}">Spot \${index + 1}:</div>
-                <pre style="\${styles.jsonPre}">\${JSON.stringify(spotData, null, 2)}</pre>
-                \${textareaInfo
-                  ? \`<div style="\${styles.textareaHeader}">Textarea Info:</div>
-                     <pre style="\${styles.textareaPre}">\${JSON.stringify(textareaInfo, null, 2)}</pre>\`
-                  : \`<div style="\${styles.noInfo}">No textarea info captured</div>\`
-                }
+                <pre style="\${styles.jsonPre}">\${JSON.stringify(spot, null, 2)}</pre>
+                <div style="\${styles.textareaHeader}">Textarea Info:</div>
+                <pre style="\${styles.textareaPre}">\${JSON.stringify(textareaInfo, null, 2)}</pre>
               </div>
             \`;
           }
 
           function updateCommentSpotDisplay() {
-            const spots = window.gitcassoGetCommentSpots ? window.gitcassoGetCommentSpots() : [];
+            const enhanced = window.enhancedTextareas ? window.enhancedTextareas.getAllEnhanced() : [];
 
-            console.log('Spots for display:', spots);
+            console.log('Enhanced textareas:', enhanced.length);
             console.log('All textareas on page:', document.querySelectorAll('textarea').length);
 
-            const content = spots.length > 0
-              ? \`<div style="\${styles.header}">CommentSpots (\${spots.length}):</div>
-                 \${spots.map(formatSpot).join('')}\`
+            const content = enhanced.length > 0
+              ? \`<div style="\${styles.header}">CommentSpots (\${enhanced.length}):</div>
+                 \${enhanced.map(formatSpot).join('')}\`
               : \`<div style="\${styles.empty}">No CommentSpots detected yet...<br><small>Textareas found: \${document.querySelectorAll('textarea').length}</small></div>\`;
 
             commentSpotDisplay.innerHTML = content;
@@ -607,12 +529,6 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
           setInterval(updateCommentSpotDisplay, 2000);
 
           document.body.appendChild(commentSpotDisplay);
-
-          // Expose textarea registry access function globally
-          window.gitcassoGetCommentSpots = function() {
-            // Return the global comment spots array
-            return window.gitcassoCommentSpots || [];
-          };
         </script>
       `
   if (!html.includes('</body>')) {
