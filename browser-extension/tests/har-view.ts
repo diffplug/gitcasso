@@ -518,7 +518,7 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
           }
 
           // Initial update
-          updateCommentSpotDisplay();
+          setTimeout(updateCommentSpotDisplay, 100);
 
           // Update display periodically
           setInterval(updateCommentSpotDisplay, 2000);
