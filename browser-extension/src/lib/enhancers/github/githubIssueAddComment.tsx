@@ -20,7 +20,10 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
     return ['GH_ISSUE_ADD_COMMENT']
   }
 
-  tryToEnhance(_textarea: HTMLTextAreaElement): GitHubIssueAddCommentSpot | null {
+  tryToEnhance(textarea: HTMLTextAreaElement): GitHubIssueAddCommentSpot | null {
+    if (textarea.id === 'feedback') {
+      return null
+    }
     if (document.querySelector('meta[name="hostname"]')?.getAttribute('content') !== 'github.com') {
       return null
     }
@@ -31,6 +34,7 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
     const match = window.location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/issues\/(\d+))/)
     logger.debug(`${this.constructor.name} found match`, window.location.pathname)
     if (!match) return null
+
     const [, owner, repo, numberStr] = match
     const slug = `${owner}/${repo}`
     const number = parseInt(numberStr!, 10)
