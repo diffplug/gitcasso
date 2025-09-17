@@ -14,7 +14,9 @@
  * - Location patching uses history.pushState to simulate original URLs
  * - Chrome APIs are mocked for extension testing outside browser context
  * - Extension assets served from `./output/chrome-mv3-dev` via `/chrome-mv3-dev` route
- * - Floating rebuild button in gitcasso mode triggers `npx wxt build --mode development` and then refresh
+ * - Floating rebuild button in gitcasso mode triggers `pnpm run build:dev` and then refresh
+ * - CommentSpot monitoring panel displays enhanced textareas with spot data and element info
+ * - Real-time updates every 2 seconds to track textarea enhancement detection and debugging
  */
 
 import { spawn } from 'node:child_process'
@@ -310,7 +312,8 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
   const urlParts = getUrlParts(key)
 
   // Inject patched content script with location patching
-  const contentScriptTag = `
+  const contentScriptTag =
+    `
         <script>
           // Patch window.location before loading content script
           console.log('Patching window.location to simulate original URL...');
@@ -333,27 +336,18 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
               
               // Replace the problematic webextension-polyfill error check
               const patchedCode = code.replace(
-                /throw new Error\\("This script should only be loaded in a browser extension\\."/g,
-                'console.warn("Webextension-polyfill check bypassed for HAR testing"'
+                'throw new Error("This script should only be loaded in a browser extension.")',
+                'console.warn("Webextension-polyfill check bypassed for HAR testing")'
               );
-              
-              // Mock necessary APIs before executing
-              window.chrome = window.chrome || {
-                runtime: {
-                  getURL: (path) => 'chrome-extension://gitcasso-test/' + path,
-                  onMessage: { addListener: () => {} },
-                  sendMessage: () => Promise.resolve(),
-                  id: 'gitcasso-test'
-                }
-              };
-              window.browser = window.chrome;
-              
-              // Execute the patched script
+
+              // Execute the patched script with browser API mocks prepended
+              const browserMocks = 'window.chrome=window.chrome||{runtime:{getURL:path=>"chrome-extension://gitcasso-test/"+path,onMessage:{addListener:()=>{}},sendMessage:()=>Promise.resolve(),id:"gitcasso-test"}};window.browser=window.chrome;';
               const script = document.createElement('script');
-              script.textContent = patchedCode;
+              script.textContent = browserMocks + patchedCode;
               document.head.appendChild(script);
-              
-              console.log('Gitcasso content script loaded with location patching for:', '${urlParts.href}');
+              console.log('Gitcasso content script loaded with location patching for:', '` +
+    urlParts.href +
+    `');
             })
             .catch(error => {
               console.error('Failed to load and patch content script:', error);
@@ -442,6 +436,88 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
           });
           
           document.body.appendChild(rebuildButton);
+
+          // Create CommentSpot display
+          const commentSpotDisplay = document.createElement('div');
+          commentSpotDisplay.id = 'gitcasso-comment-spots';
+          commentSpotDisplay.style.cssText =
+            'position: fixed;' +
+            'top: 80px;' +
+            'right: 20px;' +
+            'width: 300px;' +
+            'max-height: 400px;' +
+            'background: rgba(255, 255, 255, 0.95);' +
+            'border: 1px solid #ddd;' +
+            'border-radius: 8px;' +
+            'padding: 15px;' +
+            'font-family: Monaco, Menlo, Ubuntu Mono, monospace;' +
+            'font-size: 11px;' +
+            'line-height: 1.4;' +
+            'overflow-y: auto;' +
+            'z-index: 999998;' +
+            'box-shadow: 0 4px 12px rgba(0,0,0,0.2);' +
+            'backdrop-filter: blur(10px);';
+
+          // Simplified display formatting
+          const styles = {
+            header: 'font-weight: bold; margin-bottom: 8px; color: #333;',
+            spotContainer: 'margin-bottom: 12px; padding: 8px; border: 1px solid #eee; border-radius: 4px;',
+            spotTitle: 'font-weight: bold; color: #555;',
+            jsonPre: 'margin: 4px 0; font-size: 10px;',
+            textareaHeader: 'font-weight: bold; color: #007acc; margin-top: 8px;',
+            textareaPre: 'margin: 4px 0; font-size: 10px; color: #666;',
+            noInfo: 'color: #999; font-style: italic; margin-top: 4px;',
+            empty: 'color: #666; font-style: italic;'
+          };
+
+          function formatSpot(enhanced, index) {
+            const { textarea, spot } = enhanced;
+            const rect = textarea.getBoundingClientRect();
+            const textareaInfo = {
+              id: textarea.id || '',
+              name: textarea.name || '',
+              className: textarea.className || '',
+              tagName: textarea.tagName,
+              placeholder: textarea.placeholder || '',
+              value: textarea.value ? textarea.value.substring(0, 50) + '...' : '',
+              parentElement: textarea.parentElement ? textarea.parentElement.tagName + (textarea.parentElement.className ? '.' + textarea.parentElement.className : '') : '',
+              position: {
+                top: rect.top,
+                left: rect.left,
+                width: rect.width,
+                height: rect.height
+              }
+            };
+
+            return '<div style="' + styles.spotContainer + '">' +
+                   '<div style="' + styles.spotTitle + '">Spot ' + (index + 1) + ':</div>' +
+                   '<pre style="' + styles.jsonPre + '">' + JSON.stringify(spot, null, 2) + '</pre>' +
+                   '<div style="' + styles.textareaHeader + '">Textarea Info:</div>' +
+                   '<pre style="' + styles.textareaPre + '">' + JSON.stringify(textareaInfo, null, 2) + '</pre>' +
+                   '</div>';
+          }
+
+          function updateCommentSpotDisplay() {
+            const enhanced = window.gitcassoTextareaRegistry ? window.gitcassoTextareaRegistry.getAllEnhanced() : [];
+
+            console.log('Enhanced textareas:', enhanced.length);
+            console.log('All textareas on page:', document.querySelectorAll('textarea').length);
+
+            const content = enhanced.length > 0
+              ? '<div style="' + styles.header + '">CommentSpots (' + enhanced.length + '):</div>' +
+                enhanced.map(formatSpot).join('')
+              : '<div style="' + styles.empty + '">No CommentSpots detected yet...<br><small>Textareas found: ' + document.querySelectorAll('textarea').length + '</small></div>';
+
+            commentSpotDisplay.innerHTML = content;
+          }
+
+          // Initial update
+          setTimeout(updateCommentSpotDisplay, 100);
+
+          // Update display periodically
+          setInterval(updateCommentSpotDisplay, 2000);
+
+          document.body.appendChild(commentSpotDisplay);
         </script>
       `
   if (!html.includes('</body>')) {
