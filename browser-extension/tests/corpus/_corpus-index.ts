@@ -9,20 +9,20 @@ export interface CorpusEntry {
 export const CORPUS: Record<string, CorpusEntry> = {
   // HAR corpus (initial page loads)
   gh_issue: {
+    type: 'har',
     url: 'https://github.com/diffplug/selfie/issues/523',
-    type: 'har'
   },
   gh_new_issue: {
+    type: 'har',
     url: 'https://github.com/diffplug/selfie/issues/new',
-    type: 'har'
   },
   gh_new_pr: {
+    type: 'har',
     url: 'https://github.com/diffplug/selfie/compare/main...cavia-porcellus:selfie:main?expand=1',
-    type: 'har'
   },
   gh_pr: {
+    type: 'har',
     url: 'https://github.com/diffplug/selfie/pull/517',
-    type: 'har'
   },
   // HTML corpus (captured after user interactions via SingleFile)
   // Add new entries here as needed, e.g.:

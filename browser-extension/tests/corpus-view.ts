@@ -27,7 +27,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
 import type { Har } from 'har-format'
-import { CORPUS, type CorpusEntry } from './corpus/_corpus-index'
+import { CORPUS } from './corpus/_corpus-index'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -41,7 +41,11 @@ const harCache = new Map<string, Har>()
 
 // Extract URL parts for location patching
 function getUrlParts(key: string) {
-  const originalUrl = CORPUS[key].url
+  const entry = CORPUS[key]
+  if (!entry) {
+    throw new Error(`Corpus entry not found: ${key}`)
+  }
+  const originalUrl = entry.url
   const url = new URL(originalUrl)
   return {
     host: url.host,
@@ -77,7 +81,9 @@ app.get('/', async (_req, res) => {
   try {
     const links = Object.entries(CORPUS)
       .map(([key, entry]) => {
-        const description = entry.description ? `<div style="color: #666; font-size: 0.9em; margin-top: 5px;">${entry.description}</div>` : ''
+        const description = entry.description
+          ? `<div style="color: #666; font-size: 0.9em; margin-top: 5px;">${entry.description}</div>`
+          : ''
         return `
         <li>
           <div style="margin-bottom: 10px;">
@@ -143,14 +149,16 @@ app.get('/', async (_req, res) => {
 // Serve the main page from corpus
 app.get('/corpus/:key/:mode(clean|gitcasso)', async (req, res) => {
   try {
-    const key = req.params.key
-    const mode = req.params.mode as 'clean' | 'gitcasso'
+    // biome-ignore lint/complexity/useLiteralKeys: type comes from path string
+    const key = req.params['key']
+    // biome-ignore lint/complexity/useLiteralKeys: type comes from path string
+    const mode = req.params['mode'] as 'clean' | 'gitcasso'
 
-    if (!(key in CORPUS)) {
+    if (!key || !(key in CORPUS)) {
       return res.status(400).send('Invalid key - not found in CORPUS')
     }
 
-    const entry = CORPUS[key]
+    const entry = CORPUS[key]!
 
     if (entry.type === 'har') {
       // Handle HAR corpus
@@ -216,11 +224,11 @@ app.get('/corpus/:key/:mode(clean|gitcasso)', async (req, res) => {
 app.get('/asset/:key/*', async (req, res) => {
   try {
     const key = req.params.key
-    if (!(key in CORPUS)) {
+    if (!key || !(key in CORPUS)) {
       return res.status(400).send('Invalid key - not found in CORPUS')
     }
 
-    const entry = CORPUS[key]
+    const entry = CORPUS[key]!
     if (entry.type !== 'har') {
       return res.status(400).send('Asset serving only available for HAR corpus')
     }
