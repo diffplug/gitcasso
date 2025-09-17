@@ -1,5 +1,5 @@
 import { CONFIG } from '../lib/config'
-import type { CommentEvent, CommentSpot } from '../lib/enhancer'
+import type { CommentEvent, CommentSpot, StrippedLocation } from '../lib/enhancer'
 import { logger } from '../lib/logger'
 import { EnhancerRegistry, TextareaRegistry } from '../lib/registries'
 
@@ -8,6 +8,13 @@ const enhancedTextareas = new TextareaRegistry()
 
 // Expose for debugging in har:view
 ;(window as any).gitcassoTextareaRegistry = enhancedTextareas
+
+function detectLocation(): StrippedLocation {
+  return {
+    domain: window.location.host,
+    pathname: window.location.pathname,
+  }
+}
 
 function sendEventToBackground(type: 'ENHANCED' | 'DESTROYED', spot: CommentSpot): void {
   const message: CommentEvent = {
@@ -89,7 +96,7 @@ function enhanceMaybe(textarea: HTMLTextAreaElement) {
   injectStyles()
 
   try {
-    const enhancedTextarea = enhancers.tryToEnhance(textarea)
+    const enhancedTextarea = enhancers.tryToEnhance(textarea, detectLocation())
     if (enhancedTextarea) {
       logger.debug(
         'Identified textarea:',
