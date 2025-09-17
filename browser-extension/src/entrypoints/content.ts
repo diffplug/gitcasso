@@ -9,7 +9,11 @@ const enhancedTextareas = new TextareaRegistry()
 // Expose for debugging in har:view
 ;(window as any).gitcassoTextareaRegistry = enhancedTextareas
 
-function sendEventToBackground(type: 'ENHANCED' | 'DESTROYED', spot: CommentSpot, textarea?: HTMLTextAreaElement): void {
+function sendEventToBackground(
+  type: 'ENHANCED' | 'DESTROYED',
+  spot: CommentSpot,
+  textarea?: HTMLTextAreaElement,
+): void {
   const message: CommentEvent = {
     spot,
     type,
