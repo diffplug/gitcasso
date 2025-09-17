@@ -14,6 +14,27 @@ function sendEventToBackground(type: 'ENHANCED' | 'DESTROYED', spot: CommentSpot
     spot,
     type,
   }
+
+  // Add textarea debugging info for har:view testing
+  if (textarea && (window as any).gitcassoDebugMode) {
+    const rect = textarea.getBoundingClientRect();
+    (message as any).textareaInfo = {
+      id: textarea.id || '',
+      name: textarea.name || '',
+      className: textarea.className || '',
+      tagName: textarea.tagName,
+      placeholder: textarea.placeholder || '',
+      value: textarea.value ? textarea.value.substring(0, 50) + '...' : '',
+      parentElement: textarea.parentElement ? textarea.parentElement.tagName + (textarea.parentElement.className ? '.' + textarea.parentElement.className : '') : '',
+      position: {
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height
+      }
+    };
+  }
+
   browser.runtime.sendMessage(message).catch((error) => {
     logger.debug('Failed to send event to background:', error)
   })

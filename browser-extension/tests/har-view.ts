@@ -360,6 +360,9 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
                 console.warn('Failed to patch sendEventToBackground function');
               }
               
+              // Enable debug mode for textarea info capture
+              window.gitcassoDebugMode = true;
+
               // Mock necessary APIs before executing
               window.chrome = window.chrome || {
                 runtime: {
@@ -387,6 +390,13 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
                           timestamp: Date.now(),
                           action: message.type
                         });
+
+                        // Include textarea info if available in the message
+                        if (message.textareaInfo) {
+                          trackingData.textareaInfo = message.textareaInfo;
+                          console.log('Textarea info captured:', message.textareaInfo);
+                        }
+
                         window.gitcassoCommentSpots.push(trackingData);
                         console.log('CommentSpot captured via sendMessage:', trackingData);
                         console.log('Total CommentSpots tracked:', window.gitcassoCommentSpots.length);
@@ -404,60 +414,12 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
               // Create a global registry to track comment spots for debugging
               window.gitcassoCommentSpots = window.gitcassoCommentSpots || [];
 
-              // Helper function to extract textarea info for debugging
-              function getTextareaInfo(textarea) {
-                const rect = textarea.getBoundingClientRect();
-                return {
-                  id: textarea.id || '',
-                  name: textarea.name || '',
-                  className: textarea.className || '',
-                  tagName: textarea.tagName,
-                  placeholder: textarea.placeholder || '',
-                  value: textarea.value ? textarea.value.substring(0, 50) + '...' : '',
-                  parentElement: textarea.parentElement ? textarea.parentElement.tagName + (textarea.parentElement.className ? '.' + textarea.parentElement.className : '') : '',
-                  position: {
-                    top: rect.top,
-                    left: rect.left,
-                    width: rect.width,
-                    height: rect.height
-                  }
-                };
-              }
-
               // Execute the patched script with error handling
               try {
                 const script = document.createElement('script');
                 script.textContent = patchedCode;
                 document.head.appendChild(script);
                 console.log('Content script executed successfully');
-
-                // After the script loads, patch the TextareaRegistry if available
-                setTimeout(() => {
-                  if (window.gitcassoTextareaRegistry) {
-                    const originalSetEventHandlers = window.gitcassoTextareaRegistry.setEventHandlers;
-                    window.gitcassoTextareaRegistry.setEventHandlers = function(onEnhanced, onDestroyed) {
-                      console.log('Patching TextareaRegistry.setEventHandlers');
-                      const wrappedOnEnhanced = function(spot, textarea) {
-                        console.log('onEnhanced called with spot and textarea:', spot, textarea);
-                        const textareaInfo = getTextareaInfo(textarea);
-                        console.log('Textarea details:', textareaInfo);
-
-                        // Store enhanced info with textarea details
-                        window.gitcassoCommentSpots = window.gitcassoCommentSpots || [];
-                        const trackingData = Object.assign({}, spot, {
-                          timestamp: Date.now(),
-                          action: 'ENHANCED',
-                          textareaInfo: textareaInfo
-                        });
-                        window.gitcassoCommentSpots.push(trackingData);
-
-                        return onEnhanced(spot, textarea);
-                      };
-                      return originalSetEventHandlers.call(this, wrappedOnEnhanced, onDestroyed);
-                    };
-                  }
-                }, 100);
-
               } catch (error) {
                 console.error('Failed to execute patched content script:', error);
                 console.log('First 1000 chars of patched code:', patchedCode.substring(0, 1000));
