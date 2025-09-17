@@ -315,29 +315,29 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
   const contentScriptTag =
     `
         <script>
-          // Patch window.location before loading content script
-          console.log('Patching window.location to simulate original URL...');
-          
-          // Use history.pushState to change the pathname
-          window.history.pushState({}, '', '${urlParts.pathname}');
-          
-          console.log('Location patched:', {
-            hostname: window.location.hostname,
-            pathname: window.location.pathname,
-            href: window.location.href,
-            host: window.location.host
-          });
-          
+          console.log('Loading Gitcasso with mocked location:', '${urlParts.href}');
+
           // Fetch and patch the content script to remove webextension-polyfill issues
           fetch('/chrome-mv3-dev/content-scripts/content.js')
             .then(response => response.text())
             .then(code => {
-              console.log('Fetched content script, patching webextension-polyfill...');
-              
+              console.log('Fetched content script, patching webextension-polyfill and detectLocation...');
+
               // Replace the problematic webextension-polyfill error check
-              const patchedCode = code.replace(
+              let patchedCode = code.replace(
                 'throw new Error("This script should only be loaded in a browser extension.")',
                 'console.warn("Webextension-polyfill check bypassed for HAR testing")'
+              );
+
+              // Override detectLocation function with correct domain and pathname
+              patchedCode = patchedCode.replace(
+                /function detectLocation(): StrippedLocation {[sS]*?}/,
+                'function detectLocation() {\\n' +
+                '  return {\\n' +
+                '    domain: \\'${urlParts.host}\\',\\n' +
+                '    pathname: \\'${urlParts.pathname}\\'\\n' +
+                '  };\\n' +
+                '}'
               );
 
               // Execute the patched script with browser API mocks prepended
@@ -505,8 +505,9 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
 
             const content = enhanced.length > 0
               ? '<div style="' + styles.header + '">CommentSpots (' + enhanced.length + '):</div>' +
+                '<div style="font-size: 10px; color: #666; margin-bottom: 8px; word-break: break-all;">URL: ${urlParts.href}</div>' +
                 enhanced.map(formatSpot).join('')
-              : '<div style="' + styles.empty + '">No CommentSpots detected yet...<br><small>Textareas found: ' + document.querySelectorAll('textarea').length + '</small></div>';
+              : '<div style="' + styles.empty + '">No CommentSpots detected yet...<br><small>Textareas found: ' + document.querySelectorAll('textarea').length + '</small><br><small>URL: ${urlParts.href}</small></div>';
 
             commentSpotDisplay.innerHTML = content;
           }
