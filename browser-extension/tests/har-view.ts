@@ -328,17 +328,10 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
                 'throw new Error("This script should only be loaded in a browser extension.")',
                 'console.warn("Webextension-polyfill check bypassed for HAR testing")'
               );
-
-              // Override detectLocation function with correct domain and pathname
-              patchedCode = patchedCode.replace(
-                /function detectLocation(): StrippedLocation {[sS]*?}/,
-                'function detectLocation() {\\n' +
-                '  return {\\n' +
-                '    host: \\'${urlParts.host}\\',\\n' +
-                '    pathname: \\'${urlParts.pathname}\\'\\n' +
-                '  };\\n' +
-                '}'
-              );
+              window.gitcassoMockLocation = {
+                host: '${urlParts.host}',
+                pathname: '${urlParts.pathname}'
+              };
 
               // Execute the patched script with browser API mocks prepended
               const browserMocks = 'window.chrome=window.chrome||{runtime:{getURL:path=>"chrome-extension://gitcasso-test/"+path,onMessage:{addListener:()=>{}},sendMessage:()=>Promise.resolve(),id:"gitcasso-test"}};window.browser=window.chrome;';
