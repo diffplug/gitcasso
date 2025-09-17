@@ -310,13 +310,16 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
   const urlParts = getUrlParts(key)
 
   // Inject patched content script with location patching
-  const contentScriptTag = `
+  const contentScriptTag =
+    `
         <script>
           // Patch window.location before loading content script
           console.log('Patching window.location to simulate original URL...');
           
           // Use history.pushState to change the pathname
-          window.history.pushState({}, '', '` + urlParts.pathname + `');
+          window.history.pushState({}, '', '` +
+    urlParts.pathname +
+    `');
           
           console.log('Location patched:', {
             hostname: window.location.hostname,
@@ -342,7 +345,9 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
               const script = document.createElement('script');
               script.textContent = browserMocks + patchedCode;
               document.head.appendChild(script);
-              console.log('Gitcasso content script loaded with location patching for:', '` + urlParts.href + `');
+              console.log('Gitcasso content script loaded with location patching for:', '` +
+    urlParts.href +
+    `');
             })
             .catch(error => {
               console.error('Failed to load and patch content script:', error);
