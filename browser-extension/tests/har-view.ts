@@ -337,20 +337,10 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
                 'console.warn("Webextension-polyfill check bypassed for HAR testing")'
               );
 
-              // Mock necessary APIs before executing
-              window.chrome = window.chrome || {
-                runtime: {
-                  getURL: (path) => 'chrome-extension://gitcasso-test/' + path,
-                  onMessage: { addListener: () => {} },
-                  sendMessage: () => Promise.resolve(),
-                  id: 'gitcasso-test'
-                }
-              };
-              window.browser = window.chrome;
-
-              // Execute the patched script
+              // Execute the patched script with browser API mocks prepended
+              const browserMocks = 'window.chrome=window.chrome||{runtime:{getURL:path=>"chrome-extension://gitcasso-test/"+path,onMessage:{addListener:()=>{}},sendMessage:()=>Promise.resolve(),id:"gitcasso-test"}};window.browser=window.chrome;';
               const script = document.createElement('script');
-              script.textContent = patchedCode;
+              script.textContent = browserMocks + patchedCode;
               document.head.appendChild(script);
               console.log('Gitcasso content script loaded with location patching for:', '` + urlParts.href + `');
             })

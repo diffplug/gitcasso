@@ -6,8 +6,8 @@ import { EnhancerRegistry, TextareaRegistry } from '../lib/registries'
 const enhancers = new EnhancerRegistry()
 const enhancedTextareas = new TextareaRegistry()
 
-// Expose for debugging in har:view
-;(window as any).gitcassoTextareaRegistry = enhancedTextareas
+  // Expose for debugging in har:view
+  ; (window as any).gitcassoTextareaRegistry = enhancedTextareas
 
 function sendEventToBackground(type: 'ENHANCED' | 'DESTROYED', spot: CommentSpot): void {
   const message: CommentEvent = {
@@ -88,16 +88,20 @@ function enhanceMaybe(textarea: HTMLTextAreaElement) {
   logger.debug('activating textarea {}', textarea)
   injectStyles()
 
-  const enhancedTextarea = enhancers.tryToEnhance(textarea)
-  if (enhancedTextarea) {
-    logger.debug(
-      'Identified textarea:',
-      enhancedTextarea.spot.type,
-      enhancedTextarea.spot.unique_key,
-    )
-    enhancedTextareas.register(enhancedTextarea)
-  } else {
-    logger.debug('No handler found for textarea')
+  try {
+    const enhancedTextarea = enhancers.tryToEnhance(textarea)
+    if (enhancedTextarea) {
+      logger.debug(
+        'Identified textarea:',
+        enhancedTextarea.spot.type,
+        enhancedTextarea.spot.unique_key,
+      )
+      enhancedTextareas.register(enhancedTextarea)
+    } else {
+      logger.debug('No handler found for textarea')
+    }
+  } catch (e) {
+    logger.error(e)
   }
 }
 
