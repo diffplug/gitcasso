@@ -317,9 +317,7 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
           console.log('Patching window.location to simulate original URL...');
           
           // Use history.pushState to change the pathname
-          window.history.pushState({}, '', '` +
-    urlParts.pathname +
-    `');
+          window.history.pushState({}, '', '${urlParts.pathname}');
           
           console.log('Location patched:', {
             hostname: window.location.hostname,
