@@ -316,7 +316,7 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
           console.log('Patching window.location to simulate original URL...');
           
           // Use history.pushState to change the pathname
-          window.history.pushState({}, '', '${urlParts.pathname}');
+          window.history.pushState({}, '', '` + urlParts.pathname + `');
           
           console.log('Location patched:', {
             hostname: window.location.hostname,
@@ -333,9 +333,10 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
               
               // Replace the problematic webextension-polyfill error check
               const patchedCode = code.replace(
-                /throw new Error\\("This script should only be loaded in a browser extension\\."/g,
-                'console.warn("Webextension-polyfill check bypassed for HAR testing"'
+                'throw new Error("This script should only be loaded in a browser extension.")',
+                'console.warn("Webextension-polyfill check bypassed for HAR testing")'
               );
+
               // Mock necessary APIs before executing
               window.chrome = window.chrome || {
                 runtime: {
@@ -346,11 +347,12 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
                 }
               };
               window.browser = window.chrome;
+
               // Execute the patched script
               const script = document.createElement('script');
               script.textContent = patchedCode;
               document.head.appendChild(script);
-              console.log('Gitcasso content script loaded with location patching for:', '${urlParts.href}');
+              console.log('Gitcasso content script loaded with location patching for:', '` + urlParts.href + `');
             })
             .catch(error => {
               console.error('Failed to load and patch content script:', error);
@@ -443,24 +445,23 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
           // Create CommentSpot display
           const commentSpotDisplay = document.createElement('div');
           commentSpotDisplay.id = 'gitcasso-comment-spots';
-          commentSpotDisplay.style.cssText = \`
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            width: 300px;
-            max-height: 400px;
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 11px;
-            line-height: 1.4;
-            overflow-y: auto;
-            z-index: 999998;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            backdrop-filter: blur(10px);
-          \`;
+          commentSpotDisplay.style.cssText =
+            'position: fixed;' +
+            'top: 80px;' +
+            'right: 20px;' +
+            'width: 300px;' +
+            'max-height: 400px;' +
+            'background: rgba(255, 255, 255, 0.95);' +
+            'border: 1px solid #ddd;' +
+            'border-radius: 8px;' +
+            'padding: 15px;' +
+            'font-family: Monaco, Menlo, Ubuntu Mono, monospace;' +
+            'font-size: 11px;' +
+            'line-height: 1.4;' +
+            'overflow-y: auto;' +
+            'z-index: 999998;' +
+            'box-shadow: 0 4px 12px rgba(0,0,0,0.2);' +
+            'backdrop-filter: blur(10px);';
 
           // Simplified display formatting
           const styles = {
@@ -493,14 +494,12 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
               }
             };
 
-            return \`
-              <div style="\${styles.spotContainer}">
-                <div style="\${styles.spotTitle}">Spot \${index + 1}:</div>
-                <pre style="\${styles.jsonPre}">\${JSON.stringify(spot, null, 2)}</pre>
-                <div style="\${styles.textareaHeader}">Textarea Info:</div>
-                <pre style="\${styles.textareaPre}">\${JSON.stringify(textareaInfo, null, 2)}</pre>
-              </div>
-            \`;
+            return '<div style="' + styles.spotContainer + '">' +
+                   '<div style="' + styles.spotTitle + '">Spot ' + (index + 1) + ':</div>' +
+                   '<pre style="' + styles.jsonPre + '">' + JSON.stringify(spot, null, 2) + '</pre>' +
+                   '<div style="' + styles.textareaHeader + '">Textarea Info:</div>' +
+                   '<pre style="' + styles.textareaPre + '">' + JSON.stringify(textareaInfo, null, 2) + '</pre>' +
+                   '</div>';
           }
 
           function updateCommentSpotDisplay() {
@@ -510,9 +509,9 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
             console.log('All textareas on page:', document.querySelectorAll('textarea').length);
 
             const content = enhanced.length > 0
-              ? \`<div style="\${styles.header}">CommentSpots (\${enhanced.length}):</div>
-                 \${enhanced.map(formatSpot).join('')}\`
-              : \`<div style="\${styles.empty}">No CommentSpots detected yet...<br><small>Textareas found: \${document.querySelectorAll('textarea').length}</small></div>\`;
+              ? '<div style="' + styles.header + '">CommentSpots (' + enhanced.length + '):</div>' +
+                enhanced.map(formatSpot).join('')
+              : '<div style="' + styles.empty + '">No CommentSpots detected yet...<br><small>Textareas found: ' + document.querySelectorAll('textarea').length + '</small></div>';
 
             commentSpotDisplay.innerHTML = content;
           }
