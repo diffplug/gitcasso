@@ -332,9 +332,24 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
               console.log('Fetched content script, patching webextension-polyfill...');
               
               // Replace the problematic webextension-polyfill error check
-              const patchedCode = code.replace(
+              let patchedCode = code.replace(
                 /throw new Error\\("This script should only be loaded in a browser extension\\."/g,
                 'console.warn("Webextension-polyfill check bypassed for HAR testing"'
+              );
+
+              // Patch the content script to track CommentSpots globally
+              patchedCode = patchedCode.replace(
+                /sendEventToBackground\\('ENHANCED', spot\\)/g,
+                \`sendEventToBackground('ENHANCED', spot);
+                 window.gitcassoCommentSpots = window.gitcassoCommentSpots || [];
+                 window.gitcassoCommentSpots.push({...spot, timestamp: Date.now(), action: 'ENHANCED'});\`
+              );
+
+              patchedCode = patchedCode.replace(
+                /sendEventToBackground\\('DESTROYED', spot\\)/g,
+                \`sendEventToBackground('DESTROYED', spot);
+                 window.gitcassoCommentSpots = window.gitcassoCommentSpots || [];
+                 window.gitcassoCommentSpots.push({...spot, timestamp: Date.now(), action: 'DESTROYED'});\`
               );
               
               // Mock necessary APIs before executing
@@ -347,6 +362,9 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
                 }
               };
               window.browser = window.chrome;
+
+              // Create a global registry to track comment spots for debugging
+              window.gitcassoCommentSpots = window.gitcassoCommentSpots || [];
               
               // Execute the patched script
               const script = document.createElement('script');
@@ -442,6 +460,53 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
           });
           
           document.body.appendChild(rebuildButton);
+
+          // Create CommentSpot display
+          const commentSpotDisplay = document.createElement('div');
+          commentSpotDisplay.id = 'gitcasso-comment-spots';
+          commentSpotDisplay.style.cssText = \`
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            width: 300px;
+            max-height: 400px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 11px;
+            line-height: 1.4;
+            overflow-y: auto;
+            z-index: 999998;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+          \`;
+
+          // Function to update CommentSpot display
+          function updateCommentSpotDisplay() {
+            const spots = window.gitcassoGetCommentSpots ? window.gitcassoGetCommentSpots() : [];
+
+            const content = spots.length > 0
+              ? \`<div style="font-weight: bold; margin-bottom: 8px; color: #333;">CommentSpots (\${spots.length}):</div><pre style="margin: 0; white-space: pre-wrap;">\${JSON.stringify(spots, null, 2)}</pre>\`
+              : '<div style="color: #666; font-style: italic;">No CommentSpots detected yet...</div>';
+
+            commentSpotDisplay.innerHTML = content;
+          }
+
+          // Initial update
+          updateCommentSpotDisplay();
+
+          // Update display periodically
+          setInterval(updateCommentSpotDisplay, 2000);
+
+          document.body.appendChild(commentSpotDisplay);
+
+          // Expose textarea registry access function globally
+          window.gitcassoGetCommentSpots = function() {
+            // Return the global comment spots array
+            return window.gitcassoCommentSpots || [];
+          };
         </script>
       `
   if (!html.includes('</body>')) {
