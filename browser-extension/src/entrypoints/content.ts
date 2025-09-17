@@ -1,5 +1,5 @@
 import { CONFIG } from '../lib/config'
-import type { CommentEvent, CommentSpot } from '../lib/enhancer'
+import type { CommentEvent, CommentSpot, StrippedLocation } from '../lib/enhancer'
 import { logger } from '../lib/logger'
 import { EnhancerRegistry, TextareaRegistry } from '../lib/registries'
 
@@ -8,6 +8,18 @@ const enhancedTextareas = new TextareaRegistry()
 
 // Expose for debugging in har:view
 ;(window as any).gitcassoTextareaRegistry = enhancedTextareas
+
+function detectLocation(): StrippedLocation {
+  if ((window as any).gitcassoMockLocation) {
+    return (window as any).gitcassoMockLocation
+  }
+  const result = {
+    host: window.location.host,
+    pathname: window.location.pathname,
+  }
+  logger.debug('[gitcasso] detectLocation called, returning:', result)
+  return result
+}
 
 function sendEventToBackground(type: 'ENHANCED' | 'DESTROYED', spot: CommentSpot): void {
   const message: CommentEvent = {
@@ -26,6 +38,7 @@ enhancedTextareas.setEventHandlers(
 
 export default defineContentScript({
   main() {
+    logger.debug('Main was called')
     const textAreasOnPageLoad = document.querySelectorAll<HTMLTextAreaElement>(`textarea`)
     for (const textarea of textAreasOnPageLoad) {
       enhanceMaybe(textarea)
@@ -35,7 +48,7 @@ export default defineContentScript({
       childList: true,
       subtree: true,
     })
-    logger.debug('Extension loaded with', enhancers.getEnhancerCount, 'handlers')
+    logger.debug('Extension loaded with', enhancers.getEnhancerCount(), 'handlers')
   },
   matches: ['<all_urls>'],
   runAt: 'document_end',
@@ -80,6 +93,7 @@ function handleMutations(mutations: MutationRecord[]): void {
 }
 
 function enhanceMaybe(textarea: HTMLTextAreaElement) {
+  logger.debug('[gitcasso] enhanceMaybe called for textarea:', textarea.id, textarea.className)
   if (enhancedTextareas.get(textarea)) {
     logger.debug('textarea already registered {}', textarea)
     return
@@ -89,7 +103,9 @@ function enhanceMaybe(textarea: HTMLTextAreaElement) {
   injectStyles()
 
   try {
-    const enhancedTextarea = enhancers.tryToEnhance(textarea)
+    const location = detectLocation()
+    logger.debug('[gitcasso] Calling tryToEnhance with location:', location)
+    const enhancedTextarea = enhancers.tryToEnhance(textarea, location)
     if (enhancedTextarea) {
       logger.debug(
         'Identified textarea:',

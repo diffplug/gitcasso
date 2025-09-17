@@ -3,14 +3,19 @@ import { describe, expect, usingHar } from '../../har-fixture'
 // must import fixture **first** for mocks, the `expect` keeps biome from changing sort-order
 expect
 
+import type { StrippedLocation } from '@/lib/enhancer'
 import { EnhancerRegistry } from '../../../src/lib/registries'
 
 const enhancers = new EnhancerRegistry()
-function enhancements(document: Document) {
+function enhancements(document: Document, window: Window) {
   const textareas = document.querySelectorAll('textarea')
+  const location: StrippedLocation = {
+    host: window.location.host,
+    pathname: window.location.pathname,
+  }
   const spotsFound = []
   for (const textarea of textareas) {
-    const enhanced = enhancers.tryToEnhance(textarea)
+    const enhanced = enhancers.tryToEnhance(textarea, location)
     const forValue = `id=${textarea.id} name=${textarea.name} className=${textarea.className}`
     if (enhanced) {
       spotsFound.push({
@@ -31,7 +36,7 @@ function enhancements(document: Document) {
 
 describe('github', () => {
   usingHar('gh_pr').it('should create the correct spot object', async () => {
-    expect(enhancements(document)).toMatchInlineSnapshot(`
+    expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
           "for": "id=feedback name=feedback className=form-control width-full mb-2",
@@ -66,7 +71,7 @@ describe('github', () => {
     `)
   })
   usingHar('gh_new_pr').it('should create the correct spot object', async () => {
-    expect(enhancements(document)).toMatchInlineSnapshot(`
+    expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
           "for": "id=feedback name=feedback className=form-control width-full mb-2",
@@ -98,7 +103,7 @@ describe('github', () => {
     `)
   })
   usingHar('gh_issue').it('should create the correct spot object', async () => {
-    expect(enhancements(document)).toMatchInlineSnapshot(`
+    expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
           "for": "id=feedback name=feedback className=form-control width-full mb-2",
@@ -108,7 +113,7 @@ describe('github', () => {
     `)
   })
   usingHar('gh_new_issue').it('should create the correct spot object', async () => {
-    expect(enhancements(document)).toMatchInlineSnapshot(`
+    expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
           "for": "id=feedback name=feedback className=form-control width-full mb-2 overtype-input",
