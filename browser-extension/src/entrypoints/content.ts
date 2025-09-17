@@ -6,7 +6,10 @@ import { EnhancerRegistry, TextareaRegistry } from '../lib/registries'
 const enhancers = new EnhancerRegistry()
 const enhancedTextareas = new TextareaRegistry()
 
-function sendEventToBackground(type: 'ENHANCED' | 'DESTROYED', spot: CommentSpot): void {
+// Expose for debugging in har:view
+;(window as any).gitcassoTextareaRegistry = enhancedTextareas
+
+function sendEventToBackground(type: 'ENHANCED' | 'DESTROYED', spot: CommentSpot, textarea?: HTMLTextAreaElement): void {
   const message: CommentEvent = {
     spot,
     type,
@@ -17,7 +20,7 @@ function sendEventToBackground(type: 'ENHANCED' | 'DESTROYED', spot: CommentSpot
 }
 
 enhancedTextareas.setEventHandlers(
-  (spot) => sendEventToBackground('ENHANCED', spot),
+  (spot, textarea) => sendEventToBackground('ENHANCED', spot, textarea),
   (spot) => sendEventToBackground('DESTROYED', spot),
 )
 

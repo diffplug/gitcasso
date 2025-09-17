@@ -403,13 +403,61 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
 
               // Create a global registry to track comment spots for debugging
               window.gitcassoCommentSpots = window.gitcassoCommentSpots || [];
-              
+
+              // Helper function to extract textarea info for debugging
+              function getTextareaInfo(textarea) {
+                const rect = textarea.getBoundingClientRect();
+                return {
+                  id: textarea.id || '',
+                  name: textarea.name || '',
+                  className: textarea.className || '',
+                  tagName: textarea.tagName,
+                  placeholder: textarea.placeholder || '',
+                  value: textarea.value ? textarea.value.substring(0, 50) + '...' : '',
+                  parentElement: textarea.parentElement ? textarea.parentElement.tagName + (textarea.parentElement.className ? '.' + textarea.parentElement.className : '') : '',
+                  position: {
+                    top: rect.top,
+                    left: rect.left,
+                    width: rect.width,
+                    height: rect.height
+                  }
+                };
+              }
+
               // Execute the patched script with error handling
               try {
                 const script = document.createElement('script');
                 script.textContent = patchedCode;
                 document.head.appendChild(script);
                 console.log('Content script executed successfully');
+
+                // After the script loads, patch the TextareaRegistry if available
+                setTimeout(() => {
+                  if (window.gitcassoTextareaRegistry) {
+                    const originalSetEventHandlers = window.gitcassoTextareaRegistry.setEventHandlers;
+                    window.gitcassoTextareaRegistry.setEventHandlers = function(onEnhanced, onDestroyed) {
+                      console.log('Patching TextareaRegistry.setEventHandlers');
+                      const wrappedOnEnhanced = function(spot, textarea) {
+                        console.log('onEnhanced called with spot and textarea:', spot, textarea);
+                        const textareaInfo = getTextareaInfo(textarea);
+                        console.log('Textarea details:', textareaInfo);
+
+                        // Store enhanced info with textarea details
+                        window.gitcassoCommentSpots = window.gitcassoCommentSpots || [];
+                        const trackingData = Object.assign({}, spot, {
+                          timestamp: Date.now(),
+                          action: 'ENHANCED',
+                          textareaInfo: textareaInfo
+                        });
+                        window.gitcassoCommentSpots.push(trackingData);
+
+                        return onEnhanced(spot, textarea);
+                      };
+                      return originalSetEventHandlers.call(this, wrappedOnEnhanced, onDestroyed);
+                    };
+                  }
+                }, 100);
+
               } catch (error) {
                 console.error('Failed to execute patched content script:', error);
                 console.log('First 1000 chars of patched code:', patchedCode.substring(0, 1000));
@@ -538,9 +586,31 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
             console.log('Spots for display:', spots);
             console.log('All textareas on page:', document.querySelectorAll('textarea').length);
 
-            const content = spots.length > 0
-              ? \`<div style="font-weight: bold; margin-bottom: 8px; color: #333;">CommentSpots (\${spots.length}):</div><pre style="margin: 0; white-space: pre-wrap;">\${JSON.stringify(spots, null, 2)}</pre>\`
-              : '<div style="color: #666; font-style: italic;">No CommentSpots detected yet...<br><small>Textareas found: ' + document.querySelectorAll('textarea').length + '</small></div>';
+            let content = '';
+            if (spots.length > 0) {
+              content = \`<div style="font-weight: bold; margin-bottom: 8px; color: #333;">CommentSpots (\${spots.length}):</div>\`;
+
+              spots.forEach((spot, index) => {
+                const hasTextareaInfo = spot.textareaInfo;
+                const spotData = Object.assign({}, spot);
+                delete spotData.textareaInfo; // Remove from main display
+
+                content += \`<div style="margin-bottom: 12px; padding: 8px; border: 1px solid #eee; border-radius: 4px;">\`;
+                content += \`<div style="font-weight: bold; color: #555;">Spot \${index + 1}:</div>\`;
+                content += \`<pre style="margin: 4px 0; font-size: 10px;">\${JSON.stringify(spotData, null, 2)}</pre>\`;
+
+                if (hasTextareaInfo) {
+                  content += \`<div style="font-weight: bold; color: #007acc; margin-top: 8px;">Textarea Info:</div>\`;
+                  content += \`<pre style="margin: 4px 0; font-size: 10px; color: #666;">\${JSON.stringify(spot.textareaInfo, null, 2)}</pre>\`;
+                } else {
+                  content += \`<div style="color: #999; font-style: italic; margin-top: 4px;">No textarea info captured</div>\`;
+                }
+
+                content += \`</div>\`;
+              });
+            } else {
+              content = '<div style="color: #666; font-style: italic;">No CommentSpots detected yet...<br><small>Textareas found: ' + document.querySelectorAll('textarea').length + '</small></div>';
+            }
 
             commentSpotDisplay.innerHTML = content;
           }
