@@ -1,6 +1,6 @@
 import OverType, { type OverTypeInstance } from 'overtype'
 import type React from 'react'
-import type { CommentEnhancer, CommentSpot } from '@/lib/enhancer'
+import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhancer'
 import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGithubOptions } from './ghOptions'
@@ -19,20 +19,20 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     return ['GH_PR_ADD_COMMENT']
   }
 
-  tryToEnhance(_textarea: HTMLTextAreaElement): GitHubPRAddCommentSpot | null {
+  tryToEnhance(
+    _textarea: HTMLTextAreaElement,
+    location: StrippedLocation,
+  ): GitHubPRAddCommentSpot | null {
     // Only handle github.com domains TODO: identify GitHub Enterprise somehow
-    if (
-      document.querySelector('meta[name="hostname"]')?.getAttribute('content') !== 'github.com' ||
-      _textarea.id !== 'new_comment_field'
-    ) {
+    if (location.domain !== 'github.com' || _textarea.id !== 'new_comment_field') {
       return null
     }
 
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
-    logger.debug(`${this.constructor.name} examing url`, window.location.pathname)
+    logger.debug(`${this.constructor.name} examing url`, location.pathname)
 
-    const match = window.location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/pull\/(\d+))/)
-    logger.debug(`${this.constructor.name} found match`, window.location.pathname)
+    const match = location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/pull\/(\d+))/)
+    logger.debug(`${this.constructor.name} found match`, location.pathname)
     if (!match) return null
     const [, owner, repo, numberStr] = match
     const slug = `${owner}/${repo}`
@@ -40,7 +40,7 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     const unique_key = `github.com:${slug}:${number}`
     const title = 'TODO_TITLE'
     return {
-      domain: 'github.com',
+      domain: location.domain,
       number,
       slug,
       title,

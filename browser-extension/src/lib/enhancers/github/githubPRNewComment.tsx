@@ -1,5 +1,5 @@
 import OverType, { type OverTypeInstance } from 'overtype'
-import type { CommentEnhancer, CommentSpot } from '../../enhancer'
+import type { CommentEnhancer, CommentSpot, StrippedLocation } from '../../enhancer'
 import { logger } from '../../logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGithubOptions } from './ghOptions'
@@ -16,22 +16,25 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
     return ['GH_PR_NEW_COMMENT']
   }
 
-  tryToEnhance(textarea: HTMLTextAreaElement): GitHubPRNewCommentSpot | null {
+  tryToEnhance(
+    textarea: HTMLTextAreaElement,
+    location: StrippedLocation,
+  ): GitHubPRNewCommentSpot | null {
     if (textarea.id === 'feedback') {
       return null
     }
-    if (document.querySelector('meta[name="hostname"]')?.getAttribute('content') !== 'github.com') {
+    if (location.domain !== 'github.com') {
       return null
     }
 
     // /owner/repo/compare/feature/more-enhancers?expand=1
     // or /owner/repo/compare/feat/issue-static-and-dynamic...feature/more-enhancers?expand=1
-    logger.info(`${this.constructor.name} examing url`, window.location.pathname)
+    logger.info(`${this.constructor.name} examing url`, location.pathname)
 
-    const match = window.location.pathname.match(
+    const match = location.pathname.match(
       /^\/([^/]+)\/([^/]+)\/compare\/(?:([^.?]+)\.\.\.)?([^?]+)/,
     )
-    logger.info(`${this.constructor.name} found match`, window.location.pathname, match)
+    logger.info(`${this.constructor.name} found match`, location.pathname, match)
 
     if (!match) return null
     const [, owner, repo, baseBranch, compareBranch] = match
@@ -40,7 +43,7 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
       : `${owner}/${repo}/${compareBranch}`
     const unique_key = `github.com:${slug}`
     return {
-      domain: 'github.com',
+      domain: location.domain,
       slug,
       type: 'GH_PR_NEW_COMMENT',
       unique_key,

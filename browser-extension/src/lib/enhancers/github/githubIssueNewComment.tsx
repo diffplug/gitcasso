@@ -1,5 +1,5 @@
 import OverType, { type OverTypeInstance } from 'overtype'
-import type { CommentEnhancer, CommentSpot } from '../../enhancer'
+import type { CommentEnhancer, CommentSpot, StrippedLocation } from '../../enhancer'
 import { logger } from '../../logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGithubOptions } from './ghOptions'
@@ -16,23 +16,26 @@ export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssu
     return ['GH_ISSUE_NEW_COMMENT']
   }
 
-  tryToEnhance(_textarea: HTMLTextAreaElement): GitHubIssueNewCommentSpot | null {
-    if (document.querySelector('meta[name="hostname"]')?.getAttribute('content') !== 'github.com') {
+  tryToEnhance(
+    _textarea: HTMLTextAreaElement,
+    location: StrippedLocation,
+  ): GitHubIssueNewCommentSpot | null {
+    if (location.domain !== 'github.com') {
       return null
     }
 
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
-    logger.debug(`${this.constructor.name} examing url`, window.location.pathname)
+    logger.debug(`${this.constructor.name} examing url`, location.pathname)
 
-    const match = window.location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/issues\/new)/)
-    logger.debug(`${this.constructor.name} found match`, window.location.pathname)
+    const match = location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/issues\/new)/)
+    logger.debug(`${this.constructor.name} found match`, location.pathname)
 
     if (!match) return null
     const [, owner, repo] = match
     const slug = `${owner}/${repo}`
     const unique_key = `github.com:${slug}:new`
     return {
-      domain: 'github.com',
+      domain: location.domain,
       slug,
       type: 'GH_ISSUE_NEW_COMMENT',
       unique_key,
