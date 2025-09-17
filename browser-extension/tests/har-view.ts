@@ -14,7 +14,9 @@
  * - Location patching uses history.pushState to simulate original URLs
  * - Chrome APIs are mocked for extension testing outside browser context
  * - Extension assets served from `./output/chrome-mv3-dev` via `/chrome-mv3-dev` route
- * - Floating rebuild button in gitcasso mode triggers `npx wxt build --mode development` and then refresh
+ * - Floating rebuild button in gitcasso mode triggers `pnpm run build:dev` and then refresh
+ * - CommentSpot monitoring panel displays enhanced textareas with spot data and element info
+ * - Real-time updates every 2 seconds to track textarea enhancement detection and debugging
  */
 
 import { spawn } from 'node:child_process'
