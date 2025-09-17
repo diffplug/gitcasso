@@ -437,7 +437,7 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
             'position: fixed;' +
             'top: 80px;' +
             'right: 20px;' +
-            'width: 300px;' +
+            'width: 400px;' +
             'max-height: 400px;' +
             'background: rgba(255, 255, 255, 0.95);' +
             'border: 1px solid #ddd;' +
@@ -463,46 +463,30 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
             empty: 'color: #666; font-style: italic;'
           };
 
-          function formatSpot(enhanced, index) {
-            const { textarea, spot } = enhanced;
-            const rect = textarea.getBoundingClientRect();
-            const textareaInfo = {
-              id: textarea.id || '',
-              name: textarea.name || '',
-              className: textarea.className || '',
-              tagName: textarea.tagName,
-              placeholder: textarea.placeholder || '',
-              value: textarea.value ? textarea.value.substring(0, 50) + '...' : '',
-              parentElement: textarea.parentElement ? textarea.parentElement.tagName + (textarea.parentElement.className ? '.' + textarea.parentElement.className : '') : '',
-              position: {
-                top: rect.top,
-                left: rect.left,
-                width: rect.width,
-                height: rect.height
-              }
-            };
-
-            return '<div style="' + styles.spotContainer + '">' +
-                   '<div style="' + styles.spotTitle + '">Spot ' + (index + 1) + ':</div>' +
-                   '<pre style="' + styles.jsonPre + '">' + JSON.stringify(spot, null, 2) + '</pre>' +
-                   '<div style="' + styles.textareaHeader + '">Textarea Info:</div>' +
-                   '<pre style="' + styles.textareaPre + '">' + JSON.stringify(textareaInfo, null, 2) + '</pre>' +
-                   '</div>';
-          }
-
           function updateCommentSpotDisplay() {
-            const enhanced = window.gitcassoTextareaRegistry ? window.gitcassoTextareaRegistry.getAllEnhanced() : [];
+            const textareas = document.querySelectorAll('textarea');
+            const spotsFound = [];
 
-            console.log('Enhanced textareas:', enhanced.length);
-            console.log('All textareas on page:', document.querySelectorAll('textarea').length);
+            for (const textarea of textareas) {
+              const forValue = 'id=' + textarea.id + ' name=' + textarea.name + ' className=' + textarea.className;
+              const enhancedItem = window.gitcassoTextareaRegistry ? window.gitcassoTextareaRegistry.get(textarea) : undefined;
+              if (enhancedItem) {
+                spotsFound.push({
+                  for: forValue,
+                  spot: enhancedItem.spot,
+                  title: enhancedItem.enhancer.tableTitle(enhancedItem.spot),
+                });
+              } else {
+                spotsFound.push({
+                  for: forValue,
+                  spot: 'NO_SPOT',
+                });
+              }
+            }
 
-            const content = enhanced.length > 0
-              ? '<div style="' + styles.header + '">CommentSpots (' + enhanced.length + '):</div>' +
-                '<div style="font-size: 10px; color: #666; margin-bottom: 8px; word-break: break-all;">URL: ${urlParts.href}</div>' +
-                enhanced.map(formatSpot).join('')
-              : '<div style="' + styles.empty + '">No CommentSpots detected yet...<br><small>Textareas found: ' + document.querySelectorAll('textarea').length + '</small><br><small>URL: ${urlParts.href}</small></div>';
-
-            commentSpotDisplay.innerHTML = content;
+            console.log('Enhanced textareas:', spotsFound.filter(s => s.spot !== 'NO_SPOT').length);
+            console.log('All textareas on page:', textareas.length);
+            commentSpotDisplay.innerHTML = '<div style="' + styles.header + '"><pre>${urlParts.href}\\n' + JSON.stringify(spotsFound, null, 2) + '</pre></div>';
           }
 
           // Initial update
