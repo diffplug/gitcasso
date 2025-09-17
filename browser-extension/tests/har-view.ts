@@ -509,7 +509,7 @@ function injectGitcassoScript(key: keyof typeof PAGES, html: string) {
           }
 
           function updateCommentSpotDisplay() {
-            const enhanced = window.enhancedTextareas ? window.enhancedTextareas.getAllEnhanced() : [];
+            const enhanced = window.gitcassoTextareaRegistry ? window.gitcassoTextareaRegistry.getAllEnhanced() : [];
 
             console.log('Enhanced textareas:', enhanced.length);
             console.log('All textareas on page:', document.querySelectorAll('textarea').length);
