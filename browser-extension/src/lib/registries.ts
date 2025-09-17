@@ -2,6 +2,7 @@ import type { OverTypeInstance } from 'overtype'
 import OverType from 'overtype'
 import type { CommentEnhancer, CommentSpot } from './enhancer'
 import { CommentEnhancerMissing } from './enhancers/CommentEnhancerMissing'
+import { GitHubEditCommentEnhancer } from './enhancers/github/githubEditComment'
 import { GitHubIssueAddCommentEnhancer } from './enhancers/github/githubIssueAddComment'
 import { GitHubIssueNewCommentEnhancer } from './enhancers/github/githubIssueNewComment'
 import { GitHubPRAddCommentEnhancer } from './enhancers/github/githubPRAddComment'
@@ -21,6 +22,7 @@ export class EnhancerRegistry {
 
   constructor() {
     // Register all available handlers
+    this.register(new GitHubEditCommentEnhancer())
     this.register(new GitHubIssueAddCommentEnhancer())
     this.register(new GitHubIssueNewCommentEnhancer())
     this.register(new GitHubPRAddCommentEnhancer())
