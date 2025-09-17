@@ -17,7 +17,7 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
   }
 
   tryToEnhance(textarea: HTMLTextAreaElement): GitHubPRNewCommentSpot | null {
-    if (textarea.id == 'feedback') {
+    if (textarea.id === 'feedback') {
       return null
     }
     if (document.querySelector('meta[name="hostname"]')?.getAttribute('content') !== 'github.com') {

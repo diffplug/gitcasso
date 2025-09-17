@@ -17,12 +17,12 @@ function enhancements(document: Document) {
         for: forValue,
         spot: enhanced.spot,
         title: enhanced.enhancer.tableTitle(enhanced.spot),
-        upperDecoration: enhanced.enhancer.tableUpperDecoration(enhanced.spot)
+        upperDecoration: enhanced.enhancer.tableUpperDecoration(enhanced.spot),
       })
     } else {
       spotsFound.push({
         for: forValue,
-        spot: 'NO_SPOT'
+        spot: 'NO_SPOT',
       })
     }
   }
