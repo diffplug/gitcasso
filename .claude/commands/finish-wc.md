@@ -1,0 +1,1 @@
+Run `git status` to see the changes in the working copy. Complete whatever tasks are necessary to complete this change. Make sure that `pnpm -r precommit` succeeds. Don't fix `precommit` just be reverting the changes, the goal is to complete the change.
