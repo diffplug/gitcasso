@@ -1,0 +1,205 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`github ui > gh_issue:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=:rn: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+    "title": "[jvm] docs for VCR",
+    "upperDecoration": <React.Fragment>
+      <span
+        className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
+      >
+        <IssueOpenedIcon
+          size={16}
+        />
+      </span>
+      #
+      523
+      <a
+        className="truncate hover:underline"
+        href="https://github.com/diffplug/selfie"
+      >
+        diffplug/selfie
+      </a>
+    </React.Fragment>,
+  },
+]
+`;
+
+exports[`github ui > gh_issue_edit:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=:rc3: name=null className=prc-Textarea-TextArea-13q4j focus-visible overtype-input",
+    "title": "N/A",
+    "upperDecoration": <span>
+      N/A
+    </span>,
+  },
+  {
+    "for": "id=:ra7: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+    "title": "what about the draft?",
+    "upperDecoration": <React.Fragment>
+      <span
+        className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
+      >
+        <IssueOpenedIcon
+          size={16}
+        />
+      </span>
+      #
+      56
+      <a
+        className="truncate hover:underline"
+        href="https://github.com/diffplug/gitcasso"
+      >
+        diffplug/gitcasso
+      </a>
+    </React.Fragment>,
+  },
+]
+`;
+
+exports[`github ui > gh_issue_new:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=:r34: name=null className=prc-Textarea-TextArea-13q4j focus-visible overtype-input",
+    "title": "New issue title",
+    "upperDecoration": <React.Fragment>
+      <span>
+        New Issue
+      </span>
+      <span
+        className="font-mono text-muted-foreground text-sm"
+      >
+         
+        diffplug/gitcasso
+         
+      </span>
+    </React.Fragment>,
+  },
+]
+`;
+
+exports[`github ui > gh_new_pr:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=feedback name=feedback className=form-control width-full mb-2",
+    "title": null,
+    "upperDecoration": null,
+  },
+  {
+    "for": "id=pull_request_body name=pull_request[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit FormControl-textarea CommentBox-input js-size-to-fit size-to-fit js-session-resumable js-saved-reply-shortcut-comment-field CommentBox-input--large overtype-input",
+    "title": "Update README.md",
+    "upperDecoration": <React.Fragment>
+      <span>
+        New PR
+      </span>
+      <span
+        className="font-mono text-muted-foreground text-sm"
+      >
+         
+        diffplug/selfie
+         
+      </span>
+    </React.Fragment>,
+  },
+]
+`;
+
+exports[`github ui > gh_pr:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=feedback name=feedback className=form-control width-full mb-2",
+    "title": null,
+    "upperDecoration": null,
+  },
+  {
+    "for": "id=new_comment_field name=comment[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit FormControl-textarea CommentBox-input js-size-to-fit size-to-fit js-session-resumable js-saved-reply-shortcut-comment-field overtype-input",
+    "title": "Add "VCR" functionality
+          #517",
+    "upperDecoration": <React.Fragment>
+      <span
+        className="font-mono text-muted-foreground text-sm"
+      >
+        diffplug/selfie
+      </span>
+      <span
+        className="ml-2 font-medium"
+      >
+        PR #
+        517
+      </span>
+    </React.Fragment>,
+  },
+]
+`;
+
+exports[`github ui > gh_pr_edit:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=issue-3429313834-body name=pull_request[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit js-size-to-fit size-to-fit js-session-resumable CommentBox-input FormControl-textarea js-saved-reply-shortcut-comment-field focus-visible overtype-input",
+    "title": "N/A",
+    "upperDecoration": <span>
+      N/A
+    </span>,
+  },
+  {
+    "for": "id=new_comment_field name=comment[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit FormControl-textarea CommentBox-input js-size-to-fit size-to-fit js-session-resumable js-saved-reply-shortcut-comment-field overtype-input",
+    "title": "Feat/expand corpus
+ 
+ #58",
+    "upperDecoration": <React.Fragment>
+      <span
+        className="font-mono text-muted-foreground text-sm"
+      >
+        diffplug/gitcasso
+      </span>
+      <span
+        className="ml-2 font-medium"
+      >
+        PR #
+        58
+      </span>
+    </React.Fragment>,
+  },
+]
+`;
+
+exports[`github ui > gh_project:should render correct UI elements 1`] = `[]`;
+
+exports[`github ui > gh_project_draft:should render correct UI elements 1`] = `[]`;
+
+exports[`github ui > gh_project_draft_edit:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=:r5a: name=null className=prc-Textarea-TextArea-13q4j",
+    "title": null,
+    "upperDecoration": null,
+  },
+]
+`;
+
+exports[`github ui > gh_project_issue:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=:rbs: name=null className=prc-Textarea-TextArea-13q4j",
+    "title": null,
+    "upperDecoration": null,
+  },
+]
+`;
+
+exports[`github ui > gh_project_issue_edit:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=:rdh: name=null className=prc-Textarea-TextArea-13q4j",
+    "title": null,
+    "upperDecoration": null,
+  },
+  {
+    "for": "id=:rbs: name=null className=prc-Textarea-TextArea-13q4j",
+    "title": null,
+    "upperDecoration": null,
+  },
+]
+`;

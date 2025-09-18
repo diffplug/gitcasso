@@ -39,7 +39,7 @@ export const describe = baseDescribe
 export { expect }
 
 // Fluent interface for any corpus type (HAR or HTML)
-export function forCorpus(corpusKey: keyof typeof CORPUS) {
+export function withCorpus(corpusKey: keyof typeof CORPUS) {
   return {
     it: (name: string, fn: () => void | Promise<void>) => {
       return baseTest(`${String(corpusKey)}:${name}`, async () => {
