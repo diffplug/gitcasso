@@ -40,8 +40,27 @@ export const describe = baseDescribe
 // Re-export expect from vitest
 export { expect }
 
+// Fluent interface for any corpus type (HAR or HTML)
+export function withCorpus(corpusKey: keyof typeof CORPUS) {
+  return {
+    it: (name: string, fn: () => void | Promise<void>) => {
+      return baseTest(`${String(corpusKey)}:${name}`, async () => {
+        // Setup DOM for any corpus type (delegates to HAR or HTML based on type)
+        await setupDOM(corpusKey)
+
+        try {
+          return await fn()
+        } finally {
+          // Cleanup after test
+          cleanupDOM()
+        }
+      })
+    },
+  }
+}
+
 // Helper function for detection tests
-export function getDetectionResults() {
+export function detectedSpots() {
   const enhancers = new EnhancerRegistry()
   const textareas = document.querySelectorAll('textarea')
   const location: StrippedLocation = {
@@ -61,7 +80,7 @@ export function getDetectionResults() {
 }
 
 // Helper function for UI tests
-export function getUIResults() {
+export function tableUI() {
   const enhancers = new EnhancerRegistry()
   const textareas = document.querySelectorAll('textarea')
   const location: StrippedLocation = {
@@ -87,23 +106,4 @@ export function getUIResults() {
     }
   }
   return uiResults
-}
-
-// Fluent interface for any corpus type (HAR or HTML)
-export function withCorpus(corpusKey: keyof typeof CORPUS) {
-  return {
-    it: (name: string, fn: () => void | Promise<void>) => {
-      return baseTest(`${String(corpusKey)}:${name}`, async () => {
-        // Setup DOM for any corpus type (delegates to HAR or HTML based on type)
-        await setupDOM(corpusKey)
-
-        try {
-          return await fn()
-        } finally {
-          // Cleanup after test
-          cleanupDOM()
-        }
-      })
-    },
-  }
 }
