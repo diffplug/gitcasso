@@ -1,6 +1,6 @@
 import OverType, { type OverTypeInstance } from 'overtype'
 import type React from 'react'
-import type { CommentEnhancer, CommentSpot } from '@/lib/enhancer'
+import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhancer'
 import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGithubOptions } from './ghOptions'
@@ -8,10 +8,6 @@ import { prepareGitHubHighlighter } from './githubHighlighter'
 
 export interface GitHubEditCommentSpot extends CommentSpot {
   type: 'GH_EDIT_COMMENT'
-  title: string
-  domain: string
-  slug: string
-  number: number
 }
 
 export class GitHubEditCommentEnhancer implements CommentEnhancer<GitHubEditCommentSpot> {
@@ -19,32 +15,18 @@ export class GitHubEditCommentEnhancer implements CommentEnhancer<GitHubEditComm
     return ['GH_EDIT_COMMENT']
   }
 
-  tryToEnhance(_textarea: HTMLTextAreaElement): GitHubEditCommentSpot | null {
-    if (
-      document.querySelector('meta[name="hostname"]')?.getAttribute('content') !== 'github.com' ||
-      !_textarea.matches('.TimelineItem textarea')
-    ) {
+  tryToEnhance(
+    _textarea: HTMLTextAreaElement,
+    location: StrippedLocation,
+  ): GitHubEditCommentSpot | null {
+    if (location.host !== 'github.com') {
       return null
     }
-
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
     logger.info(`${this.constructor.name} examing url`, window.location.pathname)
-
-    const match = window.location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/(pull|issues)\/(\d+))/)
-    logger.info(`${this.constructor.name} found match`, window.location.pathname)
-    if (!match) return null
-    const [, owner, repo, numberStr] = match
-    const slug = `${owner}/${repo}`
-    const number = parseInt(numberStr!, 10)
-    const unique_key = `github.com:${slug}:${number}`
-    const title = 'TODO_TITLE'
     return {
-      domain: 'github.com',
-      number,
-      slug,
-      title,
       type: 'GH_EDIT_COMMENT',
-      unique_key,
+      unique_key: '<not unique>',
     }
   }
 
@@ -59,17 +41,11 @@ export class GitHubEditCommentEnhancer implements CommentEnhancer<GitHubEditComm
     })[0]!
   }
 
-  tableUpperDecoration(spot: GitHubEditCommentSpot): React.ReactNode {
-    const { slug, number } = spot
-    return (
-      <>
-        <span className='font-mono text-muted-foreground text-sm'>{slug}</span>
-        <span className='ml-2 font-medium'>PR #{number}</span>
-      </>
-    )
+  tableUpperDecoration(_spot: GitHubEditCommentSpot): React.ReactNode {
+    return <span>N/A</span>
   }
 
   tableTitle(_spot: GitHubEditCommentSpot): string {
-    return 'TITLE_TODO'
+    return 'N/A'
   }
 }
