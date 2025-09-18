@@ -48,11 +48,13 @@ describe('github', () => {
             "domain": "github.com",
             "number": 517,
             "slug": "diffplug/selfie",
-            "title": "TODO_TITLE",
+            "title": "Add "VCR" functionality
+                #517",
             "type": "GH_PR_ADD_COMMENT",
             "unique_key": "github.com:diffplug/selfie:517",
           },
-          "title": "TITLE_TODO",
+          "title": "Add "VCR" functionality
+                #517",
           "upperDecoration": <React.Fragment>
             <span
               className="font-mono text-muted-foreground text-sm"
@@ -273,11 +275,15 @@ describe('github', () => {
             "domain": "github.com",
             "number": 58,
             "slug": "diffplug/gitcasso",
-            "title": "TODO_TITLE",
+            "title": "Feat/expand corpus
+       
+       #58",
             "type": "GH_PR_ADD_COMMENT",
             "unique_key": "github.com:diffplug/gitcasso:58",
           },
-          "title": "TITLE_TODO",
+          "title": "Feat/expand corpus
+       
+       #58",
           "upperDecoration": <React.Fragment>
             <span
               className="font-mono text-muted-foreground text-sm"
