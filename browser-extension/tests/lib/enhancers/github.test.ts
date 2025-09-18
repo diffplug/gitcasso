@@ -1,4 +1,4 @@
-import { describe, expect, using, usingHar } from '../../har-fixture'
+import { describe, expect, forCorpus as withCorpus } from '../../corpus-fixture'
 
 // must import fixture **first** for mocks, the `expect` keeps biome from changing sort-order
 expect
@@ -35,7 +35,7 @@ function enhancements(document: Document, window: Window) {
 }
 
 describe('github', () => {
-  usingHar('gh_pr').it('should create the correct spot object', async () => {
+  withCorpus('gh_pr').it('should create the correct spot object', async () => {
     expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
@@ -70,7 +70,7 @@ describe('github', () => {
       ]
     `)
   })
-  usingHar('gh_new_pr').it('should create the correct spot object', async () => {
+  withCorpus('gh_new_pr').it('should create the correct spot object', async () => {
     expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
@@ -102,7 +102,7 @@ describe('github', () => {
       ]
     `)
   })
-  usingHar('gh_issue').it('no enhancement on initial page load', async () => {
+  withCorpus('gh_issue').it('no enhancement on initial page load', async () => {
     expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
@@ -112,7 +112,7 @@ describe('github', () => {
       ]
     `)
   })
-  using('gh_issue_populated_comment').it('should create the correct spot object', async () => {
+  withCorpus('gh_issue_populated_comment').it('should create the correct spot object', async () => {
     expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
@@ -147,7 +147,7 @@ describe('github', () => {
       ]
     `)
   })
-  usingHar('gh_new_issue').it('should create the correct spot object', async () => {
+  withCorpus('gh_new_issue').it('should create the correct spot object', async () => {
     expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
