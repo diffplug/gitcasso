@@ -83,11 +83,6 @@ exports[`github ui > gh_issue_new:should render correct UI elements 1`] = `
 exports[`github ui > gh_pr:should render correct UI elements 1`] = `
 [
   {
-    "for": "id=feedback name=feedback className=form-control width-full mb-2",
-    "title": null,
-    "upperDecoration": null,
-  },
-  {
     "for": "id=new_comment_field name=comment[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit FormControl-textarea CommentBox-input js-size-to-fit size-to-fit js-session-resumable js-saved-reply-shortcut-comment-field overtype-input",
     "title": "Add "VCR" functionality
           #517",
@@ -142,11 +137,6 @@ exports[`github ui > gh_pr_edit:should render correct UI elements 1`] = `
 exports[`github ui > gh_pr_new:should render correct UI elements 1`] = `
 [
   {
-    "for": "id=feedback name=feedback className=form-control width-full mb-2",
-    "title": null,
-    "upperDecoration": null,
-  },
-  {
     "for": "id=pull_request_body name=pull_request[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit FormControl-textarea CommentBox-input js-size-to-fit size-to-fit js-session-resumable js-saved-reply-shortcut-comment-field CommentBox-input--large overtype-input",
     "title": "Update README.md",
     "upperDecoration": <React.Fragment>
@@ -169,37 +159,8 @@ exports[`github ui > gh_project:should render correct UI elements 1`] = `[]`;
 
 exports[`github ui > gh_project_draft:should render correct UI elements 1`] = `[]`;
 
-exports[`github ui > gh_project_draft_edit:should render correct UI elements 1`] = `
-[
-  {
-    "for": "id=:r5a: name=null className=prc-Textarea-TextArea-13q4j",
-    "title": null,
-    "upperDecoration": null,
-  },
-]
-`;
+exports[`github ui > gh_project_draft_edit:should render correct UI elements 1`] = `[]`;
 
-exports[`github ui > gh_project_issue:should render correct UI elements 1`] = `
-[
-  {
-    "for": "id=:rbs: name=null className=prc-Textarea-TextArea-13q4j",
-    "title": null,
-    "upperDecoration": null,
-  },
-]
-`;
+exports[`github ui > gh_project_issue:should render correct UI elements 1`] = `[]`;
 
-exports[`github ui > gh_project_issue_edit:should render correct UI elements 1`] = `
-[
-  {
-    "for": "id=:rdh: name=null className=prc-Textarea-TextArea-13q4j",
-    "title": null,
-    "upperDecoration": null,
-  },
-  {
-    "for": "id=:rbs: name=null className=prc-Textarea-TextArea-13q4j",
-    "title": null,
-    "upperDecoration": null,
-  },
-]
-`;
+exports[`github ui > gh_project_issue_edit:should render correct UI elements 1`] = `[]`;

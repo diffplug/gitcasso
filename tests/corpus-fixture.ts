@@ -97,12 +97,6 @@ export function tableUI() {
         title: enhanced.enhancer.tableTitle(enhanced.spot),
         upperDecoration: enhanced.enhancer.tableUpperDecoration(enhanced.spot),
       })
-    } else {
-      uiResults.push({
-        for: forValue,
-        title: null,
-        upperDecoration: null,
-      })
     }
   }
   return uiResults
