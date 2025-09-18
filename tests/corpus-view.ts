@@ -125,20 +125,19 @@ app.get('/', async (_req, res) => {
   try {
     const links = Object.entries(CORPUS)
       .map(([key, entry]) => {
-        const description = entry.description
-          ? `<div style="color: #666; font-size: 0.9em; margin-top: 5px;">${entry.description}</div>`
-          : ''
+        const description = entry.description ? `<div style="color: #666; font-size: 0.9em;">${entry.description}</div>` : ''
         return `
         <li>
-          <div style="margin-bottom: 10px;">
-            <div style="font-weight: bold; color: #555;">${key}</div>
-            <div style="font-size: 0.9em; color: #888;">${entry.type.toUpperCase()}</div>
-            ${description}
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong>${key}</strong> <span style="color: #888;">${entry.type.toLowerCase()}</span>
+            </div>
+            <div style="display: flex; gap: 15px;">
+              <a href="/corpus/${key}/clean">🔍 clean</a>
+              <a href="/corpus/${key}/gitcasso">🚀 gitcasso</a>
+            </div>
           </div>
-          <div style="display: flex; gap: 10px;">
-            <a href="/corpus/${key}/clean" style="flex: 1; text-align: center;">🔍 Clean</a>
-            <a href="/corpus/${key}/gitcasso" style="flex: 1; text-align: center;">🚀 Gitcasso</a>
-          </div>
+          ${description}
         </li>
       `
       })
@@ -151,36 +150,27 @@ app.get('/', async (_req, res) => {
     <title>Corpus Viewer</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 700px;
-            margin: 50px auto;
-            padding: 20px;
+            font-family: system-ui, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 10px;
         }
-        h1 { color: #333; }
-        ul { list-style: none; padding: 0; }
-        li { margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; }
+        h1 { margin-bottom: 10px; }
+        ul { list-style: none; padding: 0; margin: 0; }
+        li { margin: 4px 0; padding: 8px 12px; background: #f9f9f9; }
         a {
-            display: block;
-            padding: 12px 20px;
-            background: #fff;
+            color: #0066cc;
             text-decoration: none;
-            color: #333;
-            border-radius: 6px;
-            border: 1px solid #dee2e6;
-            transition: all 0.2s;
+            font-size: 0.9em;
         }
-        a:hover:not([style*="pointer-events: none"]) { background: #e9ecef; transform: translateY(-1px); }
-        code { background: #f1f3f4; padding: 2px 4px; border-radius: 3px; font-size: 0.9em; }
+        a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <h1>📄 Corpus Viewer</h1>
-    <p>Select a recorded page to view:</p>
+    <h1>Corpus Viewer</h1>
     <ul>${links}</ul>
-    <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #007acc;">
-        <h3>Corpus Types</h3>
-        <p><strong>HAR:</strong> Automated network captures of initial page loads</p>
-        <p><strong>HTML:</strong> Manual SingleFile captures of post-interaction states</p>
+    <div style="margin-top: 20px; padding: 10px; background: #f9f9f9;">
+        <strong>HAR:</strong> Network captures | <strong>HTML:</strong> Manual captures
     </div>
 </body>
 </html>
