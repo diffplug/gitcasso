@@ -4,7 +4,7 @@ import type React from 'react'
 import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhancer'
 import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
-import { commonGithubOptions, prepareGitHubHighlighter } from './github-common'
+import { commonGitHubOptions, prepareGitHubHighlighter } from './github-common'
 
 const GH_ISSUE_APPEND = 'GH_ISSUE_APPEND' as const
 
@@ -67,7 +67,7 @@ export class GitHubIssueAppendEnhancer implements CommentEnhancer<GitHubIssueApp
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
-      ...commonGithubOptions,
+      ...commonGitHubOptions,
       minHeight: '100px',
       placeholder: 'Use Markdown to format your comment',
     })[0]!

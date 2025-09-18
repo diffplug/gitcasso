@@ -2,7 +2,7 @@ import OverType, { type OverTypeInstance } from 'overtype'
 import type { CommentEnhancer, CommentSpot, StrippedLocation } from '../../enhancer'
 import { logger } from '../../logger'
 import { modifyDOM } from '../modifyDOM'
-import { commonGithubOptions, prepareGitHubHighlighter } from './github-common'
+import { commonGitHubOptions, prepareGitHubHighlighter } from './github-common'
 
 const GH_ISSUE_CREATE = 'GH_ISSUE_CREATE' as const
 
@@ -54,7 +54,7 @@ export class GitHubIssueCreateEnhancer implements CommentEnhancer<GitHubIssueCre
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
-      ...commonGithubOptions,
+      ...commonGitHubOptions,
       minHeight: '400px',
       placeholder: 'Type your description here...',
     })[0]!

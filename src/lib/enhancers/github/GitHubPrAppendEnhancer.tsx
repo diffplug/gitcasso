@@ -3,7 +3,7 @@ import type React from 'react'
 import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhancer'
 import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
-import { commonGithubOptions, prepareGitHubHighlighter } from './github-common'
+import { commonGitHubOptions, prepareGitHubHighlighter } from './github-common'
 
 const GH_PR_APPEND = 'GH_PR_APPEND' as const
 
@@ -57,7 +57,7 @@ export class GitHubPrAppendEnhancer implements CommentEnhancer<GitHubPrAppendSpo
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
-      ...commonGithubOptions,
+      ...commonGitHubOptions,
       minHeight: '102px',
       padding: 'var(--base-size-8)',
       placeholder: 'Add your comment here...',
