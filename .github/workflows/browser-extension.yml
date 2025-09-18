@@ -21,9 +21,6 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run biome
-        working-directory: browser-extension
       - run: pnpm test
-        working-directory: browser-extension
-      - run: pnpm run typecheck
-        working-directory: browser-extension
+      - run: pnpm biome
+      - run: pnpm typecheck
