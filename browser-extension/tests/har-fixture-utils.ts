@@ -105,6 +105,27 @@ export function cleanupDOM(): void {
   }
 }
 
+export async function loadHtmlFromHtml(key: keyof typeof CORPUS): Promise<string> {
+  const entry = CORPUS[key]
+  if (!entry || entry.type !== 'html') {
+    throw new Error(`Invalid HTML corpus key: ${String(key)}`)
+  }
+  const htmlPath = path.join(__dirname, 'corpus', 'html', `${String(key)}.html`)
+  return await fs.readFile(htmlPath, 'utf-8')
+}
+
+export async function setupHtmlDOM(key: keyof typeof CORPUS): Promise<TestDOMGlobals> {
+  const html = await loadHtmlFromHtml(key)
+  const entry = CORPUS[key]
+  if (!entry || entry.type !== 'html') {
+    throw new Error(`Invalid HTML corpus key: ${String(key)}`)
+  }
+  const url = entry.url
+  const domGlobals = createDOMFromHar(html, url)
+  setupDOMFromHar(domGlobals)
+  return domGlobals
+}
+
 export async function setupHarDOM(key: keyof typeof CORPUS): Promise<TestDOMGlobals> {
   const html = await loadHtmlFromHar(key)
   const entry = CORPUS[key]
@@ -115,4 +136,19 @@ export async function setupHarDOM(key: keyof typeof CORPUS): Promise<TestDOMGlob
   const domGlobals = createDOMFromHar(html, url)
   setupDOMFromHar(domGlobals)
   return domGlobals
+}
+
+export async function setupDOM(key: keyof typeof CORPUS): Promise<TestDOMGlobals> {
+  const entry = CORPUS[key]
+  if (!entry) {
+    throw new Error(`Invalid corpus key: ${String(key)}`)
+  }
+
+  if (entry.type === 'har') {
+    return await setupHarDOM(key)
+  } else if (entry.type === 'html') {
+    return await setupHtmlDOM(key)
+  } else {
+    throw new Error(`Unsupported corpus type: ${entry.type}`)
+  }
 }

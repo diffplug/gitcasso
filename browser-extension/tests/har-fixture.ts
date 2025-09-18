@@ -31,7 +31,7 @@ vi.mock('overtype', () => {
 
 import { describe as baseDescribe, test as baseTest, expect } from 'vitest'
 import type { CORPUS } from './corpus/_corpus-index'
-import { cleanupDOM, setupHarDOM } from './har-fixture-utils'
+import { cleanupDOM, setupDOM, setupHarDOM } from './har-fixture-utils'
 
 export const describe = baseDescribe
 
@@ -45,6 +45,25 @@ export function usingHar(harKey: keyof typeof CORPUS) {
       return baseTest(`${String(harKey)}:${name}`, async () => {
         // Setup HAR DOM before test
         await setupHarDOM(harKey)
+
+        try {
+          return await fn()
+        } finally {
+          // Cleanup after test
+          cleanupDOM()
+        }
+      })
+    },
+  }
+}
+
+// Fluent interface for any corpus type (HAR or HTML)
+export function using(corpusKey: keyof typeof CORPUS) {
+  return {
+    it: (name: string, fn: () => void | Promise<void>) => {
+      return baseTest(`${String(corpusKey)}:${name}`, async () => {
+        // Setup DOM for any corpus type
+        await setupDOM(corpusKey)
 
         try {
           return await fn()
