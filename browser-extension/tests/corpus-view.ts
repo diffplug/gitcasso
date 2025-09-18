@@ -21,7 +21,6 @@
  */
 
 import { spawn } from 'node:child_process'
-import { error } from 'node:console'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -200,16 +199,28 @@ app.get('/corpus/:key/:mode(clean|gitcasso)', async (req, res) => {
         html = html.replace(regex, `/asset/${key}`)
       })
       if (mode === 'gitcasso') {
-        html = injectGitcassoScript(key, html)
+        html = await injectGitcassoScript(key, html)
       }
       return res.send(html)
     } else if (entry.type === 'html') {
       // Handle HTML corpus
       const htmlPath = path.join(__dirname, 'corpus', 'html', `${key}.html`)
       let html = await fs.readFile(htmlPath, 'utf-8')
+
+      // Strip CSP headers that might block our injected scripts
+      html = stripCSPFromHTML(html)
+
       if (mode === 'gitcasso') {
-        html = injectGitcassoScript(key, html)
+        html = await injectGitcassoScript(key, html)
       }
+
+      // Set permissive headers for HTML corpus
+      res.set({
+        'Content-Security-Policy':
+          "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: http: https:;",
+        'X-Content-Type-Options': 'nosniff',
+      })
+
       return res.send(html)
     } else {
       return res.status(400).send('Unknown corpus type')
@@ -342,43 +353,73 @@ app.listen(PORT, () => {
   console.log('Click the links to view recorded pages')
 })
 
-function injectGitcassoScript(key: string, html: string) {
+// Strip CSP meta tags and headers from HTML that might block our scripts
+function stripCSPFromHTML(html: string): string {
+  // Remove CSP meta tags
+  html = html.replace(/<meta[^>]*http-equiv\s*=\s*["']content-security-policy["'][^>]*>/gi, '')
+  html = html.replace(/<meta[^>]*name\s*=\s*["']content-security-policy["'][^>]*>/gi, '')
+
+  // Remove any other restrictive security meta tags
+  html = html.replace(/<meta[^>]*http-equiv\s*=\s*["']x-content-type-options["'][^>]*>/gi, '')
+
+  return html
+}
+
+async function injectGitcassoScript(key: string, html: string): Promise<string> {
   const urlParts = getUrlParts(key)
 
+  // Read and embed the content script directly to avoid CSP issues
+  let contentScriptCode = ''
+  try {
+    const contentScriptPath = path.join(
+      __dirname,
+      '..',
+      '.output',
+      'chrome-mv3-dev',
+      'content-scripts',
+      'content.js',
+    )
+    contentScriptCode = await fs.readFile(contentScriptPath, 'utf-8')
+
+    // Patch the content script to remove webextension-polyfill issues
+    contentScriptCode = contentScriptCode.replace(
+      'throw new Error("This script should only be loaded in a browser extension.")',
+      'console.warn("Webextension-polyfill check bypassed for corpus testing")',
+    )
+  } catch (error) {
+    console.warn('Could not read content script, using fallback:', error)
+    contentScriptCode = 'console.warn("Content script not found - extension may not be built");'
+  }
+
   // Inject patched content script with location patching
-  const contentScriptTag =
-    `
+  const contentScriptTag = `
         <script>
           console.log('Loading Gitcasso with mocked location:', '${urlParts.href}');
 
-          // Fetch and patch the content script to remove webextension-polyfill issues
-          fetch('/chrome-mv3-dev/content-scripts/content.js')
-            .then(response => response.text())
-            .then(code => {
-              console.log('Fetched content script, patching webextension-polyfill and detectLocation...');
+          // Set up mocked location
+          window.gitcassoMockLocation = {
+            host: '${urlParts.host}',
+            pathname: '${urlParts.pathname}'
+          };
 
-              // Replace the problematic webextension-polyfill error check
-              let patchedCode = code.replace(
-                'throw new Error("This script should only be loaded in a browser extension.")',
-                'console.warn("Webextension-polyfill check bypassed for corpus testing")'
-              );
-              window.gitcassoMockLocation = {
-                host: '${urlParts.host}',
-                pathname: '${urlParts.pathname}'
-              };
+          // Set up browser API mocks
+          window.chrome = window.chrome || {
+            runtime: {
+              getURL: path => "chrome-extension://gitcasso-test/" + path,
+              onMessage: { addListener: () => {} },
+              sendMessage: () => Promise.resolve(),
+              id: "gitcasso-test"
+            }
+          };
+          window.browser = window.chrome;
 
-              // Execute the patched script with browser API mocks prepended
-              const browserMocks = 'window.chrome=window.chrome||{runtime:{getURL:path=>"chrome-extension://gitcasso-test/"+path,onMessage:{addListener:()=>{}},sendMessage:()=>Promise.resolve(),id:"gitcasso-test"}};window.browser=window.chrome;';
-              const script = document.createElement('script');
-              script.textContent = browserMocks + patchedCode;
-              document.head.appendChild(script);
-              console.log('Gitcasso content script loaded with location patching for:', '` +
-    urlParts.href +
-    `');
-            })
-            .catch(error => {
-              console.error('Failed to load and patch content script:', error);
-            });
+          // Execute the patched content script directly
+          try {
+            ${contentScriptCode}
+            console.log('Gitcasso content script loaded with location patching for:', '${urlParts.href}');
+          } catch (error) {
+            console.error('Failed to execute content script:', error);
+          }
 
           // Create floating rebuild button
           const rebuildButton = document.createElement('div');

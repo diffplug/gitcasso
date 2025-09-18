@@ -99,9 +99,7 @@ function enhanceMaybe(textarea: HTMLTextAreaElement) {
     return
   }
 
-  logger.debug('activating textarea {}', textarea)
   injectStyles()
-
   try {
     const location = detectLocation()
     logger.debug('[gitcasso] Calling tryToEnhance with location:', location)

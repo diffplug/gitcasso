@@ -13,9 +13,9 @@ export const CORPUS: Record<string, CorpusEntry> = {
     url: 'https://github.com/diffplug/selfie/issues/523',
   },
   gh_issue_populated_comment: {
+    description: 'comment text box has some text',
     type: 'html',
     url: 'https://github.com/diffplug/selfie/issues/523',
-    description: 'comment text box has some text'
   },
   gh_new_issue: {
     type: 'har',
