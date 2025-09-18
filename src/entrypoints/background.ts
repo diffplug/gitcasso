@@ -43,7 +43,7 @@ export function handleCommentEvent(message: CommentEvent, sender: any): boolean 
   ) {
     if (message.type === 'ENHANCED') {
       const commentState: CommentStorage = {
-        drafts: [],
+        drafts: [[Date.now(), message.draft || '']],
         sentOn: null,
         spot: message.spot,
         tab: {
