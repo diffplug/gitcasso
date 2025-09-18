@@ -17,6 +17,11 @@ export const CORPUS: Record<string, CorpusEntry> = {
     type: 'html',
     url: 'https://github.com/diffplug/gitcasso/issues/56',
   },
+  gh_issue_new_populated: {
+    description: 'a new issue wiht some fields filled out',
+    type: 'html',
+    url: 'https://github.com/diffplug/gitcasso/issues/new',
+  },
   gh_issue_populated_comment: {
     description: 'comment text box has some text',
     type: 'html',
