@@ -1,5 +1,5 @@
 import type { CommentEvent, CommentSpot } from '@/lib/enhancer'
-import { type DraftStats, statsFor } from '@/lib/enhancers/draftStats'
+import { type DraftStats, statsFor } from '@/lib/enhancers/draft-stats'
 import type { GetTableRowsResponse, ToBackgroundMessage } from '@/lib/messages'
 import {
   CLOSE_MESSAGE_PORT,

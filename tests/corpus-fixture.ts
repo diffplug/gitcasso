@@ -30,6 +30,8 @@ vi.mock('overtype', () => {
 })
 
 import { describe as baseDescribe, test as baseTest, expect } from 'vitest'
+import type { StrippedLocation } from '@/lib/enhancer'
+import { EnhancerRegistry } from '../src/lib/registries'
 import type { CORPUS } from './corpus/_corpus-index'
 import { cleanupDOM, setupDOM } from './corpus-utils'
 
@@ -39,7 +41,7 @@ export const describe = baseDescribe
 export { expect }
 
 // Fluent interface for any corpus type (HAR or HTML)
-export function forCorpus(corpusKey: keyof typeof CORPUS) {
+export function withCorpus(corpusKey: keyof typeof CORPUS) {
   return {
     it: (name: string, fn: () => void | Promise<void>) => {
       return baseTest(`${String(corpusKey)}:${name}`, async () => {
@@ -55,4 +57,47 @@ export function forCorpus(corpusKey: keyof typeof CORPUS) {
       })
     },
   }
+}
+
+// Helper function for detection tests
+export function detectedSpots() {
+  const enhancers = new EnhancerRegistry()
+  const textareas = document.querySelectorAll('textarea')
+  const location: StrippedLocation = {
+    host: window.location.host,
+    pathname: window.location.pathname,
+  }
+  const detectionResults = []
+  for (const textarea of textareas) {
+    const enhanced = enhancers.tryToEnhance(textarea, location)
+    const forValue = `id=${textarea.id} name=${textarea.name} className=${textarea.className}`
+    detectionResults.push({
+      for: forValue,
+      spot: enhanced ? enhanced.spot : 'NO_SPOT',
+    })
+  }
+  return detectionResults
+}
+
+// Helper function for UI tests
+export function tableUI() {
+  const enhancers = new EnhancerRegistry()
+  const textareas = document.querySelectorAll('textarea')
+  const location: StrippedLocation = {
+    host: window.location.host,
+    pathname: window.location.pathname,
+  }
+  const uiResults = []
+  for (const textarea of textareas) {
+    const enhanced = enhancers.tryToEnhance(textarea, location)
+    const forValue = `id=${textarea.id} name=${textarea.name} className=${textarea.className}`
+    if (enhanced) {
+      uiResults.push({
+        for: forValue,
+        title: enhanced.enhancer.tableTitle(enhanced.spot),
+        upperDecoration: enhanced.enhancer.tableUpperDecoration(enhanced.spot),
+      })
+    }
+  }
+  return uiResults
 }

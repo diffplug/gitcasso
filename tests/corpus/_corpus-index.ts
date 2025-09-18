@@ -7,33 +7,21 @@ export interface CorpusEntry {
 }
 
 export const CORPUS: Record<string, CorpusEntry> = {
-  // HAR corpus (initial page loads)
   gh_issue: {
-    type: 'har',
+    description: 'comment text box has some text',
+    type: 'html',
     url: 'https://github.com/diffplug/selfie/issues/523',
   },
+  // HAR corpus (initial page loads)
   gh_issue_edit: {
     description: 'editing an existing comment on an issue',
     type: 'html',
     url: 'https://github.com/diffplug/gitcasso/issues/56',
   },
-  gh_issue_new_populated: {
+  gh_issue_new: {
     description: 'a new issue wiht some fields filled out',
     type: 'html',
     url: 'https://github.com/diffplug/gitcasso/issues/new',
-  },
-  gh_issue_populated_comment: {
-    description: 'comment text box has some text',
-    type: 'html',
-    url: 'https://github.com/diffplug/selfie/issues/523',
-  },
-  gh_new_issue: {
-    type: 'har',
-    url: 'https://github.com/diffplug/selfie/issues/new',
-  },
-  gh_new_pr: {
-    type: 'har',
-    url: 'https://github.com/diffplug/selfie/compare/main...cavia-porcellus:selfie:main?expand=1',
   },
   gh_pr: {
     type: 'har',
@@ -43,6 +31,10 @@ export const CORPUS: Record<string, CorpusEntry> = {
     description: 'editing an existing comment on a PR',
     type: 'html',
     url: 'https://github.com/diffplug/gitcasso/pull/58',
+  },
+  gh_pr_new: {
+    type: 'har',
+    url: 'https://github.com/diffplug/selfie/compare/main...cavia-porcellus:selfie:main?expand=1',
   },
   gh_project: {
     description: 'github project board initial load',
