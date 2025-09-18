@@ -84,9 +84,9 @@ We maintain a corpus of test pages in two formats for testing the browser extens
   - `npx playwright codegen https://github.com/login --save-storage=playwright/.auth/gh.json` will store new auth tokens
     - login manually, then close the browser
     - ***these cookies are very sensitive! we only run this script using a test account that has no permissions or memberships to anything, recommend you do the same!***
-  - `pnpm run corpus:record:har` records new HAR files using those auth tokens (it needs args, run it with no args for docs)
+  - `pnpm run corpus:har:record` records new HAR files using those auth tokens (it needs args, run it with no args for docs)
     - DO NOT COMMIT AND PUSH NEW OR CHANGED HAR files!
-    - we try to sanitize these (see `har-record.ts` for details) but there may be important PII in them
+    - we try to sanitize these (see `corpus-har-record.ts` for details) but there may be important PII in them
     - if you need new HAR files for something, let us know and we will generate them ourselves using a dummy account
     - IF YOUR PR CHANGES OR ADDS HAR FILES WE WILL CLOSE IT. Ask for HAR files and we'll be happy to generate clean ones you can test against.
 

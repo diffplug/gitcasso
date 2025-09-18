@@ -65,7 +65,7 @@ function stripHeaders(headers?: any[]) {
 async function sanitize(filename: string) {
   console.log('Sanitizing:', filename)
 
-  const p = path.join('tests/corpus/har', filename)
+  const p = path.join('tests/corpus', filename)
   const har = JSON.parse(await fs.readFile(p, 'utf8'))
 
   for (const e of har.log?.entries ?? []) {
