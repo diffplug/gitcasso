@@ -153,26 +153,8 @@ describe('github', () => {
     expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
-          "for": "id=feedback name=feedback className=form-control width-full mb-2 overtype-input",
-          "spot": {
-            "domain": "github.com",
-            "slug": "diffplug/selfie",
-            "type": "GH_ISSUE_NEW_COMMENT",
-            "unique_key": "github.com:diffplug/selfie:new",
-          },
-          "title": "New Issue",
-          "upperDecoration": <React.Fragment>
-            <span>
-              New Issue
-            </span>
-            <span
-              className="font-mono text-muted-foreground text-sm"
-            >
-               
-              diffplug/selfie
-               
-            </span>
-          </React.Fragment>,
+          "for": "id=feedback name=feedback className=form-control width-full mb-2",
+          "spot": "NO_SPOT",
         },
       ]
     `)
