@@ -10,8 +10,7 @@ interface GitHubPRNewCommentSpot extends CommentSpot {
   domain: string
   slug: string // owner/repo
   title: string
-  head: string // branch name where changes are implemented
-  head_repo?: string // repository where changes were made (for cross-repo PRs)
+  head: string // `user:repo:branch` where changes are implemented
   base: string // branch you want changes pulled into
 }
 
@@ -44,23 +43,17 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
     const [, owner, repo, baseBranch, compareBranch] = match
     const slug = `${owner}/${repo}`
     const base = baseBranch || 'main'
-    const head = compareBranch
+    const head = compareBranch!
     const unique_key = `github.com:${slug}:${base}...${head}`
     const titleInput = document.querySelector('input[placeholder="Title"]') as HTMLInputElement
-    const title = titleInput?.value || ''
-
-    // Check if this is a cross-repository PR by looking at the head repository button
-    const headRepoButton = document.querySelector('button[aria-label*="head repository:"]')
-    const headRepoText = headRepoButton?.textContent
-    const headRepo = headRepoText?.includes('/') ? headRepoText.split(':')[1]?.trim() : undefined
+    const title = titleInput!.value
 
     return {
+      base,
       domain: location.host,
+      head,
       slug,
       title,
-      head,
-      head_repo: headRepo,
-      base,
       type: 'GH_PR_NEW_COMMENT',
       unique_key,
     }

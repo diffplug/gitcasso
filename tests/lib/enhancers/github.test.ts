@@ -85,7 +85,6 @@ describe('github', () => {
             "base": "main",
             "domain": "github.com",
             "head": "cavia-porcellus:selfie:main",
-            "head_repo": undefined,
             "slug": "diffplug/selfie",
             "title": "Update README.md",
             "type": "GH_PR_NEW_COMMENT",
