@@ -241,8 +241,15 @@ describe('github', () => {
     expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
-          "for": "id=issue-3429313834-body name=pull_request[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit js-size-to-fit size-to-fit js-session-resumable CommentBox-input FormControl-textarea js-saved-reply-shortcut-comment-field focus-visible",
-          "spot": "NO_SPOT",
+          "for": "id=issue-3429313834-body name=pull_request[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit js-size-to-fit size-to-fit js-session-resumable CommentBox-input FormControl-textarea js-saved-reply-shortcut-comment-field focus-visible overtype-input",
+          "spot": {
+            "type": "GH_EDIT_COMMENT",
+            "unique_key": "github.com:diffplug/gitcasso:58:edit-body",
+          },
+          "title": "N/A",
+          "upperDecoration": <span>
+            N/A
+          </span>,
         },
         {
           "for": "id=new_comment_field name=comment[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit FormControl-textarea CommentBox-input js-size-to-fit size-to-fit js-session-resumable js-saved-reply-shortcut-comment-field overtype-input",

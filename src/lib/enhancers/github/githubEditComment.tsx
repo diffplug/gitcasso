@@ -23,9 +23,11 @@ export class GitHubEditCommentEnhancer implements CommentEnhancer<GitHubEditComm
       return null
     }
 
-    // Only enhance textareas that are within the issue/PR body editing container
-    const bodyContainer = textarea.closest('.react-issue-body')
-    if (!bodyContainer) {
+    // Only enhance textareas that are for editing issue/PR body
+    const isIssueBodyEdit = textarea.closest('.react-issue-body')
+    const isPRBodyEdit = textarea.id?.match(/^issue-\d+-body$/) || textarea.name === 'pull_request[body]'
+
+    if (!isIssueBodyEdit && !isPRBodyEdit) {
       return null
     }
 
