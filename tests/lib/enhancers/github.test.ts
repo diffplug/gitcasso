@@ -121,11 +121,11 @@ describe('github', () => {
             "domain": "github.com",
             "number": 523,
             "slug": "diffplug/selfie",
-            "title": "TODO_TITLE",
+            "title": "[jvm] docs for VCR",
             "type": "GH_ISSUE_ADD_COMMENT",
             "unique_key": "github.com:diffplug/selfie:523",
           },
-          "title": "TITLE_TODO",
+          "title": "[jvm] docs for VCR",
           "upperDecoration": <React.Fragment>
             <span
               className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
@@ -184,11 +184,11 @@ describe('github', () => {
             "domain": "github.com",
             "number": 56,
             "slug": "diffplug/gitcasso",
-            "title": "TODO_TITLE",
+            "title": "what about the draft?",
             "type": "GH_ISSUE_ADD_COMMENT",
             "unique_key": "github.com:diffplug/gitcasso:56",
           },
-          "title": "TITLE_TODO",
+          "title": "what about the draft?",
           "upperDecoration": <React.Fragment>
             <span
               className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
@@ -213,11 +213,11 @@ describe('github', () => {
             "domain": "github.com",
             "number": 56,
             "slug": "diffplug/gitcasso",
-            "title": "TODO_TITLE",
+            "title": "what about the draft?",
             "type": "GH_ISSUE_ADD_COMMENT",
             "unique_key": "github.com:diffplug/gitcasso:56",
           },
-          "title": "TITLE_TODO",
+          "title": "what about the draft?",
           "upperDecoration": <React.Fragment>
             <span
               className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
