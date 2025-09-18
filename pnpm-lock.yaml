@@ -6,9 +6,7 @@ settings:
 
 importers:
 
-  .: {}
-
-  browser-extension:
+  .:
     dependencies:
       '@primer/octicons-react':
         specifier: ^19.18.0
@@ -30,7 +28,7 @@ importers:
         version: 0.543.0(react@19.1.1)
       overtype:
         specifier: workspace:*
-        version: link:../packages/overtype
+        version: link:packages/overtype
       react:
         specifier: ^19.1.1
         version: 19.1.1
