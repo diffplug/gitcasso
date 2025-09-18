@@ -55,3 +55,12 @@ If you see `"title": "TODO_TITLE"` or similar hardcoded `TODO` values in the JSO
 - Don't hedge your bets and write lots of fallback code or strings of `?.`. Have a specific piece of data you want to get, use non-null `!` assertions where necessary to be clear about getting.
 - If a field is empty, represent it with an empty string. Don't use placeholders when extracting data.
 - The pages we are scraping are going to change over time, and it's easier to fix broken ones if we know exactly what used to work. If the code has lots of branching paths, it's harder to tell what it was doing.
+
+## Troubleshooting
+
+- If you see `"spot": "NO_SPOT"` but expect an enhancer to match:
+  - Check console logs for enhancer attempts (e.g., `"eE examing url"`)
+  - Look for specific rejection reasons in the enhancer's `tryToEnhance` method
+- If multiple enhancers are conflicting:
+  - Check the order of enhancer registration in `registries.ts`
+  - Ensure proper exclusion logic (e.g., checking for specific containers)
