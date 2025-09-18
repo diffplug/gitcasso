@@ -4,7 +4,7 @@ import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhan
 import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGithubOptions } from './ghOptions'
-import { githubHighlighter } from './githubHighlighter'
+import { prepareGitHubHighlighter } from './githubHighlighter'
 
 export interface GitHubPRAddCommentSpot extends CommentSpot {
   type: 'GH_PR_ADD_COMMENT' // Override to narrow from string to specific union
@@ -49,11 +49,8 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     }
   }
 
-  prepareForFirstEnhancement(): void {
-    OverType.setCodeHighlighter(githubHighlighter)
-  }
-
   enhance(textArea: HTMLTextAreaElement, _spot: GitHubPRAddCommentSpot): OverTypeInstance {
+    prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
       ...commonGithubOptions,

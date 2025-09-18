@@ -5,7 +5,7 @@ import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhan
 import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGithubOptions } from './ghOptions'
-import { githubHighlighter } from './githubHighlighter'
+import { prepareGitHubHighlighter } from './githubHighlighter'
 
 export interface GitHubIssueAddCommentSpot extends CommentSpot {
   type: 'GH_ISSUE_ADD_COMMENT'
@@ -53,11 +53,8 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
     }
   }
 
-  prepareForFirstEnhancement(): void {
-    OverType.setCodeHighlighter(githubHighlighter)
-  }
-
   enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueAddCommentSpot): OverTypeInstance {
+    prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
       ...commonGithubOptions,

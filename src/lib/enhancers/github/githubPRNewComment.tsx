@@ -3,7 +3,7 @@ import type { CommentEnhancer, CommentSpot, StrippedLocation } from '../../enhan
 import { logger } from '../../logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGithubOptions } from './ghOptions'
-import { githubHighlighter } from './githubHighlighter'
+import { prepareGitHubHighlighter } from './githubHighlighter'
 
 interface GitHubPRNewCommentSpot extends CommentSpot {
   type: 'GH_PR_NEW_COMMENT'
@@ -50,11 +50,8 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
     }
   }
 
-  prepareForFirstEnhancement(): void {
-    OverType.setCodeHighlighter(githubHighlighter)
-  }
-
   enhance(textArea: HTMLTextAreaElement, _spot: GitHubPRNewCommentSpot): OverTypeInstance {
+    prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
       ...commonGithubOptions,
