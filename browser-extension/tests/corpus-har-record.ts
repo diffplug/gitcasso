@@ -84,7 +84,7 @@ async function sanitize(filename: string) {
   await fs.writeFile(p, JSON.stringify(har, null, 2))
 }
 
-; (async () => {
+;(async () => {
   const pattern = process.argv[2]
 
   // If no argument provided, show available keys
