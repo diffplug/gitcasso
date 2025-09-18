@@ -39,7 +39,8 @@ const WEBEXTENSION_POLYFILL_REPLACEMENT =
   'console.warn("Webextension-polyfill check bypassed for corpus testing")'
 const BROWSER_API_MOCKS =
   'window.chrome=window.chrome||{runtime:{getURL:path=>"chrome-extension://gitcasso-test/"+path,onMessage:{addListener:()=>{}},sendMessage:()=>Promise.resolve(),id:"gitcasso-test"}};window.browser=window.chrome;'
-const PERMISSIVE_CSP = "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: http: https:;"
+const PERMISSIVE_CSP =
+  "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: http: https:; connect-src 'self' http: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval';"
 
 // UI Styles
 const REBUILD_BUTTON_STYLES = `
@@ -237,6 +238,10 @@ app.get('/corpus/:key/:mode(clean|gitcasso)', async (req, res) => {
 
       // Replace external URLs with local asset URLs
       let html = mainEntry.response.content.text!
+
+      // Strip CSP headers that might block our injected scripts
+      html = stripCSPFromHTML(html)
+
       domains.forEach((domain) => {
         const escapedDomain = domain.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
         const regex = new RegExp(`https?://${escapedDomain}`, 'g')
@@ -245,6 +250,13 @@ app.get('/corpus/:key/:mode(clean|gitcasso)', async (req, res) => {
       if (mode === 'gitcasso') {
         html = injectGitcassoScriptForHAR(key, html)
       }
+
+      // Set permissive headers for HAR corpus to allow rebuild requests
+      res.set({
+        'Content-Security-Policy': PERMISSIVE_CSP,
+        'X-Content-Type-Options': 'nosniff',
+      })
+
       return res.send(html)
     } else if (entry.type === 'html') {
       // Handle HTML corpus
@@ -385,12 +397,15 @@ app.listen(PORT, () => {
 
 // Strip CSP meta tags and headers from HTML that might block our scripts
 function stripCSPFromHTML(html: string): string {
-  // Remove CSP meta tags
-  html = html.replace(/<meta[^>]*http-equiv\s*=\s*["']content-security-policy["'][^>]*>/gi, '')
-  html = html.replace(/<meta[^>]*name\s*=\s*["']content-security-policy["'][^>]*>/gi, '')
+  // Remove CSP meta tags - more comprehensive patterns
+  html = html.replace(/<meta[^>]*http-equiv\s*=\s*["']?content-security-policy["']?[^>]*>/gi, '')
+  html = html.replace(/<meta[^>]*name\s*=\s*["']?content-security-policy["']?[^>]*>/gi, '')
+
+  // Also match patterns where content-security-policy appears anywhere in the meta tag
+  html = html.replace(/<meta[^>]*content-security-policy[^>]*>/gi, '')
 
   // Remove any other restrictive security meta tags
-  html = html.replace(/<meta[^>]*http-equiv\s*=\s*["']x-content-type-options["'][^>]*>/gi, '')
+  html = html.replace(/<meta[^>]*http-equiv\s*=\s*["']?x-content-type-options["']?[^>]*>/gi, '')
 
   return html
 }
