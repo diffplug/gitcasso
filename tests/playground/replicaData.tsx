@@ -1,6 +1,6 @@
 import type { CommentTableRow } from '@/entrypoints/background'
 import type { CommentSpot } from '@/lib/enhancer'
-import type { GitHubIssueSpot } from '@/lib/enhancers/github/GitHubIssueEnhancer'
+import type { GitHubIssueAppendSpot } from '@/lib/enhancers/github/GitHubIssueAppendEnhancer'
 import type { GitHubPrSpot } from '@/lib/enhancers/github/GitHubPrEnhancer'
 
 export interface RedditSpot extends CommentSpot {
@@ -93,9 +93,9 @@ export const generateMockDrafts = (): CommentTableRow[] => [
       number: 5678,
       slug: 'facebook/react',
       title: 'Unexpected behavior with useEffect cleanup',
-      type: 'GH_ISSUE',
+      type: 'GH_ISSUE_APPEND',
       unique_key: '3',
-    } satisfies GitHubIssueSpot),
+    } satisfies GitHubIssueAppendSpot),
   },
   {
     isOpenTab: false,

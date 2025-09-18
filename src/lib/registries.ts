@@ -3,8 +3,8 @@ import OverType from 'overtype'
 import type { CommentEnhancer, CommentSpot, StrippedLocation } from './enhancer'
 import { CommentEnhancerMissing } from './enhancers/CommentEnhancerMissing'
 import { GitHubEditEnhancer } from './enhancers/github/GitHubEditEnhancer'
-import { GitHubIssueEnhancer } from './enhancers/github/GitHubIssueEnhancer'
-import { GitHubIssueNewEnhancer } from './enhancers/github/GitHubIssueNewEnhancer'
+import { GitHubIssueAppendEnhancer } from './enhancers/github/GitHubIssueAppendEnhancer'
+import { GitHubIssueCreateEnhancer } from './enhancers/github/GitHubIssueCreateEnhancer'
 import { GitHubPrEnhancer } from './enhancers/github/GitHubPrEnhancer'
 import { GitHubPRNewEnhancer } from './enhancers/github/GitHubPrNewEnhancer'
 
@@ -22,8 +22,8 @@ export class EnhancerRegistry {
   constructor() {
     // Register all available handlers
     this.register(new GitHubEditEnhancer())
-    this.register(new GitHubIssueEnhancer())
-    this.register(new GitHubIssueNewEnhancer())
+    this.register(new GitHubIssueAppendEnhancer())
+    this.register(new GitHubIssueCreateEnhancer())
     this.register(new GitHubPrEnhancer())
     this.register(new GitHubPRNewEnhancer())
     const textColor = 'rgb(31, 35, 40)'

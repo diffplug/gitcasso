@@ -4,24 +4,24 @@ import { logger } from '../../logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGithubOptions, prepareGitHubHighlighter } from './github-common'
 
-const GH_ISSUE_NEW = 'GH_ISSUE_NEW' as const
+const GH_ISSUE_CREATE = 'GH_ISSUE_CREATE' as const
 
-interface GitHubIssueNewSpot extends CommentSpot {
-  type: typeof GH_ISSUE_NEW
+interface GitHubIssueCreateSpot extends CommentSpot {
+  type: typeof GH_ISSUE_CREATE
   domain: string
   slug: string // owner/repo
   title: string
 }
 
-export class GitHubIssueNewEnhancer implements CommentEnhancer<GitHubIssueNewSpot> {
+export class GitHubIssueCreateEnhancer implements CommentEnhancer<GitHubIssueCreateSpot> {
   forSpotTypes(): string[] {
-    return [GH_ISSUE_NEW]
+    return [GH_ISSUE_CREATE]
   }
 
   tryToEnhance(
     textarea: HTMLTextAreaElement,
     location: StrippedLocation,
-  ): GitHubIssueNewSpot | null {
+  ): GitHubIssueCreateSpot | null {
     if (textarea.id === 'feedback') {
       return null
     }
@@ -45,12 +45,12 @@ export class GitHubIssueNewEnhancer implements CommentEnhancer<GitHubIssueNewSpo
       domain: location.host,
       slug,
       title,
-      type: GH_ISSUE_NEW,
+      type: GH_ISSUE_CREATE,
       unique_key,
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueNewSpot): OverTypeInstance {
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueCreateSpot): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
@@ -60,7 +60,7 @@ export class GitHubIssueNewEnhancer implements CommentEnhancer<GitHubIssueNewSpo
     })[0]!
   }
 
-  tableUpperDecoration(spot: GitHubIssueNewSpot): React.ReactNode {
+  tableUpperDecoration(spot: GitHubIssueCreateSpot): React.ReactNode {
     const { slug } = spot
     return (
       <>
@@ -70,11 +70,11 @@ export class GitHubIssueNewEnhancer implements CommentEnhancer<GitHubIssueNewSpo
     )
   }
 
-  tableTitle(spot: GitHubIssueNewSpot): string {
+  tableTitle(spot: GitHubIssueCreateSpot): string {
     return spot.title || 'New Issue'
   }
 
-  buildUrl(spot: GitHubIssueNewSpot): string {
+  buildUrl(spot: GitHubIssueCreateSpot): string {
     return `https://${spot.domain}/${spot.slug}/issue/new`
   }
 }

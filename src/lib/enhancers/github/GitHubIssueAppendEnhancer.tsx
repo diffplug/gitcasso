@@ -6,22 +6,25 @@ import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGithubOptions, prepareGitHubHighlighter } from './github-common'
 
-const GH_ISSUE = 'GH_ISSUE' as const
+const GH_ISSUE_APPEND = 'GH_ISSUE_APPEND' as const
 
-export interface GitHubIssueSpot extends CommentSpot {
-  type: typeof GH_ISSUE
+export interface GitHubIssueAppendSpot extends CommentSpot {
+  type: typeof GH_ISSUE_APPEND
   title: string
   domain: string
   slug: string // owner/repo
   number: number // issue number, undefined for new issues
 }
 
-export class GitHubIssueEnhancer implements CommentEnhancer<GitHubIssueSpot> {
+export class GitHubIssueAppendEnhancer implements CommentEnhancer<GitHubIssueAppendSpot> {
   forSpotTypes(): string[] {
-    return [GH_ISSUE]
+    return [GH_ISSUE_APPEND]
   }
 
-  tryToEnhance(textarea: HTMLTextAreaElement, location: StrippedLocation): GitHubIssueSpot | null {
+  tryToEnhance(
+    textarea: HTMLTextAreaElement,
+    location: StrippedLocation,
+  ): GitHubIssueAppendSpot | null {
     if (textarea.id === 'feedback') {
       return null
     }
@@ -55,12 +58,12 @@ export class GitHubIssueEnhancer implements CommentEnhancer<GitHubIssueSpot> {
       number,
       slug,
       title,
-      type: GH_ISSUE,
+      type: GH_ISSUE_APPEND,
       unique_key,
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueSpot): OverTypeInstance {
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueAppendSpot): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
@@ -70,7 +73,7 @@ export class GitHubIssueEnhancer implements CommentEnhancer<GitHubIssueSpot> {
     })[0]!
   }
 
-  tableUpperDecoration(spot: GitHubIssueSpot): React.ReactNode {
+  tableUpperDecoration(spot: GitHubIssueAppendSpot): React.ReactNode {
     return (
       <>
         <span className='flex h-4 w-4 flex-shrink-0 items-center justify-center'>
@@ -84,7 +87,7 @@ export class GitHubIssueEnhancer implements CommentEnhancer<GitHubIssueSpot> {
     )
   }
 
-  tableTitle(spot: GitHubIssueSpot): string {
+  tableTitle(spot: GitHubIssueAppendSpot): string {
     return spot.title
   }
 }

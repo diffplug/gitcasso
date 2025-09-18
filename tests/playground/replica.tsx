@@ -1,7 +1,7 @@
 import { PopupRoot } from '@/components/PopupRoot'
 import type { CommentStorage, CommentTableRow } from '@/entrypoints/background'
 import type { CommentSpot } from '@/lib/enhancer'
-import type { GitHubIssueSpot } from '@/lib/enhancers/github/GitHubIssueEnhancer'
+import type { GitHubIssueAppendSpot } from '@/lib/enhancers/github/GitHubIssueAppendEnhancer'
 import type { GitHubPrSpot } from '@/lib/enhancers/github/GitHubPrEnhancer'
 
 const gh_pr: GitHubPrSpot = {
@@ -12,12 +12,12 @@ const gh_pr: GitHubPrSpot = {
   type: 'GH_PR',
   unique_key: 'github.com:diffplug/selfie:517',
 }
-const gh_issue: GitHubIssueSpot = {
+const gh_issue: GitHubIssueAppendSpot = {
   domain: 'github.com',
   number: 523,
   slug: 'diffplug/selfie',
   title: 'whoa',
-  type: 'GH_ISSUE',
+  type: 'GH_ISSUE_APPEND',
   unique_key: 'github.com:diffplug/selfie:523',
 }
 
