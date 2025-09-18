@@ -68,7 +68,7 @@ exports[`github detection > gh_pr:should detect correct spots 1`] = `
       "slug": "diffplug/selfie",
       "title": "Add "VCR" functionality
           #517",
-      "type": "GH_PR",
+      "type": "GH_PR_APPEND",
       "unique_key": "github.com:diffplug/selfie:517",
     },
   },
@@ -93,7 +93,7 @@ exports[`github detection > gh_pr_edit:should detect correct spots 1`] = `
       "title": "Feat/expand corpus
  
  #58",
-      "type": "GH_PR",
+      "type": "GH_PR_APPEND",
       "unique_key": "github.com:diffplug/gitcasso:58",
     },
   },
@@ -114,7 +114,7 @@ exports[`github detection > gh_pr_new:should detect correct spots 1`] = `
       "head": "cavia-porcellus:selfie:main",
       "slug": "diffplug/selfie",
       "title": "Update README.md",
-      "type": "GH_PR_NEW",
+      "type": "GH_PR_CREATE",
       "unique_key": "github.com:diffplug/selfie:main...cavia-porcellus:selfie:main",
     },
   },

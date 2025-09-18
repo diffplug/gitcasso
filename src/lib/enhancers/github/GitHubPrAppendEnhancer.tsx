@@ -5,22 +5,25 @@ import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGithubOptions, prepareGitHubHighlighter } from './github-common'
 
-const GH_PR = 'GH_PR' as const
+const GH_PR_APPEND = 'GH_PR_APPEND' as const
 
-export interface GitHubPrSpot extends CommentSpot {
-  type: typeof GH_PR
+export interface GitHubPrAppendSpot extends CommentSpot {
+  type: typeof GH_PR_APPEND
   title: string
   domain: string
   slug: string // owner/repo
   number: number // issue/PR number, undefined for new issues and PRs
 }
 
-export class GitHubPrEnhancer implements CommentEnhancer<GitHubPrSpot> {
+export class GitHubPrAppendEnhancer implements CommentEnhancer<GitHubPrAppendSpot> {
   forSpotTypes(): string[] {
-    return [GH_PR]
+    return [GH_PR_APPEND]
   }
 
-  tryToEnhance(_textarea: HTMLTextAreaElement, location: StrippedLocation): GitHubPrSpot | null {
+  tryToEnhance(
+    _textarea: HTMLTextAreaElement,
+    location: StrippedLocation,
+  ): GitHubPrAppendSpot | null {
     // Only handle github.com domains TODO: identify GitHub Enterprise somehow
     if (location.host !== 'github.com' || _textarea.id !== 'new_comment_field') {
       return null
@@ -45,12 +48,12 @@ export class GitHubPrEnhancer implements CommentEnhancer<GitHubPrSpot> {
       number,
       slug,
       title,
-      type: GH_PR,
+      type: GH_PR_APPEND,
       unique_key,
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubPrSpot): OverTypeInstance {
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubPrAppendSpot): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
@@ -61,7 +64,7 @@ export class GitHubPrEnhancer implements CommentEnhancer<GitHubPrSpot> {
     })[0]!
   }
 
-  tableUpperDecoration(spot: GitHubPrSpot): React.ReactNode {
+  tableUpperDecoration(spot: GitHubPrAppendSpot): React.ReactNode {
     const { slug, number } = spot
     return (
       <>
@@ -71,7 +74,7 @@ export class GitHubPrEnhancer implements CommentEnhancer<GitHubPrSpot> {
     )
   }
 
-  tableTitle(spot: GitHubPrSpot): string {
+  tableTitle(spot: GitHubPrAppendSpot): string {
     return spot.title
   }
 }

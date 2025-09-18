@@ -5,8 +5,8 @@ import { CommentEnhancerMissing } from './enhancers/CommentEnhancerMissing'
 import { GitHubEditEnhancer } from './enhancers/github/GitHubEditEnhancer'
 import { GitHubIssueAppendEnhancer } from './enhancers/github/GitHubIssueAppendEnhancer'
 import { GitHubIssueCreateEnhancer } from './enhancers/github/GitHubIssueCreateEnhancer'
-import { GitHubPrEnhancer } from './enhancers/github/GitHubPrEnhancer'
-import { GitHubPRNewEnhancer } from './enhancers/github/GitHubPrNewEnhancer'
+import { GitHubPrAppendEnhancer } from './enhancers/github/GitHubPrAppendEnhancer'
+import { GitHubPrCreateEnhancer } from './enhancers/github/GitHubPrCreateEnhancer'
 
 export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
   textarea: HTMLTextAreaElement
@@ -24,8 +24,8 @@ export class EnhancerRegistry {
     this.register(new GitHubEditEnhancer())
     this.register(new GitHubIssueAppendEnhancer())
     this.register(new GitHubIssueCreateEnhancer())
-    this.register(new GitHubPrEnhancer())
-    this.register(new GitHubPRNewEnhancer())
+    this.register(new GitHubPrAppendEnhancer())
+    this.register(new GitHubPrCreateEnhancer())
     const textColor = 'rgb(31, 35, 40)'
     const headingColor = 'rgb(174, 52, 151)'
     OverType.setTheme({
