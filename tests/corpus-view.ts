@@ -537,7 +537,7 @@ function createGitcassoScript(
 ): string {
   const contentScriptSetup = contentScriptCode
     ? // Direct embedding (for HTML corpus)
-    `
+      `
       // Set up mocked location
       window.gitcassoMockLocation = {
         host: '${urlParts.host}',
@@ -564,7 +564,7 @@ function createGitcassoScript(
       }
       `
     : // Fetch-based loading (for HAR corpus)
-    `
+      `
       // Fetch and patch the content script to remove webextension-polyfill issues
       fetch('/chrome-mv3-dev/content-scripts/content.js')
         .then(response => response.text())

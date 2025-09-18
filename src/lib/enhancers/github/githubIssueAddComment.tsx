@@ -42,7 +42,10 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
     const slug = `${owner}/${repo}`
     const number = parseInt(numberStr!, 10)
     const unique_key = `github.com:${slug}:${number}`
-    const title = document.querySelector('main h1')!.textContent.replace(/\s*#\d+$/, '').trim()
+    const title = document
+      .querySelector('main h1')!
+      .textContent.replace(/\s*#\d+$/, '')
+      .trim()
     return {
       domain: location.host,
       number,

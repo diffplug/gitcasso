@@ -17,9 +17,5 @@ dist/
 .DS_Store
 Thumbs.db
 
-# playright
+# playwright
 .playwright-mcp/
-browser-extension/dist-playground/
-browser-extension/playwright-report/
-browser-extension/playwright/
-browser-extension/test-results/
