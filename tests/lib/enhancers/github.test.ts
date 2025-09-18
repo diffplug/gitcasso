@@ -82,12 +82,16 @@ describe('github', () => {
         {
           "for": "id=pull_request_body name=pull_request[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit FormControl-textarea CommentBox-input js-size-to-fit size-to-fit js-session-resumable js-saved-reply-shortcut-comment-field CommentBox-input--large overtype-input",
           "spot": {
+            "base": "main",
             "domain": "github.com",
-            "slug": "diffplug/selfie/main...cavia-porcellus:selfie:main",
+            "head": "cavia-porcellus:selfie:main",
+            "head_repo": undefined,
+            "slug": "diffplug/selfie",
+            "title": "Update README.md",
             "type": "GH_PR_NEW_COMMENT",
-            "unique_key": "github.com:diffplug/selfie/main...cavia-porcellus:selfie:main",
+            "unique_key": "github.com:diffplug/selfie:main...cavia-porcellus:selfie:main",
           },
-          "title": "TITLE_TODO",
+          "title": "Update README.md",
           "upperDecoration": <React.Fragment>
             <span>
               New PR
@@ -96,7 +100,7 @@ describe('github', () => {
               className="font-mono text-muted-foreground text-sm"
             >
                
-              diffplug/selfie/main...cavia-porcellus:selfie:main
+              diffplug/selfie
                
             </span>
           </React.Fragment>,
