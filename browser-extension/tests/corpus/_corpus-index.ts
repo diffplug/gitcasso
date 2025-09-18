@@ -12,6 +12,11 @@ export const CORPUS: Record<string, CorpusEntry> = {
     type: 'har',
     url: 'https://github.com/diffplug/selfie/issues/523',
   },
+  gh_issue_edit: {
+    description: 'editing an existing comment on an issue',
+    type: 'html',
+    url: 'https://github.com/diffplug/gitcasso/issues/56',
+  },
   gh_issue_populated_comment: {
     description: 'comment text box has some text',
     type: 'html',
@@ -29,16 +34,11 @@ export const CORPUS: Record<string, CorpusEntry> = {
     type: 'har',
     url: 'https://github.com/diffplug/selfie/pull/517',
   },
-  // gh_issue_edit: {
-  //   description: 'editing an existing comment on an issue',
-  //   type: 'html',
-  //   url: 'https://TODO'
-  // },
-  // gh_pr_edit: {
-  //   description: 'editing an existing comment on a PR',
-  //   type: 'html',
-  //   url: 'https://TODO'
-  // },
+  gh_pr_edit: {
+    description: 'editing an existing comment on a PR',
+    type: 'html',
+    url: 'https://github.com/diffplug/gitcasso/pull/58',
+  },
   gh_project: {
     description: 'github project board initial load',
     type: 'html',
