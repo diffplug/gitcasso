@@ -32,6 +32,50 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
 const PORT = 3001
 
+// Constants
+const WEBEXTENSION_POLYFILL_PATCH =
+  'throw new Error("This script should only be loaded in a browser extension.")'
+const WEBEXTENSION_POLYFILL_REPLACEMENT =
+  'console.warn("Webextension-polyfill check bypassed for corpus testing")'
+const BROWSER_API_MOCKS =
+  'window.chrome=window.chrome||{runtime:{getURL:path=>"chrome-extension://gitcasso-test/"+path,onMessage:{addListener:()=>{}},sendMessage:()=>Promise.resolve(),id:"gitcasso-test"}};window.browser=window.chrome;'
+const PERMISSIVE_CSP = "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: http: https:;"
+
+// UI Styles
+const REBUILD_BUTTON_STYLES = `
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: #007acc;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 999999;
+  user-select: none;
+  transition: all 0.2s ease;
+  font-family: system-ui, -apple-system, sans-serif;
+`
+
+const COMMENT_SPOT_STYLES = {
+  container:
+    'position: fixed; top: 80px; right: 20px; width: 400px; max-height: 400px; background: rgba(255, 255, 255, 0.95); border: 1px solid #ddd; border-radius: 8px; padding: 15px; font-family: Monaco, Menlo, Ubuntu Mono, monospace; font-size: 11px; line-height: 1.4; overflow-y: auto; z-index: 999998; box-shadow: 0 4px 12px rgba(0,0,0,0.2); backdrop-filter: blur(10px);',
+  empty: 'color: #666; font-style: italic;',
+  header: 'font-weight: bold; margin-bottom: 8px; color: #333;',
+  jsonPre: 'margin: 4px 0; font-size: 10px;',
+  noInfo: 'color: #999; font-style: italic; margin-top: 4px;',
+  spotContainer: 'margin-bottom: 12px; padding: 8px; border: 1px solid #eee; border-radius: 4px;',
+  spotTitle: 'font-weight: bold; color: #555;',
+  textareaHeader: 'font-weight: bold; color: #007acc; margin-top: 8px;',
+  textareaPre: 'margin: 4px 0; font-size: 10px; color: #666;',
+}
+
 // Middleware to parse JSON bodies
 app.use(express.json())
 
@@ -216,8 +260,7 @@ app.get('/corpus/:key/:mode(clean|gitcasso)', async (req, res) => {
 
       // Set permissive headers for HTML corpus
       res.set({
-        'Content-Security-Policy':
-          "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: http: https:;",
+        'Content-Security-Policy': PERMISSIVE_CSP,
         'X-Content-Type-Options': 'nosniff',
       })
 
@@ -252,20 +295,7 @@ app.get('/asset/:key/*', async (req, res) => {
     const assetEntry = harData.log.entries.find((entry) => {
       try {
         const url = new URL(entry.request.url)
-        // First try exact path match
-        if (url.pathname === `/${assetPath}`) {
-          return true
-        }
-        // Then try path ending match (for nested paths)
-        if (url.pathname.endsWith(`/${assetPath}`)) {
-          return true
-        }
-        // Handle query parameters - check if path without query matches
-        const pathWithoutQuery = url.pathname + url.search
-        if (pathWithoutQuery === `/${assetPath}` || pathWithoutQuery.endsWith(`/${assetPath}`)) {
-          return true
-        }
-        return false
+        return matchAssetPath(url, assetPath)
       } catch {
         return false
       }
@@ -365,197 +395,221 @@ function stripCSPFromHTML(html: string): string {
   return html
 }
 
+// Shared UI Component Functions
+function createRebuildButtonScript(): string {
+  return `
+    // Create floating rebuild button
+    const rebuildButton = document.createElement('div');
+    rebuildButton.id = 'gitcasso-rebuild-btn';
+    rebuildButton.innerHTML = '🔄';
+    rebuildButton.title = 'Rebuild Extension';
+    rebuildButton.style.cssText = \`${REBUILD_BUTTON_STYLES}\`;
+
+    rebuildButton.addEventListener('mouseenter', () => {
+      rebuildButton.style.transform = 'scale(1.1)';
+      rebuildButton.style.backgroundColor = '#005a9e';
+    });
+
+    rebuildButton.addEventListener('mouseleave', () => {
+      rebuildButton.style.transform = 'scale(1)';
+      rebuildButton.style.backgroundColor = '#007acc';
+    });
+
+    rebuildButton.addEventListener('click', async () => {
+      try {
+        rebuildButton.innerHTML = '⏳';
+        rebuildButton.style.backgroundColor = '#ffa500';
+        rebuildButton.title = 'Rebuilding...';
+
+        const response = await fetch('/rebuild', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          rebuildButton.innerHTML = '✅';
+          rebuildButton.style.backgroundColor = '#28a745';
+          rebuildButton.title = 'Build successful! Reloading...';
+
+          setTimeout(() => {
+            location.reload(true);
+          }, 1000);
+        } else {
+          rebuildButton.innerHTML = '❌';
+          rebuildButton.style.backgroundColor = '#dc3545';
+          rebuildButton.title = 'Build failed: ' + (result.error || result.message);
+
+          setTimeout(() => {
+            rebuildButton.innerHTML = '🔄';
+            rebuildButton.style.backgroundColor = '#007acc';
+            rebuildButton.title = 'Rebuild Extension';
+          }, 3000);
+        }
+      } catch (error) {
+        console.error('Rebuild failed:', error);
+        rebuildButton.innerHTML = '❌';
+        rebuildButton.style.backgroundColor = '#dc3545';
+        rebuildButton.title = 'Network error: ' + error.message;
+
+        setTimeout(() => {
+          rebuildButton.innerHTML = '🔄';
+          rebuildButton.style.backgroundColor = '#007acc';
+          rebuildButton.title = 'Rebuild Extension';
+        }, 3000);
+      }
+    });
+
+    document.body.appendChild(rebuildButton);
+  `
+}
+
+function createCommentSpotDisplayScript(urlParts: ReturnType<typeof getUrlParts>): string {
+  return `
+    // Create CommentSpot display
+    const commentSpotDisplay = document.createElement('div');
+    commentSpotDisplay.id = 'gitcasso-comment-spots';
+    commentSpotDisplay.style.cssText = '${COMMENT_SPOT_STYLES.container}';
+
+    // Simplified display formatting
+    const styles = ${JSON.stringify(COMMENT_SPOT_STYLES)};
+
+    function updateCommentSpotDisplay() {
+      const textareas = document.querySelectorAll('textarea');
+      const spotsFound = [];
+
+      for (const textarea of textareas) {
+        const forValue = 'id=' + textarea.id + ' name=' + textarea.name + ' className=' + textarea.className;
+        const enhancedItem = window.gitcassoTextareaRegistry ? window.gitcassoTextareaRegistry.get(textarea) : undefined;
+        if (enhancedItem) {
+          spotsFound.push({
+            for: forValue,
+            spot: enhancedItem.spot,
+            title: enhancedItem.enhancer.tableTitle(enhancedItem.spot),
+          });
+        } else {
+          spotsFound.push({
+            for: forValue,
+            spot: 'NO_SPOT',
+          });
+        }
+      }
+
+      console.log('Enhanced textareas:', spotsFound.filter(s => s.spot !== 'NO_SPOT').length);
+      console.log('All textareas on page:', textareas.length);
+      commentSpotDisplay.innerHTML = '<div style="' + styles.header + '"><pre>${urlParts.href}\\n' + JSON.stringify(spotsFound, null, 2) + '</pre></div>';
+    }
+
+    // Initial update
+    updateCommentSpotDisplay()
+    setTimeout(updateCommentSpotDisplay, 100);
+    setTimeout(updateCommentSpotDisplay, 200);
+    setTimeout(updateCommentSpotDisplay, 400);
+    setTimeout(updateCommentSpotDisplay, 800);
+
+    // Update display periodically
+    setInterval(updateCommentSpotDisplay, 2000);
+
+    document.body.appendChild(commentSpotDisplay);
+  `
+}
+
+// Asset matching helper
+function matchAssetPath(url: URL, assetPath: string): boolean {
+  // First try exact path match
+  if (url.pathname === `/${assetPath}`) {
+    return true
+  }
+  // Then try path ending match (for nested paths)
+  if (url.pathname.endsWith(`/${assetPath}`)) {
+    return true
+  }
+  // Handle query parameters - check if path without query matches
+  const pathWithoutQuery = url.pathname + url.search
+  if (pathWithoutQuery === `/${assetPath}` || pathWithoutQuery.endsWith(`/${assetPath}`)) {
+    return true
+  }
+  return false
+}
+
+// Unified script injection with different content script loading strategies
+function createGitcassoScript(
+  urlParts: ReturnType<typeof getUrlParts>,
+  contentScriptCode?: string,
+): string {
+  const contentScriptSetup = contentScriptCode
+    ? // Direct embedding (for HTML corpus)
+      `
+      // Set up mocked location
+      window.gitcassoMockLocation = {
+        host: '${urlParts.host}',
+        pathname: '${urlParts.pathname}'
+      };
+
+      // Set up browser API mocks
+      window.chrome = window.chrome || {
+        runtime: {
+          getURL: path => "chrome-extension://gitcasso-test/" + path,
+          onMessage: { addListener: () => {} },
+          sendMessage: () => Promise.resolve(),
+          id: "gitcasso-test"
+        }
+      };
+      window.browser = window.chrome;
+
+      // Execute the patched content script directly
+      try {
+        ${contentScriptCode}
+        console.log('Gitcasso content script loaded with location patching for:', '${urlParts.href}');
+      } catch (error) {
+        console.error('Failed to execute content script:', error);
+      }
+      `
+    : // Fetch-based loading (for HAR corpus)
+      `
+      // Fetch and patch the content script to remove webextension-polyfill issues
+      fetch('/chrome-mv3-dev/content-scripts/content.js')
+        .then(response => response.text())
+        .then(code => {
+          console.log('Fetched content script, patching webextension-polyfill and detectLocation...');
+
+          // Replace the problematic webextension-polyfill error check
+          let patchedCode = code.replace(
+            '${WEBEXTENSION_POLYFILL_PATCH}',
+            '${WEBEXTENSION_POLYFILL_REPLACEMENT}'
+          );
+          window.gitcassoMockLocation = {
+            host: '${urlParts.host}',
+            pathname: '${urlParts.pathname}'
+          };
+
+          // Execute the patched script with browser API mocks prepended
+          const script = document.createElement('script');
+          script.textContent = '${BROWSER_API_MOCKS}' + patchedCode;
+          document.head.appendChild(script);
+          console.log('Gitcasso content script loaded with location patching for:', '${urlParts.href}');
+        })
+        .catch(error => {
+          console.error('Failed to load and patch content script:', error);
+        });
+      `
+
+  return `
+    <script>
+      console.log('Loading Gitcasso with mocked location:', '${urlParts.href}');
+      ${contentScriptSetup}
+      ${createRebuildButtonScript()}
+      ${createCommentSpotDisplayScript(urlParts)}
+    </script>
+  `
+}
+
 // HAR version - uses fetch() to load content script (original approach)
 function injectGitcassoScriptForHAR(key: string, html: string): string {
   const urlParts = getUrlParts(key)
+  const contentScriptTag = createGitcassoScript(urlParts)
 
-  // Inject patched content script with location patching
-  const contentScriptTag =
-    `
-        <script>
-          console.log('Loading Gitcasso with mocked location:', '${urlParts.href}');
-
-          // Fetch and patch the content script to remove webextension-polyfill issues
-          fetch('/chrome-mv3-dev/content-scripts/content.js')
-            .then(response => response.text())
-            .then(code => {
-              console.log('Fetched content script, patching webextension-polyfill and detectLocation...');
-
-              // Replace the problematic webextension-polyfill error check
-              let patchedCode = code.replace(
-                'throw new Error("This script should only be loaded in a browser extension.")',
-                'console.warn("Webextension-polyfill check bypassed for corpus testing")'
-              );
-              window.gitcassoMockLocation = {
-                host: '${urlParts.host}',
-                pathname: '${urlParts.pathname}'
-              };
-
-              // Execute the patched script with browser API mocks prepended
-              const browserMocks = 'window.chrome=window.chrome||{runtime:{getURL:path=>"chrome-extension://gitcasso-test/"+path,onMessage:{addListener:()=>{}},sendMessage:()=>Promise.resolve(),id:"gitcasso-test"}};window.browser=window.chrome;';
-              const script = document.createElement('script');
-              script.textContent = browserMocks + patchedCode;
-              document.head.appendChild(script);
-              console.log('Gitcasso content script loaded with location patching for:', '` +
-    urlParts.href +
-    `');
-            })
-            .catch(error => {
-              console.error('Failed to load and patch content script:', error);
-            });
-
-          // Create floating rebuild button
-          const rebuildButton = document.createElement('div');
-          rebuildButton.id = 'gitcasso-rebuild-btn';
-          rebuildButton.innerHTML = '🔄';
-          rebuildButton.title = 'Rebuild Extension';
-          rebuildButton.style.cssText = \`
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            background: #007acc;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            z-index: 999999;
-            user-select: none;
-            transition: all 0.2s ease;
-            font-family: system-ui, -apple-system, sans-serif;
-          \`;
-
-          rebuildButton.addEventListener('mouseenter', () => {
-            rebuildButton.style.transform = 'scale(1.1)';
-            rebuildButton.style.backgroundColor = '#005a9e';
-          });
-
-          rebuildButton.addEventListener('mouseleave', () => {
-            rebuildButton.style.transform = 'scale(1)';
-            rebuildButton.style.backgroundColor = '#007acc';
-          });
-
-          rebuildButton.addEventListener('click', async () => {
-            try {
-              rebuildButton.innerHTML = '⏳';
-              rebuildButton.style.backgroundColor = '#ffa500';
-              rebuildButton.title = 'Rebuilding...';
-
-              const response = await fetch('/rebuild', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-              });
-
-              const result = await response.json();
-
-              if (result.success) {
-                rebuildButton.innerHTML = '✅';
-                rebuildButton.style.backgroundColor = '#28a745';
-                rebuildButton.title = 'Build successful! Reloading...';
-
-                setTimeout(() => {
-                  location.reload(true);
-                }, 1000);
-              } else {
-                rebuildButton.innerHTML = '❌';
-                rebuildButton.style.backgroundColor = '#dc3545';
-                rebuildButton.title = 'Build failed: ' + (result.error || result.message);
-
-                setTimeout(() => {
-                  rebuildButton.innerHTML = '🔄';
-                  rebuildButton.style.backgroundColor = '#007acc';
-                  rebuildButton.title = 'Rebuild Extension';
-                }, 3000);
-              }
-            } catch (error) {
-              console.error('Rebuild failed:', error);
-              rebuildButton.innerHTML = '❌';
-              rebuildButton.style.backgroundColor = '#dc3545';
-              rebuildButton.title = 'Network error: ' + error.message;
-
-              setTimeout(() => {
-                rebuildButton.innerHTML = '🔄';
-                rebuildButton.style.backgroundColor = '#007acc';
-                rebuildButton.title = 'Rebuild Extension';
-              }, 3000);
-            }
-          });
-
-          document.body.appendChild(rebuildButton);
-
-          // Create CommentSpot display
-          const commentSpotDisplay = document.createElement('div');
-          commentSpotDisplay.id = 'gitcasso-comment-spots';
-          commentSpotDisplay.style.cssText =
-            'position: fixed;' +
-            'top: 80px;' +
-            'right: 20px;' +
-            'width: 400px;' +
-            'max-height: 400px;' +
-            'background: rgba(255, 255, 255, 0.95);' +
-            'border: 1px solid #ddd;' +
-            'border-radius: 8px;' +
-            'padding: 15px;' +
-            'font-family: Monaco, Menlo, Ubuntu Mono, monospace;' +
-            'font-size: 11px;' +
-            'line-height: 1.4;' +
-            'overflow-y: auto;' +
-            'z-index: 999998;' +
-            'box-shadow: 0 4px 12px rgba(0,0,0,0.2);' +
-            'backdrop-filter: blur(10px);';
-
-          // Simplified display formatting
-          const styles = {
-            header: 'font-weight: bold; margin-bottom: 8px; color: #333;',
-            spotContainer: 'margin-bottom: 12px; padding: 8px; border: 1px solid #eee; border-radius: 4px;',
-            spotTitle: 'font-weight: bold; color: #555;',
-            jsonPre: 'margin: 4px 0; font-size: 10px;',
-            textareaHeader: 'font-weight: bold; color: #007acc; margin-top: 8px;',
-            textareaPre: 'margin: 4px 0; font-size: 10px; color: #666;',
-            noInfo: 'color: #999; font-style: italic; margin-top: 4px;',
-            empty: 'color: #666; font-style: italic;'
-          };
-
-          function updateCommentSpotDisplay() {
-            const textareas = document.querySelectorAll('textarea');
-            const spotsFound = [];
-
-            for (const textarea of textareas) {
-              const forValue = 'id=' + textarea.id + ' name=' + textarea.name + ' className=' + textarea.className;
-              const enhancedItem = window.gitcassoTextareaRegistry ? window.gitcassoTextareaRegistry.get(textarea) : undefined;
-              if (enhancedItem) {
-                spotsFound.push({
-                  for: forValue,
-                  spot: enhancedItem.spot,
-                  title: enhancedItem.enhancer.tableTitle(enhancedItem.spot),
-                });
-              } else {
-                spotsFound.push({
-                  for: forValue,
-                  spot: 'NO_SPOT',
-                });
-              }
-            }
-
-            console.log('Enhanced textareas:', spotsFound.filter(s => s.spot !== 'NO_SPOT').length);
-            console.log('All textareas on page:', textareas.length);
-            commentSpotDisplay.innerHTML = '<div style="' + styles.header + '"><pre>${urlParts.href}\\n' + JSON.stringify(spotsFound, null, 2) + '</pre></div>';
-          }
-
-          // Initial update
-          setTimeout(updateCommentSpotDisplay, 100);
-
-          // Update display periodically
-          setInterval(updateCommentSpotDisplay, 2000);
-
-          document.body.appendChild(commentSpotDisplay);
-        </script>
-      `
   if (html.includes('</body>')) {
     return html.replace('</body>', `${contentScriptTag}</body>`)
   } else {
@@ -582,197 +636,16 @@ async function injectGitcassoScriptForHTML(key: string, html: string): Promise<s
 
     // Patch the content script to remove webextension-polyfill issues
     contentScriptCode = contentScriptCode.replace(
-      'throw new Error("This script should only be loaded in a browser extension.")',
-      'console.warn("Webextension-polyfill check bypassed for corpus testing")',
+      WEBEXTENSION_POLYFILL_PATCH,
+      WEBEXTENSION_POLYFILL_REPLACEMENT,
     )
   } catch (error) {
     console.warn('Could not read content script, using fallback:', error)
     contentScriptCode = 'console.warn("Content script not found - extension may not be built");'
   }
 
-  // Inject patched content script with location patching
-  const contentScriptTag = `
-        <script>
-          console.log('Loading Gitcasso with mocked location:', '${urlParts.href}');
+  const contentScriptTag = createGitcassoScript(urlParts, contentScriptCode)
 
-          // Set up mocked location
-          window.gitcassoMockLocation = {
-            host: '${urlParts.host}',
-            pathname: '${urlParts.pathname}'
-          };
-
-          // Set up browser API mocks
-          window.chrome = window.chrome || {
-            runtime: {
-              getURL: path => "chrome-extension://gitcasso-test/" + path,
-              onMessage: { addListener: () => {} },
-              sendMessage: () => Promise.resolve(),
-              id: "gitcasso-test"
-            }
-          };
-          window.browser = window.chrome;
-
-          // Execute the patched content script directly
-          try {
-            ${contentScriptCode}
-            console.log('Gitcasso content script loaded with location patching for:', '${urlParts.href}');
-          } catch (error) {
-            console.error('Failed to execute content script:', error);
-          }
-
-          // Create floating rebuild button
-          const rebuildButton = document.createElement('div');
-          rebuildButton.id = 'gitcasso-rebuild-btn';
-          rebuildButton.innerHTML = '🔄';
-          rebuildButton.title = 'Rebuild Extension';
-          rebuildButton.style.cssText = \`
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            background: #007acc;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            z-index: 999999;
-            user-select: none;
-            transition: all 0.2s ease;
-            font-family: system-ui, -apple-system, sans-serif;
-          \`;
-
-          rebuildButton.addEventListener('mouseenter', () => {
-            rebuildButton.style.transform = 'scale(1.1)';
-            rebuildButton.style.backgroundColor = '#005a9e';
-          });
-
-          rebuildButton.addEventListener('mouseleave', () => {
-            rebuildButton.style.transform = 'scale(1)';
-            rebuildButton.style.backgroundColor = '#007acc';
-          });
-
-          rebuildButton.addEventListener('click', async () => {
-            try {
-              rebuildButton.innerHTML = '⏳';
-              rebuildButton.style.backgroundColor = '#ffa500';
-              rebuildButton.title = 'Rebuilding...';
-
-              const response = await fetch('/rebuild', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-              });
-
-              const result = await response.json();
-
-              if (result.success) {
-                rebuildButton.innerHTML = '✅';
-                rebuildButton.style.backgroundColor = '#28a745';
-                rebuildButton.title = 'Build successful! Reloading...';
-
-                setTimeout(() => {
-                  location.reload(true);
-                }, 1000);
-              } else {
-                rebuildButton.innerHTML = '❌';
-                rebuildButton.style.backgroundColor = '#dc3545';
-                rebuildButton.title = 'Build failed: ' + (result.error || result.message);
-
-                setTimeout(() => {
-                  rebuildButton.innerHTML = '🔄';
-                  rebuildButton.style.backgroundColor = '#007acc';
-                  rebuildButton.title = 'Rebuild Extension';
-                }, 3000);
-              }
-            } catch (error) {
-              console.error('Rebuild failed:', error);
-              rebuildButton.innerHTML = '❌';
-              rebuildButton.style.backgroundColor = '#dc3545';
-              rebuildButton.title = 'Network error: ' + error.message;
-
-              setTimeout(() => {
-                rebuildButton.innerHTML = '🔄';
-                rebuildButton.style.backgroundColor = '#007acc';
-                rebuildButton.title = 'Rebuild Extension';
-              }, 3000);
-            }
-          });
-
-          document.body.appendChild(rebuildButton);
-
-          // Create CommentSpot display
-          const commentSpotDisplay = document.createElement('div');
-          commentSpotDisplay.id = 'gitcasso-comment-spots';
-          commentSpotDisplay.style.cssText =
-            'position: fixed;' +
-            'top: 80px;' +
-            'right: 20px;' +
-            'width: 400px;' +
-            'max-height: 400px;' +
-            'background: rgba(255, 255, 255, 0.95);' +
-            'border: 1px solid #ddd;' +
-            'border-radius: 8px;' +
-            'padding: 15px;' +
-            'font-family: Monaco, Menlo, Ubuntu Mono, monospace;' +
-            'font-size: 11px;' +
-            'line-height: 1.4;' +
-            'overflow-y: auto;' +
-            'z-index: 999998;' +
-            'box-shadow: 0 4px 12px rgba(0,0,0,0.2);' +
-            'backdrop-filter: blur(10px);';
-
-          // Simplified display formatting
-          const styles = {
-            header: 'font-weight: bold; margin-bottom: 8px; color: #333;',
-            spotContainer: 'margin-bottom: 12px; padding: 8px; border: 1px solid #eee; border-radius: 4px;',
-            spotTitle: 'font-weight: bold; color: #555;',
-            jsonPre: 'margin: 4px 0; font-size: 10px;',
-            textareaHeader: 'font-weight: bold; color: #007acc; margin-top: 8px;',
-            textareaPre: 'margin: 4px 0; font-size: 10px; color: #666;',
-            noInfo: 'color: #999; font-style: italic; margin-top: 4px;',
-            empty: 'color: #666; font-style: italic;'
-          };
-
-          function updateCommentSpotDisplay() {
-            const textareas = document.querySelectorAll('textarea');
-            const spotsFound = [];
-
-            for (const textarea of textareas) {
-              const forValue = 'id=' + textarea.id + ' name=' + textarea.name + ' className=' + textarea.className;
-              const enhancedItem = window.gitcassoTextareaRegistry ? window.gitcassoTextareaRegistry.get(textarea) : undefined;
-              if (enhancedItem) {
-                spotsFound.push({
-                  for: forValue,
-                  spot: enhancedItem.spot,
-                  title: enhancedItem.enhancer.tableTitle(enhancedItem.spot),
-                });
-              } else {
-                spotsFound.push({
-                  for: forValue,
-                  spot: 'NO_SPOT',
-                });
-              }
-            }
-
-            console.log('Enhanced textareas:', spotsFound.filter(s => s.spot !== 'NO_SPOT').length);
-            console.log('All textareas on page:', textareas.length);
-            commentSpotDisplay.innerHTML = '<div style="' + styles.header + '"><pre>${urlParts.href}\\n' + JSON.stringify(spotsFound, null, 2) + '</pre></div>';
-          }
-
-          // Initial update
-          updateCommentSpotDisplay()
-          setTimeout(updateCommentSpotDisplay, 100);
-          setTimeout(updateCommentSpotDisplay, 200);
-          setTimeout(updateCommentSpotDisplay, 400);
-          setTimeout(updateCommentSpotDisplay, 800);
-
-          document.body.appendChild(commentSpotDisplay);
-        </script>
-      `
   if (html.includes('</body>')) {
     return html.replace('</body>', `${contentScriptTag}</body>`)
   } else {
