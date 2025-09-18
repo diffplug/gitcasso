@@ -37,12 +37,8 @@ export interface CommentEnhancer<Spot extends CommentSpot = CommentSpot> {
    * If we return non-null, then we become the handler for that text area.
    */
   tryToEnhance(textarea: HTMLTextAreaElement, location: StrippedLocation): Spot | null
-  /** This gets called the first time that `tryToEnhance` returns non-null. */
-  prepareForFirstEnhancement(): void
   /**
    * If `tryToEnhance` returns non-null, then this gets called.
-   * It is guaranteed that `prepareForFirstEnhancement` has been called
-   * exactly once since pageload before this gets called.
    */
   enhance(textarea: HTMLTextAreaElement, spot: Spot): OverTypeInstance
   /** Returns a ReactNode which will be displayed in the table row. */
