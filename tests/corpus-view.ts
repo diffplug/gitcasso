@@ -125,7 +125,9 @@ app.get('/', async (_req, res) => {
   try {
     const links = Object.entries(CORPUS)
       .map(([key, entry]) => {
-        const description = entry.description ? `<div style="color: #666; font-size: 0.9em;">${entry.description}</div>` : ''
+        const description = entry.description
+          ? `<div style="color: #666; font-size: 0.9em;">${entry.description}</div>`
+          : ''
         return `
         <li>
           <div style="display: flex; justify-content: space-between; align-items: center;">
