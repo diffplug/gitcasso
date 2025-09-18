@@ -16,17 +16,33 @@ export class GitHubEditCommentEnhancer implements CommentEnhancer<GitHubEditComm
   }
 
   tryToEnhance(
-    _textarea: HTMLTextAreaElement,
+    textarea: HTMLTextAreaElement,
     location: StrippedLocation,
   ): GitHubEditCommentSpot | null {
     if (location.host !== 'github.com') {
       return null
     }
+
+    // Only enhance textareas that are within the issue/PR body editing container
+    const bodyContainer = textarea.closest('.react-issue-body')
+    if (!bodyContainer) {
+      return null
+    }
+
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
-    logger.info(`${this.constructor.name} examing url`, window.location.pathname)
+    const match = location.pathname.match(/^\/([^/]+)\/([^/]+)\/(?:issues|pull)\/(\d+)/)
+    if (!match) {
+      return null
+    }
+
+    const [, owner, repo, numberStr] = match
+    const number = parseInt(numberStr!, 10)
+    const unique_key = `github.com:${owner}/${repo}:${number}:edit-body`
+
+    logger.debug(`${this.constructor.name} enhanced issue/PR body textarea`, unique_key)
     return {
       type: 'GH_EDIT_COMMENT',
-      unique_key: '<not unique>',
+      unique_key,
     }
   }
 

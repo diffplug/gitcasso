@@ -31,6 +31,12 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
       return null
     }
 
+    // Don't enhance textareas that are within the issue/PR body editing container
+    const bodyContainer = textarea.closest('.react-issue-body')
+    if (bodyContainer) {
+      return null
+    }
+
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
     logger.debug(`${this.constructor.name} examing url`, location.pathname)
 
