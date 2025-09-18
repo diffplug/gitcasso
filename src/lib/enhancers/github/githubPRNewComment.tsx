@@ -8,7 +8,10 @@ import { prepareGitHubHighlighter } from './githubHighlighter'
 interface GitHubPRNewCommentSpot extends CommentSpot {
   type: 'GH_PR_NEW_COMMENT'
   domain: string
-  slug: string // owner/repo/base-branch/compare-branch
+  slug: string // owner/repo
+  title: string
+  head: string // `user:repo:branch` where changes are implemented
+  base: string // branch you want changes pulled into
 }
 
 export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCommentSpot> {
@@ -38,13 +41,19 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
 
     if (!match) return null
     const [, owner, repo, baseBranch, compareBranch] = match
-    const slug = baseBranch
-      ? `${owner}/${repo}/${baseBranch}...${compareBranch}`
-      : `${owner}/${repo}/${compareBranch}`
-    const unique_key = `github.com:${slug}`
+    const slug = `${owner}/${repo}`
+    const base = baseBranch || 'main'
+    const head = compareBranch!
+    const unique_key = `github.com:${slug}:${base}...${head}`
+    const titleInput = document.querySelector('input[placeholder="Title"]') as HTMLInputElement
+    const title = titleInput!.value
+
     return {
+      base,
       domain: location.host,
+      head,
       slug,
+      title,
       type: 'GH_PR_NEW_COMMENT',
       unique_key,
     }
@@ -70,8 +79,8 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
     )
   }
 
-  tableTitle(_spot: GitHubPRNewCommentSpot): string {
-    return 'TITLE_TODO'
+  tableTitle(spot: GitHubPRNewCommentSpot): string {
+    return spot.title || 'New Pull Request'
   }
 
   buildUrl(spot: GitHubPRNewCommentSpot): string {

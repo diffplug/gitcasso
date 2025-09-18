@@ -48,11 +48,13 @@ describe('github', () => {
             "domain": "github.com",
             "number": 517,
             "slug": "diffplug/selfie",
-            "title": "TODO_TITLE",
+            "title": "Add "VCR" functionality
+                #517",
             "type": "GH_PR_ADD_COMMENT",
             "unique_key": "github.com:diffplug/selfie:517",
           },
-          "title": "TITLE_TODO",
+          "title": "Add "VCR" functionality
+                #517",
           "upperDecoration": <React.Fragment>
             <span
               className="font-mono text-muted-foreground text-sm"
@@ -80,12 +82,15 @@ describe('github', () => {
         {
           "for": "id=pull_request_body name=pull_request[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit FormControl-textarea CommentBox-input js-size-to-fit size-to-fit js-session-resumable js-saved-reply-shortcut-comment-field CommentBox-input--large overtype-input",
           "spot": {
+            "base": "main",
             "domain": "github.com",
-            "slug": "diffplug/selfie/main...cavia-porcellus:selfie:main",
+            "head": "cavia-porcellus:selfie:main",
+            "slug": "diffplug/selfie",
+            "title": "Update README.md",
             "type": "GH_PR_NEW_COMMENT",
-            "unique_key": "github.com:diffplug/selfie/main...cavia-porcellus:selfie:main",
+            "unique_key": "github.com:diffplug/selfie:main...cavia-porcellus:selfie:main",
           },
-          "title": "TITLE_TODO",
+          "title": "Update README.md",
           "upperDecoration": <React.Fragment>
             <span>
               New PR
@@ -94,7 +99,7 @@ describe('github', () => {
               className="font-mono text-muted-foreground text-sm"
             >
                
-              diffplug/selfie/main...cavia-porcellus:selfie:main
+              diffplug/selfie
                
             </span>
           </React.Fragment>,
@@ -112,6 +117,35 @@ describe('github', () => {
       ]
     `)
   })
+  withCorpus('gh_issue_new_populated').it('has enhancement on initial page load', async () => {
+    expect(enhancements(document, window)).toMatchInlineSnapshot(`
+      [
+        {
+          "for": "id=:r34: name=null className=prc-Textarea-TextArea-13q4j focus-visible overtype-input",
+          "spot": {
+            "domain": "github.com",
+            "slug": "diffplug/gitcasso",
+            "title": "New issue title",
+            "type": "GH_ISSUE_NEW_COMMENT",
+            "unique_key": "github.com:diffplug/gitcasso:new",
+          },
+          "title": "New issue title",
+          "upperDecoration": <React.Fragment>
+            <span>
+              New Issue
+            </span>
+            <span
+              className="font-mono text-muted-foreground text-sm"
+            >
+               
+              diffplug/gitcasso
+               
+            </span>
+          </React.Fragment>,
+        },
+      ]
+    `)
+  })
   withCorpus('gh_issue_populated_comment').it('should create the correct spot object', async () => {
     expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
@@ -121,11 +155,11 @@ describe('github', () => {
             "domain": "github.com",
             "number": 523,
             "slug": "diffplug/selfie",
-            "title": "TODO_TITLE",
+            "title": "[jvm] docs for VCR",
             "type": "GH_ISSUE_ADD_COMMENT",
             "unique_key": "github.com:diffplug/selfie:523",
           },
-          "title": "TITLE_TODO",
+          "title": "[jvm] docs for VCR",
           "upperDecoration": <React.Fragment>
             <span
               className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
@@ -151,26 +185,8 @@ describe('github', () => {
     expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
-          "for": "id=feedback name=feedback className=form-control width-full mb-2 overtype-input",
-          "spot": {
-            "domain": "github.com",
-            "slug": "diffplug/selfie",
-            "type": "GH_ISSUE_NEW_COMMENT",
-            "unique_key": "github.com:diffplug/selfie:new",
-          },
-          "title": "New Issue",
-          "upperDecoration": <React.Fragment>
-            <span>
-              New Issue
-            </span>
-            <span
-              className="font-mono text-muted-foreground text-sm"
-            >
-               
-              diffplug/selfie
-               
-            </span>
-          </React.Fragment>,
+          "for": "id=feedback name=feedback className=form-control width-full mb-2",
+          "spot": "NO_SPOT",
         },
       ]
     `)
@@ -184,11 +200,11 @@ describe('github', () => {
             "domain": "github.com",
             "number": 56,
             "slug": "diffplug/gitcasso",
-            "title": "TODO_TITLE",
+            "title": "what about the draft?",
             "type": "GH_ISSUE_ADD_COMMENT",
             "unique_key": "github.com:diffplug/gitcasso:56",
           },
-          "title": "TITLE_TODO",
+          "title": "what about the draft?",
           "upperDecoration": <React.Fragment>
             <span
               className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
@@ -213,11 +229,11 @@ describe('github', () => {
             "domain": "github.com",
             "number": 56,
             "slug": "diffplug/gitcasso",
-            "title": "TODO_TITLE",
+            "title": "what about the draft?",
             "type": "GH_ISSUE_ADD_COMMENT",
             "unique_key": "github.com:diffplug/gitcasso:56",
           },
-          "title": "TITLE_TODO",
+          "title": "what about the draft?",
           "upperDecoration": <React.Fragment>
             <span
               className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
@@ -273,11 +289,15 @@ describe('github', () => {
             "domain": "github.com",
             "number": 58,
             "slug": "diffplug/gitcasso",
-            "title": "TODO_TITLE",
+            "title": "Feat/expand corpus
+       
+       #58",
             "type": "GH_PR_ADD_COMMENT",
             "unique_key": "github.com:diffplug/gitcasso:58",
           },
-          "title": "TITLE_TODO",
+          "title": "Feat/expand corpus
+       
+       #58",
           "upperDecoration": <React.Fragment>
             <span
               className="font-mono text-muted-foreground text-sm"

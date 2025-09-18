@@ -42,7 +42,10 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
     const slug = `${owner}/${repo}`
     const number = parseInt(numberStr!, 10)
     const unique_key = `github.com:${slug}:${number}`
-    const title = 'TODO_TITLE'
+    const title = document
+      .querySelector('main h1')!
+      .textContent.replace(/\s*#\d+$/, '')
+      .trim()
     return {
       domain: location.host,
       number,
@@ -77,7 +80,7 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
     )
   }
 
-  tableTitle(_spot: GitHubIssueAddCommentSpot): string {
-    return 'TITLE_TODO'
+  tableTitle(spot: GitHubIssueAddCommentSpot): string {
+    return spot.title
   }
 }
