@@ -5,23 +5,22 @@ import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGithubOptions, prepareGitHubHighlighter } from './github-common'
 
-export interface GitHubPRAddCommentSpot extends CommentSpot {
-  type: 'GH_PR_ADD_COMMENT' // Override to narrow from string to specific union
+const GH_PR = 'GH_PR' as const
+
+export interface GitHubPrSpot extends CommentSpot {
+  type: typeof GH_PR
   title: string
   domain: string
   slug: string // owner/repo
   number: number // issue/PR number, undefined for new issues and PRs
 }
 
-export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCommentSpot> {
+export class GitHubPrEnhancer implements CommentEnhancer<GitHubPrSpot> {
   forSpotTypes(): string[] {
-    return ['GH_PR_ADD_COMMENT']
+    return [GH_PR]
   }
 
-  tryToEnhance(
-    _textarea: HTMLTextAreaElement,
-    location: StrippedLocation,
-  ): GitHubPRAddCommentSpot | null {
+  tryToEnhance(_textarea: HTMLTextAreaElement, location: StrippedLocation): GitHubPrSpot | null {
     // Only handle github.com domains TODO: identify GitHub Enterprise somehow
     if (location.host !== 'github.com' || _textarea.id !== 'new_comment_field') {
       return null
@@ -46,12 +45,12 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
       number,
       slug,
       title,
-      type: 'GH_PR_ADD_COMMENT',
+      type: GH_PR,
       unique_key,
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubPRAddCommentSpot): OverTypeInstance {
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubPrSpot): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
@@ -62,7 +61,7 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     })[0]!
   }
 
-  tableUpperDecoration(spot: GitHubPRAddCommentSpot): React.ReactNode {
+  tableUpperDecoration(spot: GitHubPrSpot): React.ReactNode {
     const { slug, number } = spot
     return (
       <>
@@ -72,7 +71,7 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     )
   }
 
-  tableTitle(spot: GitHubPRAddCommentSpot): string {
+  tableTitle(spot: GitHubPrSpot): string {
     return spot.title
   }
 }

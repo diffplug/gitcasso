@@ -9,7 +9,7 @@ exports[`github detection > gh_issue:should detect correct spots 1`] = `
       "number": 523,
       "slug": "diffplug/selfie",
       "title": "[jvm] docs for VCR",
-      "type": "GH_ISSUE_ADD_COMMENT",
+      "type": "GH_ISSUE",
       "unique_key": "github.com:diffplug/selfie:523",
     },
   },
@@ -21,7 +21,7 @@ exports[`github detection > gh_issue_edit:should detect correct spots 1`] = `
   {
     "for": "id=:rc3: name=null className=prc-Textarea-TextArea-13q4j focus-visible overtype-input",
     "spot": {
-      "type": "GH_EDIT_COMMENT",
+      "type": "GH_EDIT",
       "unique_key": "github.com:diffplug/gitcasso:56:edit-body",
     },
   },
@@ -32,7 +32,7 @@ exports[`github detection > gh_issue_edit:should detect correct spots 1`] = `
       "number": 56,
       "slug": "diffplug/gitcasso",
       "title": "what about the draft?",
-      "type": "GH_ISSUE_ADD_COMMENT",
+      "type": "GH_ISSUE",
       "unique_key": "github.com:diffplug/gitcasso:56",
     },
   },
@@ -47,7 +47,7 @@ exports[`github detection > gh_issue_new:should detect correct spots 1`] = `
       "domain": "github.com",
       "slug": "diffplug/gitcasso",
       "title": "New issue title",
-      "type": "GH_ISSUE_NEW_COMMENT",
+      "type": "GH_ISSUE_NEW",
       "unique_key": "github.com:diffplug/gitcasso:new",
     },
   },
@@ -68,7 +68,7 @@ exports[`github detection > gh_pr:should detect correct spots 1`] = `
       "slug": "diffplug/selfie",
       "title": "Add "VCR" functionality
           #517",
-      "type": "GH_PR_ADD_COMMENT",
+      "type": "GH_PR",
       "unique_key": "github.com:diffplug/selfie:517",
     },
   },
@@ -80,7 +80,7 @@ exports[`github detection > gh_pr_edit:should detect correct spots 1`] = `
   {
     "for": "id=issue-3429313834-body name=pull_request[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit js-size-to-fit size-to-fit js-session-resumable CommentBox-input FormControl-textarea js-saved-reply-shortcut-comment-field focus-visible overtype-input",
     "spot": {
-      "type": "GH_EDIT_COMMENT",
+      "type": "GH_EDIT",
       "unique_key": "github.com:diffplug/gitcasso:58:edit-body",
     },
   },
@@ -93,7 +93,7 @@ exports[`github detection > gh_pr_edit:should detect correct spots 1`] = `
       "title": "Feat/expand corpus
  
  #58",
-      "type": "GH_PR_ADD_COMMENT",
+      "type": "GH_PR",
       "unique_key": "github.com:diffplug/gitcasso:58",
     },
   },
@@ -114,7 +114,7 @@ exports[`github detection > gh_pr_new:should detect correct spots 1`] = `
       "head": "cavia-porcellus:selfie:main",
       "slug": "diffplug/selfie",
       "title": "Update README.md",
-      "type": "GH_PR_NEW_COMMENT",
+      "type": "GH_PR_NEW",
       "unique_key": "github.com:diffplug/selfie:main...cavia-porcellus:selfie:main",
     },
   },

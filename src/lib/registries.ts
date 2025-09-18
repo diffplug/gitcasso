@@ -2,11 +2,11 @@ import type { OverTypeInstance } from 'overtype'
 import OverType from 'overtype'
 import type { CommentEnhancer, CommentSpot, StrippedLocation } from './enhancer'
 import { CommentEnhancerMissing } from './enhancers/CommentEnhancerMissing'
-import { GitHubEditCommentEnhancer } from './enhancers/github/githubEditComment'
-import { GitHubIssueAddCommentEnhancer } from './enhancers/github/githubIssueAddComment'
-import { GitHubIssueNewCommentEnhancer } from './enhancers/github/githubIssueNewComment'
-import { GitHubPRAddCommentEnhancer } from './enhancers/github/githubPRAddComment'
-import { GitHubPRNewCommentEnhancer } from './enhancers/github/githubPRNewComment'
+import { GitHubEditEnhancer } from './enhancers/github/GitHubEditEnhancer'
+import { GitHubIssueEnhancer } from './enhancers/github/GitHubIssueEnhancer'
+import { GitHubIssueNewEnhancer } from './enhancers/github/GitHubIssueNewEnhancer'
+import { GitHubPrEnhancer } from './enhancers/github/GitHubPrEnhancer'
+import { GitHubPRNewEnhancer } from './enhancers/github/GitHubPrNewEnhancer'
 
 export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
   textarea: HTMLTextAreaElement
@@ -21,11 +21,11 @@ export class EnhancerRegistry {
 
   constructor() {
     // Register all available handlers
-    this.register(new GitHubEditCommentEnhancer())
-    this.register(new GitHubIssueAddCommentEnhancer())
-    this.register(new GitHubIssueNewCommentEnhancer())
-    this.register(new GitHubPRAddCommentEnhancer())
-    this.register(new GitHubPRNewCommentEnhancer())
+    this.register(new GitHubEditEnhancer())
+    this.register(new GitHubIssueEnhancer())
+    this.register(new GitHubIssueNewEnhancer())
+    this.register(new GitHubPrEnhancer())
+    this.register(new GitHubPRNewEnhancer())
     const textColor = 'rgb(31, 35, 40)'
     const headingColor = 'rgb(174, 52, 151)'
     OverType.setTheme({

@@ -1,23 +1,23 @@
 import { PopupRoot } from '@/components/PopupRoot'
 import type { CommentStorage, CommentTableRow } from '@/entrypoints/background'
 import type { CommentSpot } from '@/lib/enhancer'
-import type { GitHubIssueAddCommentSpot } from '@/lib/enhancers/github/githubIssueAddComment'
-import type { GitHubPRAddCommentSpot } from '@/lib/enhancers/github/githubPRAddComment'
+import type { GitHubIssueSpot } from '@/lib/enhancers/github/GitHubIssueEnhancer'
+import type { GitHubPrSpot } from '@/lib/enhancers/github/GitHubPrEnhancer'
 
-const gh_pr: GitHubPRAddCommentSpot = {
+const gh_pr: GitHubPrSpot = {
   domain: 'github.com',
   number: 517,
   slug: 'diffplug/selfie',
   title: 'wowza',
-  type: 'GH_PR_ADD_COMMENT',
+  type: 'GH_PR',
   unique_key: 'github.com:diffplug/selfie:517',
 }
-const gh_issue: GitHubIssueAddCommentSpot = {
+const gh_issue: GitHubIssueSpot = {
   domain: 'github.com',
   number: 523,
   slug: 'diffplug/selfie',
   title: 'whoa',
-  type: 'GH_ISSUE_ADD_COMMENT',
+  type: 'GH_ISSUE',
   unique_key: 'github.com:diffplug/selfie:523',
 }
 

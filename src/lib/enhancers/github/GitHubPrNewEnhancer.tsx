@@ -4,8 +4,10 @@ import { logger } from '../../logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGithubOptions, prepareGitHubHighlighter } from './github-common'
 
-interface GitHubPRNewCommentSpot extends CommentSpot {
-  type: 'GH_PR_NEW_COMMENT'
+const GH_PR_NEW = 'GH_PR_NEW' as const
+
+interface GitHubPRNewSpot extends CommentSpot {
+  type: typeof GH_PR_NEW
   domain: string
   slug: string // owner/repo
   title: string
@@ -13,15 +15,12 @@ interface GitHubPRNewCommentSpot extends CommentSpot {
   base: string // branch you want changes pulled into
 }
 
-export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCommentSpot> {
+export class GitHubPRNewEnhancer implements CommentEnhancer<GitHubPRNewSpot> {
   forSpotTypes(): string[] {
-    return ['GH_PR_NEW_COMMENT']
+    return [GH_PR_NEW]
   }
 
-  tryToEnhance(
-    textarea: HTMLTextAreaElement,
-    location: StrippedLocation,
-  ): GitHubPRNewCommentSpot | null {
+  tryToEnhance(textarea: HTMLTextAreaElement, location: StrippedLocation): GitHubPRNewSpot | null {
     if (textarea.id === 'feedback') {
       return null
     }
@@ -53,12 +52,12 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
       head,
       slug,
       title,
-      type: 'GH_PR_NEW_COMMENT',
+      type: GH_PR_NEW,
       unique_key,
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubPRNewCommentSpot): OverTypeInstance {
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubPRNewSpot): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
@@ -68,7 +67,7 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
     })[0]!
   }
 
-  tableUpperDecoration(spot: GitHubPRNewCommentSpot): React.ReactNode {
+  tableUpperDecoration(spot: GitHubPRNewSpot): React.ReactNode {
     const { slug } = spot
     return (
       <>
@@ -78,11 +77,11 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
     )
   }
 
-  tableTitle(spot: GitHubPRNewCommentSpot): string {
+  tableTitle(spot: GitHubPRNewSpot): string {
     return spot.title || 'New Pull Request'
   }
 
-  buildUrl(spot: GitHubPRNewCommentSpot): string {
+  buildUrl(spot: GitHubPRNewSpot): string {
     return `https://${spot.domain}/${spot.slug}/issue/new`
   }
 }
