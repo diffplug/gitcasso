@@ -1,4 +1,3 @@
-import { CONFIG } from '../lib/config'
 import type { CommentEvent, CommentSpot, StrippedLocation } from '../lib/enhancer'
 import { logger } from '../lib/logger'
 import { EnhancerRegistry, TextareaRegistry } from '../lib/registries'
@@ -98,8 +97,6 @@ function enhanceMaybe(textarea: HTMLTextAreaElement) {
     logger.debug('textarea already registered {}', textarea)
     return
   }
-
-  injectStyles()
   try {
     const location = detectLocation()
     logger.debug('[gitcasso] Calling tryToEnhance with location:', location)
@@ -116,20 +113,5 @@ function enhanceMaybe(textarea: HTMLTextAreaElement) {
     }
   } catch (e) {
     logger.error(e)
-  }
-}
-
-const STYLES = `
-.${CONFIG.ADDED_OVERTYPE_CLASS} {
-  background: cyan !important;
-}
-`
-
-function injectStyles(): void {
-  if (!document.getElementById('gitcasso-styles')) {
-    const style = document.createElement('style')
-    style.textContent = STYLES
-    style.id = 'gitcasso-styles'
-    document.head.appendChild(style)
   }
 }

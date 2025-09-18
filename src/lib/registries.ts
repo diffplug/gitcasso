@@ -17,7 +17,6 @@ export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
 
 export class EnhancerRegistry {
   private enhancers = new Set<CommentEnhancer>()
-  private preparedEnhancers = new Set<CommentEnhancer>()
   byType = new Map<string, CommentEnhancer>()
 
   constructor() {
@@ -66,11 +65,6 @@ export class EnhancerRegistry {
       try {
         const spot = enhancer.tryToEnhance(textarea, location)
         if (spot) {
-          // Prepare enhancer on first use
-          if (!this.preparedEnhancers.has(enhancer)) {
-            enhancer.prepareForFirstEnhancement()
-            this.preparedEnhancers.add(enhancer)
-          }
           const overtype = enhancer.enhance(textarea, spot)
           this.handleDelayedValueInjection(overtype)
           return { enhancer, overtype, spot, textarea }

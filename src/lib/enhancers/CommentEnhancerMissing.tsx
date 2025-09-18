@@ -43,9 +43,6 @@ export class CommentEnhancerMissing implements CommentEnhancer {
   tryToEnhance(_textarea: HTMLTextAreaElement, _location: StrippedLocation): CommentSpot | null {
     throw new Error('Method not implemented.')
   }
-  prepareForFirstEnhancement(): void {
-    throw new Error('Method not implemented.')
-  }
   enhance(_textarea: HTMLTextAreaElement, _spot: CommentSpot): OverTypeInstance {
     throw new Error('Method not implemented.')
   }
