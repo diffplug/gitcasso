@@ -524,16 +524,18 @@ function injectGitcassoScript(key: string, html: string) {
           }
 
           // Initial update
+          updateCommentSpotDisplay()
           setTimeout(updateCommentSpotDisplay, 100);
-
-          // Update display periodically
-          setInterval(updateCommentSpotDisplay, 2000);
+          setTimeout(updateCommentSpotDisplay, 200);
+          setTimeout(updateCommentSpotDisplay, 400);
+          setTimeout(updateCommentSpotDisplay, 800);
 
           document.body.appendChild(commentSpotDisplay);
         </script>
       `
-  if (!html.includes('</body>')) {
-    throw error('No closing body tag, nowhere to put the content script!')
+  if (html.includes('</body>')) {
+    return html.replace('</body>', `${contentScriptTag}</body>`)
+  } else {
+    return html + contentScriptTag
   }
-  return html.replace('</body>', `${contentScriptTag}</body>`)
 }
