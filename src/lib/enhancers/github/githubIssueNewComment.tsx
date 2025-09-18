@@ -9,6 +9,7 @@ interface GitHubIssueNewCommentSpot extends CommentSpot {
   type: 'GH_ISSUE_NEW_COMMENT'
   domain: string
   slug: string // owner/repo
+  title: string
 }
 
 export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssueNewCommentSpot> {
@@ -17,9 +18,12 @@ export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssu
   }
 
   tryToEnhance(
-    _textarea: HTMLTextAreaElement,
+    textarea: HTMLTextAreaElement,
     location: StrippedLocation,
   ): GitHubIssueNewCommentSpot | null {
+    if (textarea.id === 'feedback') {
+      return null
+    }
     if (location.host !== 'github.com') {
       return null
     }
@@ -34,9 +38,12 @@ export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssu
     const [, owner, repo] = match
     const slug = `${owner}/${repo}`
     const unique_key = `github.com:${slug}:new`
+    const titleInput = document.querySelector('input[placeholder="Title"]') as HTMLInputElement
+    const title = titleInput?.value || ''
     return {
       domain: location.host,
       slug,
+      title,
       type: 'GH_ISSUE_NEW_COMMENT',
       unique_key,
     }
@@ -62,8 +69,8 @@ export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssu
     )
   }
 
-  tableTitle(_spot: GitHubIssueNewCommentSpot): string {
-    return 'New Issue'
+  tableTitle(spot: GitHubIssueNewCommentSpot): string {
+    return spot.title || 'New Issue'
   }
 
   buildUrl(spot: GitHubIssueNewCommentSpot): string {
