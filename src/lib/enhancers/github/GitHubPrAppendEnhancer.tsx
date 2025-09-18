@@ -21,11 +21,11 @@ export class GitHubPrAppendEnhancer implements CommentEnhancer<GitHubPrAppendSpo
   }
 
   tryToEnhance(
-    _textarea: HTMLTextAreaElement,
+    textarea: HTMLTextAreaElement,
     location: StrippedLocation,
   ): GitHubPrAppendSpot | null {
     // Only handle github.com domains TODO: identify GitHub Enterprise somehow
-    if (location.host !== 'github.com' || _textarea.id !== 'new_comment_field') {
+    if (location.host !== 'github.com' || textarea.id !== 'new_comment_field') {
       return null
     }
 
