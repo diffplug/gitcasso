@@ -79,7 +79,7 @@ When the `textarea` gets removed from the page, the `TextareaRegistry` is notifi
 ## Testing
 
 - `pnpm playground` gives you a test environment where you can tinker with the popup with various test data, supports hot reload
-- `pnpm corpus:view` gives you recordings of various web pages which you can see with and without enhancement by the browser extension
+- `pnpm corpus` gives you recordings of various web pages which you can see with and without enhancement by the browser extension
 
 ### Test Corpus
 
@@ -114,7 +114,7 @@ We maintain a corpus of test pages in two formats for testing the browser extens
 
 #### Viewing Corpus Files
 
-- Run `pnpm corpus:view` to start the test server at http://localhost:3001
+- Run `pnpm corpus` to start the test server at http://localhost:3001
 - Select any corpus file to view in two modes:
   - **Clean**: Original page without extension
   - **Gitcasso**: Page with extension injected for testing

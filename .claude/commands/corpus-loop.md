@@ -1,6 +1,6 @@
 ---
 argument-hint: [corpus_slug]
-description: uses Playwright MCP and the `corpus:view` to parse page elements
+description: uses Playwright MCP and the `corpus` to parse page elements
 ---
 
 - using Playwright MCP, navigate to `http://localhost:3001/corpus/$1/gitcasso`
