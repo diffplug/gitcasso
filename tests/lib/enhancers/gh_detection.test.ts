@@ -7,7 +7,7 @@ const githubCorpusEntries = Object.keys(CORPUS).filter((key) => key.startsWith('
 describe('github detection', () => {
   for (const corpusKey of githubCorpusEntries) {
     withCorpus(corpusKey as keyof typeof CORPUS).it('should detect correct spots', async () => {
-      expect(getDetectionResults(document, window)).toMatchSnapshot()
+      expect(getDetectionResults()).toMatchSnapshot()
     })
   }
 })

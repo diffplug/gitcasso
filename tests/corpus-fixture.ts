@@ -41,7 +41,7 @@ export const describe = baseDescribe
 export { expect }
 
 // Helper function for detection tests
-export function getDetectionResults(document: Document, window: Window) {
+export function getDetectionResults() {
   const enhancers = new EnhancerRegistry()
   const textareas = document.querySelectorAll('textarea')
   const location: StrippedLocation = {
@@ -58,6 +58,35 @@ export function getDetectionResults(document: Document, window: Window) {
     })
   }
   return detectionResults
+}
+
+// Helper function for UI tests
+export function getUIResults() {
+  const enhancers = new EnhancerRegistry()
+  const textareas = document.querySelectorAll('textarea')
+  const location: StrippedLocation = {
+    host: window.location.host,
+    pathname: window.location.pathname,
+  }
+  const uiResults = []
+  for (const textarea of textareas) {
+    const enhanced = enhancers.tryToEnhance(textarea, location)
+    const forValue = `id=${textarea.id} name=${textarea.name} className=${textarea.className}`
+    if (enhanced) {
+      uiResults.push({
+        for: forValue,
+        title: enhanced.enhancer.tableTitle(enhanced.spot),
+        upperDecoration: enhanced.enhancer.tableUpperDecoration(enhanced.spot),
+      })
+    } else {
+      uiResults.push({
+        for: forValue,
+        title: null,
+        upperDecoration: null,
+      })
+    }
+  }
+  return uiResults
 }
 
 // Fluent interface for any corpus type (HAR or HTML)
