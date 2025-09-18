@@ -4,8 +4,7 @@ import type React from 'react'
 import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhancer'
 import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
-import { commonGithubOptions } from './ghOptions'
-import { prepareGitHubHighlighter } from './githubHighlighter'
+import { commonGithubOptions, prepareGitHubHighlighter } from './github-common'
 
 export interface GitHubIssueAddCommentSpot extends CommentSpot {
   type: 'GH_ISSUE_ADD_COMMENT'

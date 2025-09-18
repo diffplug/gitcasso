@@ -2,8 +2,7 @@ import OverType, { type OverTypeInstance } from 'overtype'
 import type { CommentEnhancer, CommentSpot, StrippedLocation } from '../../enhancer'
 import { logger } from '../../logger'
 import { modifyDOM } from '../modifyDOM'
-import { commonGithubOptions } from './ghOptions'
-import { prepareGitHubHighlighter } from './githubHighlighter'
+import { commonGithubOptions, prepareGitHubHighlighter } from './github-common'
 
 interface GitHubIssueNewCommentSpot extends CommentSpot {
   type: 'GH_ISSUE_NEW_COMMENT'
