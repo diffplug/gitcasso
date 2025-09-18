@@ -329,7 +329,7 @@ app.post('/rebuild', async (_req, res) => {
 
     // Run pnpm run build:dev
     const buildProcess = spawn('pnpm', ['run', 'build:dev'], {
-      cwd: path.join(__dirname, '..', '..'),
+      cwd: path.join(__dirname, '..'),
       stdio: ['pipe', 'pipe', 'pipe'],
     })
 
