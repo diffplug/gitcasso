@@ -175,4 +175,124 @@ describe('github', () => {
       ]
     `)
   })
+  withCorpus('gh_issue_edit').it('should create the correct spot object', async () => {
+    expect(enhancements(document, window)).toMatchInlineSnapshot(`
+      [
+        {
+          "for": "id=:rc3: name=null className=prc-Textarea-TextArea-13q4j focus-visible overtype-input",
+          "spot": {
+            "domain": "github.com",
+            "number": 56,
+            "slug": "diffplug/gitcasso",
+            "title": "TODO_TITLE",
+            "type": "GH_ISSUE_ADD_COMMENT",
+            "unique_key": "github.com:diffplug/gitcasso:56",
+          },
+          "title": "TITLE_TODO",
+          "upperDecoration": <React.Fragment>
+            <span
+              className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
+            >
+              <IssueOpenedIcon
+                size={16}
+              />
+            </span>
+            #
+            56
+            <a
+              className="truncate hover:underline"
+              href="https://github.com/diffplug/gitcasso"
+            >
+              diffplug/gitcasso
+            </a>
+          </React.Fragment>,
+        },
+        {
+          "for": "id=:ra7: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+          "spot": {
+            "domain": "github.com",
+            "number": 56,
+            "slug": "diffplug/gitcasso",
+            "title": "TODO_TITLE",
+            "type": "GH_ISSUE_ADD_COMMENT",
+            "unique_key": "github.com:diffplug/gitcasso:56",
+          },
+          "title": "TITLE_TODO",
+          "upperDecoration": <React.Fragment>
+            <span
+              className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
+            >
+              <IssueOpenedIcon
+                size={16}
+              />
+            </span>
+            #
+            56
+            <a
+              className="truncate hover:underline"
+              href="https://github.com/diffplug/gitcasso"
+            >
+              diffplug/gitcasso
+            </a>
+          </React.Fragment>,
+        },
+      ]
+    `)
+  })
+  withCorpus('gh_pr_edit').it('should create the correct spot object', async () => {
+    expect(enhancements(document, window)).toMatchInlineSnapshot(`
+      [
+        {
+          "for": "id=issue-3429313834-body name=pull_request[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit js-size-to-fit size-to-fit js-session-resumable CommentBox-input FormControl-textarea js-saved-reply-shortcut-comment-field focus-visible overtype-input",
+          "spot": {
+            "domain": "github.com",
+            "number": NaN,
+            "slug": "diffplug/gitcasso",
+            "title": "TODO_TITLE",
+            "type": "GH_EDIT_COMMENT",
+            "unique_key": "github.com:diffplug/gitcasso:NaN",
+          },
+          "title": "TITLE_TODO",
+          "upperDecoration": <React.Fragment>
+            <span
+              className="font-mono text-muted-foreground text-sm"
+            >
+              diffplug/gitcasso
+            </span>
+            <span
+              className="ml-2 font-medium"
+            >
+              PR #
+              NaN
+            </span>
+          </React.Fragment>,
+        },
+        {
+          "for": "id=new_comment_field name=comment[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit FormControl-textarea CommentBox-input js-size-to-fit size-to-fit js-session-resumable js-saved-reply-shortcut-comment-field overtype-input",
+          "spot": {
+            "domain": "github.com",
+            "number": 58,
+            "slug": "diffplug/gitcasso",
+            "title": "TODO_TITLE",
+            "type": "GH_PR_ADD_COMMENT",
+            "unique_key": "github.com:diffplug/gitcasso:58",
+          },
+          "title": "TITLE_TODO",
+          "upperDecoration": <React.Fragment>
+            <span
+              className="font-mono text-muted-foreground text-sm"
+            >
+              diffplug/gitcasso
+            </span>
+            <span
+              className="ml-2 font-medium"
+            >
+              PR #
+              58
+            </span>
+          </React.Fragment>,
+        },
+      ]
+    `)
+  })
 })
