@@ -65,7 +65,7 @@ function stripHeaders(headers?: any[]) {
 async function sanitize(filename: string) {
   console.log('Sanitizing:', filename)
 
-  const p = path.join('tests/corpus/har', filename)
+  const p = path.join('tests/corpus', filename)
   const har = JSON.parse(await fs.readFile(p, 'utf8'))
 
   for (const e of har.log?.entries ?? []) {
@@ -84,7 +84,7 @@ async function sanitize(filename: string) {
   await fs.writeFile(p, JSON.stringify(har, null, 2))
 }
 
-;(async () => {
+; (async () => {
   const pattern = process.argv[2]
 
   // If no argument provided, show available keys
