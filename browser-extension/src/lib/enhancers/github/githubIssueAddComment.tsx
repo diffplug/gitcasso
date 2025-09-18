@@ -1,7 +1,7 @@
 import { IssueOpenedIcon } from '@primer/octicons-react'
 import OverType, { type OverTypeInstance } from 'overtype'
 import type React from 'react'
-import type { CommentEnhancer, CommentSpot } from '@/lib/enhancer'
+import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhancer'
 import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGithubOptions } from './ghOptions'
@@ -20,24 +20,31 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
     return ['GH_ISSUE_ADD_COMMENT']
   }
 
-  tryToEnhance(_textarea: HTMLTextAreaElement): GitHubIssueAddCommentSpot | null {
-    if (document.querySelector('meta[name="hostname"]')?.getAttribute('content') !== 'github.com') {
+  tryToEnhance(
+    textarea: HTMLTextAreaElement,
+    location: StrippedLocation,
+  ): GitHubIssueAddCommentSpot | null {
+    if (textarea.id === 'feedback') {
+      return null
+    }
+    if (location.host !== 'github.com') {
       return null
     }
 
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
-    logger.debug(`${this.constructor.name} examing url`, window.location.pathname)
+    logger.debug(`${this.constructor.name} examing url`, location.pathname)
 
-    const match = window.location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/issues\/(\d+))/)
-    logger.debug(`${this.constructor.name} found match`, window.location.pathname)
+    const match = location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/issues\/(\d+))/)
+    logger.debug(`${this.constructor.name} found match`, location.pathname)
     if (!match) return null
+
     const [, owner, repo, numberStr] = match
     const slug = `${owner}/${repo}`
     const number = parseInt(numberStr!, 10)
     const unique_key = `github.com:${slug}:${number}`
     const title = 'TODO_TITLE'
     return {
-      domain: 'github.com',
+      domain: location.host,
       number,
       slug,
       title,

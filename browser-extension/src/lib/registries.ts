@@ -1,6 +1,6 @@
 import type { OverTypeInstance } from 'overtype'
 import OverType from 'overtype'
-import type { CommentEnhancer, CommentSpot } from './enhancer'
+import type { CommentEnhancer, CommentSpot, StrippedLocation } from './enhancer'
 import { CommentEnhancerMissing } from './enhancers/CommentEnhancerMissing'
 import { GitHubEditCommentEnhancer } from './enhancers/github/githubEditComment'
 import { GitHubIssueAddCommentEnhancer } from './enhancers/github/githubIssueAddComment'
@@ -61,10 +61,10 @@ export class EnhancerRegistry {
     return (this.byType.get(spot.type) || new CommentEnhancerMissing()) as CommentEnhancer<T>
   }
 
-  tryToEnhance(textarea: HTMLTextAreaElement): EnhancedTextarea | null {
+  tryToEnhance(textarea: HTMLTextAreaElement, location: StrippedLocation): EnhancedTextarea | null {
     for (const enhancer of this.enhancers) {
       try {
-        const spot = enhancer.tryToEnhance(textarea)
+        const spot = enhancer.tryToEnhance(textarea, location)
         if (spot) {
           // Prepare enhancer on first use
           if (!this.preparedEnhancers.has(enhancer)) {
@@ -133,5 +133,9 @@ export class TextareaRegistry {
 
   get(textarea: HTMLTextAreaElement): EnhancedTextarea | undefined {
     return this.textareas.get(textarea)
+  }
+
+  getAllEnhanced(): EnhancedTextarea[] {
+    return Array.from(this.textareas.values())
   }
 }

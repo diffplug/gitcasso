@@ -1,6 +1,5 @@
 import { Eye, EyeOff, Search, Settings, Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
 import Badge from '@/components/Badge'
 import { badgeCVA } from '@/components/design'
 import MultiSegment from '@/components/MultiSegment'
@@ -157,13 +156,11 @@ export const ClaudePrototype = () => {
                       <button
                         type='button'
                         onClick={() => updateFilter('showTrashed', !filters.showTrashed)}
-                        className={twMerge(
-                          badgeCVA({
-                            clickable: true,
-                            type: filters.showTrashed ? 'trashed' : 'hideTrashed',
-                          }),
-                          'border',
-                        )}
+                        className={badgeCVA({
+                          class: 'border',
+                          clickable: true,
+                          type: filters.showTrashed ? 'trashed' : 'hideTrashed',
+                        })}
                       >
                         <Trash2 className='h-3 w-3' />
                         {filters.showTrashed ? (
@@ -195,13 +192,11 @@ export const ClaudePrototype = () => {
                       />
                       <button
                         type='button'
-                        className={twMerge(
-                          badgeCVA({
-                            clickable: true,
-                            type: 'settings',
-                          }),
-                          'border',
-                        )}
+                        className={badgeCVA({
+                          class: 'border',
+                          clickable: true,
+                          type: 'settings',
+                        })}
                       >
                         <Settings className='h-3 w-3' />
                       </button>

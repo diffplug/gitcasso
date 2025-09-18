@@ -1,0 +1,5 @@
+- run `git status` to see the changes in the working copy
+- **figure out the intent of the change**
+- complete whatever tasks are necessary to complete this change
+- make sure that `pnpm precommit` succeeds when you are done
+- don't fix `precommit` by reverting the changes, it is more important to complete the initial change

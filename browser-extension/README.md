@@ -69,17 +69,42 @@ When the `textarea` gets removed from the page, the `TextareaRegistry` is notifi
 ## Testing
 
 - `npm run playground` gives you a test environment where you can tinker with the popup with various test data, supports hot reload
-- `npm run har:view` gives you recordings of various web pages which you can see with and without enhancement by the browser extension
+- `npm run corpus:view` gives you recordings of various web pages which you can see with and without enhancement by the browser extension
 
-### Recording new HAR files
+### Test Corpus
 
-- the har recordings live in `tests/har`, they are complete recordings of the network requests of a single page load
-- you can add or change URLs in `tests/har-index.ts`
-- `npx playwright codegen https://github.com/login --save-storage=playwright/.auth/gh.json` will store new auth tokens
-  - login manually, then close the browser
-  - ***these cookies are very sensitive! we only run this script using a test account that has no permissions or memberships to anything, recommend you do the same!***
-- `pnpm run har:record` this records new snapshots using those auth tokens (it needs args, run it with no args for docs)
-  - DO NOT COMMIT AND PUSH NEW OR CHANGED `har` files!
-  - we try to sanitize these (see `har-record.ts` for details) but there may be important PII in them
-  - if you need new HAR files for something, let us know and we will generate them ourselves using a dummy account
-  - IF YOUR PR CHANGES OR ADDS HAR FILES WE WILL CLOSE IT. Ask for HAR files and we'll be happy to generate clean ones you can test against.
+We maintain a corpus of test pages in two formats for testing the browser extension:
+
+#### HAR Corpus (Automated)
+
+- For testing initial page loads and network requests
+- HAR recordings live in `tests/corpus/har/`, complete recordings of the network requests of a single page load
+- You can add or change URLs in `tests/corpus/_corpus-index.ts`
+- **Recording new HAR files:**
+  - `npx playwright codegen https://github.com/login --save-storage=playwright/.auth/gh.json` will store new auth tokens
+    - login manually, then close the browser
+    - ***these cookies are very sensitive! we only run this script using a test account that has no permissions or memberships to anything, recommend you do the same!***
+  - `pnpm run corpus:record:har` records new HAR files using those auth tokens (it needs args, run it with no args for docs)
+    - DO NOT COMMIT AND PUSH NEW OR CHANGED HAR files!
+    - we try to sanitize these (see `har-record.ts` for details) but there may be important PII in them
+    - if you need new HAR files for something, let us know and we will generate them ourselves using a dummy account
+    - IF YOUR PR CHANGES OR ADDS HAR FILES WE WILL CLOSE IT. Ask for HAR files and we'll be happy to generate clean ones you can test against.
+
+#### HTML Corpus (Manual)
+
+- For testing post-interaction states (e.g., expanded textareas, modal dialogs, dynamic content)
+- HTML snapshots live in `tests/corpus/html/`, manually captured using SingleFile browser extension
+- All assets are inlined in a single HTML file by SingleFile
+- **Creating new HTML corpus files:**
+  1. Navigate to the desired page state (click buttons, expand textareas, etc.)
+  2. Use SingleFile browser extension to save the complete page
+  3. Save the `.html` file to `tests/corpus/html/` with a descriptive name
+  4. Add an entry to `tests/corpus/_corpus-index.ts` with `type: 'html'` and a description of the captured state
+
+#### Viewing Corpus Files
+
+- Run `pnpm run corpus:view` to start the test server at http://localhost:3001
+- Select any corpus file to view in two modes:
+  - **Clean**: Original page without extension
+  - **Gitcasso**: Page with extension injected for testing
+- Both HAR and HTML corpus types are supported

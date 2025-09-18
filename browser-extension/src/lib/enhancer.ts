@@ -19,6 +19,15 @@ export interface CommentEvent {
   draft?: string
 }
 
+/**
+ * Minimal location information that enhancers need for routing decisions.
+ * Avoids dependency on global window/location objects for better testability.
+ */
+export interface StrippedLocation {
+  host: string
+  pathname: string
+}
+
 /** Wraps the textareas of a given platform with Gitcasso's enhancements. */
 export interface CommentEnhancer<Spot extends CommentSpot = CommentSpot> {
   /** Guarantees to only return a type within this list. */
@@ -27,7 +36,7 @@ export interface CommentEnhancer<Spot extends CommentSpot = CommentSpot> {
    * Whenever a new `textarea` is added to any webpage, this method is called.
    * If we return non-null, then we become the handler for that text area.
    */
-  tryToEnhance(textarea: HTMLTextAreaElement): Spot | null
+  tryToEnhance(textarea: HTMLTextAreaElement, location: StrippedLocation): Spot | null
   /** This gets called the first time that `tryToEnhance` returns non-null. */
   prepareForFirstEnhancement(): void
   /**
