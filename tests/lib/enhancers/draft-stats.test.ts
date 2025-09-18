@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { statsFor } from '../../../src/lib/enhancers/draftStats'
+import { statsFor } from '../../../src/lib/enhancers/draft-stats'
 
 describe('statsFor', () => {
   it('should handle empty markdown', () => {
