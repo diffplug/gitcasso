@@ -104,7 +104,7 @@ async function loadHar(key: string): Promise<Har> {
     return harCache.get(key)!
   }
 
-  const harPath = path.join(__dirname, 'corpus', 'har', `${key}.har`)
+  const harPath = path.join(__dirname, 'corpus', `${key}.har`)
   const harContent = await fs.readFile(harPath, 'utf-8')
   const harData = JSON.parse(harContent)
   harCache.set(key, harData)
@@ -248,7 +248,7 @@ app.get('/corpus/:key/:mode(clean|gitcasso)', async (req, res) => {
       return res.send(html)
     } else if (entry.type === 'html') {
       // Handle HTML corpus
-      const htmlPath = path.join(__dirname, 'corpus', 'html', `${key}.html`)
+      const htmlPath = path.join(__dirname, 'corpus', `${key}.html`)
       let html = await fs.readFile(htmlPath, 'utf-8')
 
       // Strip CSP headers that might block our injected scripts

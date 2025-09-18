@@ -57,7 +57,7 @@ async function loadRootHtmlStringFromHar(key: keyof typeof CORPUS): Promise<stri
     throw new Error(`Invalid HAR corpus key: ${String(key)}`)
   }
   const url = entry.url
-  const harPath = path.join(__dirname, 'corpus', 'har', `${String(key)}.har`)
+  const harPath = path.join(__dirname, 'corpus', `${String(key)}.har`)
   const harContent = await fs.readFile(harPath, 'utf-8')
   const harData: HarFile = JSON.parse(harContent)
   const mainEntry = harData.log.entries.find((entry) => entry.request.url === url)
@@ -72,7 +72,7 @@ async function loadHtmlStringFromHtml(key: keyof typeof CORPUS): Promise<string>
   if (!entry || entry.type !== 'html') {
     throw new Error(`Invalid HTML corpus key: ${String(key)}`)
   }
-  const htmlPath = path.join(__dirname, 'corpus', 'html', `${String(key)}.html`)
+  const htmlPath = path.join(__dirname, 'corpus', `${String(key)}.html`)
   return await fs.readFile(htmlPath, 'utf-8')
 }
 
