@@ -19,7 +19,7 @@ This extension ***must never transmit any data outside the browser***.
 ### Hotreload development
 
 - `pnpm install`
-- `pnpm run dev`
+- `pnpm dev`
 - open [`chrome://extensions`](chrome://extensions)
 - toggle **Developer mode** (top-right)
 - click "Load unpacked" (far left)
@@ -45,7 +45,7 @@ This is a [WXT](https://wxt.dev/)-based browser extension that
 
 - [`src/entrypoints/content.ts`](src/entrypoints/content.ts) - injected into every webpage
 - [`src/entrypoints/background.ts`](src/entrypoints/background.ts) - service worker that manages state and handles messages
-- [`src/entrypoints/popup/popup.tsx`](src/entrypoints/popup/popup.tsx) - popup (html/css/tsx) with shadcn/ui table components
+- [`src/entrypoints/popup/popup.tsx`](src/entrypoints/popup/popup.tsx) - popup (react html + TailwindCSS)
 
 ```mermaid
 graph TD
@@ -94,7 +94,7 @@ We maintain a corpus of test pages in two formats for testing the browser extens
   - `npx playwright codegen https://github.com/login --save-storage=playwright/.auth/gh.json` will store new auth tokens
     - login manually, then close the browser
     - ***these cookies are very sensitive! we only run this script using a test account that has no permissions or memberships to anything, recommend you do the same!***
-  - `pnpm run corpus:har:record` records new HAR files using those auth tokens (it needs args, run it with no args for docs)
+  - `pnpm corpus:har:record` records new HAR files using those auth tokens (it needs args, run it with no args for docs)
     - DO NOT COMMIT AND PUSH NEW OR CHANGED HAR files!
     - we try to sanitize these (see `corpus-har-record.ts` for details) but there may be important PII in them
     - if you need new HAR files for something, let us know and we will generate them ourselves using a dummy account
