@@ -1,4 +1,4 @@
-import { describe, expect, usingHar } from '../../har-fixture'
+import { describe, expect, forCorpus as withCorpus } from '../../corpus-fixture'
 
 // must import fixture **first** for mocks, the `expect` keeps biome from changing sort-order
 expect
@@ -35,7 +35,7 @@ function enhancements(document: Document, window: Window) {
 }
 
 describe('github', () => {
-  usingHar('gh_pr').it('should create the correct spot object', async () => {
+  withCorpus('gh_pr').it('should create the correct spot object', async () => {
     expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
@@ -70,7 +70,7 @@ describe('github', () => {
       ]
     `)
   })
-  usingHar('gh_new_pr').it('should create the correct spot object', async () => {
+  withCorpus('gh_new_pr').it('should create the correct spot object', async () => {
     expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
@@ -102,7 +102,7 @@ describe('github', () => {
       ]
     `)
   })
-  usingHar('gh_issue').it('should create the correct spot object', async () => {
+  withCorpus('gh_issue').it('no enhancement on initial page load', async () => {
     expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
@@ -112,7 +112,42 @@ describe('github', () => {
       ]
     `)
   })
-  usingHar('gh_new_issue').it('should create the correct spot object', async () => {
+  withCorpus('gh_issue_populated_comment').it('should create the correct spot object', async () => {
+    expect(enhancements(document, window)).toMatchInlineSnapshot(`
+      [
+        {
+          "for": "id=:rn: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+          "spot": {
+            "domain": "github.com",
+            "number": 523,
+            "slug": "diffplug/selfie",
+            "title": "TODO_TITLE",
+            "type": "GH_ISSUE_ADD_COMMENT",
+            "unique_key": "github.com:diffplug/selfie:523",
+          },
+          "title": "TITLE_TODO",
+          "upperDecoration": <React.Fragment>
+            <span
+              className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
+            >
+              <IssueOpenedIcon
+                size={16}
+              />
+            </span>
+            #
+            523
+            <a
+              className="truncate hover:underline"
+              href="https://github.com/diffplug/selfie"
+            >
+              diffplug/selfie
+            </a>
+          </React.Fragment>,
+        },
+      ]
+    `)
+  })
+  withCorpus('gh_new_issue').it('should create the correct spot object', async () => {
     expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {

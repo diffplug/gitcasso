@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { chromium } from '@playwright/test'
-import { PAGES } from './har/_har-index'
+import { CORPUS } from './corpus/_corpus-index'
 
 // Convert glob pattern to regex
 function globToRegex(pattern: string): RegExp {
@@ -12,10 +12,12 @@ function globToRegex(pattern: string): RegExp {
   return new RegExp(`^${regexPattern}$`)
 }
 
-// Filter pages based on pattern
-function filterPages(pattern: string) {
+// Filter HAR corpus entries based on pattern
+function filterHarEntries(pattern: string) {
   const regex = globToRegex(pattern)
-  return Object.entries(PAGES).filter(([name]) => regex.test(name))
+  return Object.entries(CORPUS)
+    .filter(([name, entry]) => regex.test(name) && entry.type === 'har')
+    .map(([name, entry]) => [name, entry.url] as const)
 }
 
 const FILTER =
@@ -35,7 +37,7 @@ async function record(name: string, url: string) {
   const context = await browser.newContext({
     recordHar: {
       mode: 'minimal', // smaller; omits cookies etc.
-      path: `tests/har/${name}.har`,
+      path: `tests/corpus/har/${name}.har`,
       urlFilter: FILTER, // restrict scope to GitHub + assets
     },
     storageState: 'playwright/.auth/gh.json', // local-only; never commit
@@ -63,7 +65,7 @@ function stripHeaders(headers?: any[]) {
 async function sanitize(filename: string) {
   console.log('Sanitizing:', filename)
 
-  const p = path.join('tests/har', filename)
+  const p = path.join('tests/corpus/har', filename)
   const har = JSON.parse(await fs.readFile(p, 'utf8'))
 
   for (const e of har.log?.entries ?? []) {
@@ -87,47 +89,51 @@ async function sanitize(filename: string) {
 
   // If no argument provided, show available keys
   if (!pattern) {
-    console.log('Available recording targets:')
-    for (const [name] of Object.entries(PAGES)) {
-      console.log(`  ${name}`)
+    console.log('Available HAR recording targets:')
+    for (const [name, entry] of Object.entries(CORPUS)) {
+      if (entry.type === 'har') {
+        console.log(`  ${name}`)
+      }
     }
-    console.log('\nUsage: pnpm run har:record <pattern>')
+    console.log('\nUsage: pnpm run corpus:record:har <pattern>')
     console.log('Examples:')
-    console.log('  pnpm run har:record "*"              # Record all')
-    console.log('  pnpm run har:record "github_*"       # Record all github_*')
-    console.log('  pnpm run har:record "github_issue"   # Record specific target')
+    console.log('  pnpm run corpus:record:har "*"              # Record all HAR targets')
+    console.log('  pnpm run corpus:record:har "gh_*"           # Record all gh_* targets')
+    console.log('  pnpm run corpus:record:har "gh_issue"       # Record specific target')
     return
   }
 
-  // Filter pages based on pattern
-  const pagesToRecord = filterPages(pattern)
+  // Filter HAR entries based on pattern
+  const entriesToRecord = filterHarEntries(pattern)
 
-  if (pagesToRecord.length === 0) {
-    console.log(`No targets match pattern: ${pattern}`)
-    console.log('Available targets:')
-    for (const [name] of Object.entries(PAGES)) {
-      console.log(`  ${name}`)
+  if (entriesToRecord.length === 0) {
+    console.log(`No HAR targets match pattern: ${pattern}`)
+    console.log('Available HAR targets:')
+    for (const [name, entry] of Object.entries(CORPUS)) {
+      if (entry.type === 'har') {
+        console.log(`  ${name}`)
+      }
     }
     return
   }
 
-  console.log(`Recording ${pagesToRecord.length} target(s) matching "${pattern}":`)
-  for (const [name] of pagesToRecord) {
+  console.log(`Recording ${entriesToRecord.length} HAR target(s) matching "${pattern}":`)
+  for (const [name] of entriesToRecord) {
     console.log(`  ${name}`)
   }
   console.log()
 
-  await fs.mkdir('tests/har', { recursive: true })
+  await fs.mkdir('tests/corpus/har', { recursive: true })
 
   // Record filtered HAR files
-  for (const [name, url] of pagesToRecord) {
+  for (const [name, url] of entriesToRecord) {
     await record(name, url)
   }
 
   console.log('Recording complete. Sanitizing...')
 
   // Sanitize recorded HAR files
-  for (const [name] of pagesToRecord) {
+  for (const [name] of entriesToRecord) {
     await sanitize(`${name}.har`)
   }
 

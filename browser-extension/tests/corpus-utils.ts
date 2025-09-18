@@ -3,7 +3,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { Har as HarFile } from 'har-format'
 import { parseHTML } from 'linkedom'
-import { PAGES } from './har/_har-index'
+import { CORPUS } from './corpus/_corpus-index'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -32,21 +32,51 @@ export interface TestDOMContext {
 let currentDOMInstance: any = null
 let originalGlobals: Partial<TestDOMGlobals> = {}
 
-export async function loadHtmlFromHar(key: keyof typeof PAGES): Promise<string> {
-  const url = PAGES[key]
-  const harPath = path.join(__dirname, 'har', `${key}.har`)
+export async function setupDOM(key: keyof typeof CORPUS): Promise<TestDOMGlobals> {
+  const entry = CORPUS[key]
+  if (!entry) {
+    throw new Error(`Invalid corpus key: ${String(key)}`)
+  }
+
+  let html: string
+  if (entry.type === 'har') {
+    html = await loadRootHtmlStringFromHar(key)
+  } else if (entry.type === 'html') {
+    html = await loadHtmlStringFromHtml(key)
+  } else {
+    throw new Error(`Unsupported corpus type: ${entry.type}`)
+  }
+  const domGlobals = createDOMFromString(html, entry.url)
+  setupDOMFromHar(domGlobals)
+  return domGlobals
+}
+
+async function loadRootHtmlStringFromHar(key: keyof typeof CORPUS): Promise<string> {
+  const entry = CORPUS[key]
+  if (!entry || entry.type !== 'har') {
+    throw new Error(`Invalid HAR corpus key: ${String(key)}`)
+  }
+  const url = entry.url
+  const harPath = path.join(__dirname, 'corpus', `${String(key)}.har`)
   const harContent = await fs.readFile(harPath, 'utf-8')
   const harData: HarFile = JSON.parse(harContent)
   const mainEntry = harData.log.entries.find((entry) => entry.request.url === url)
-
   if (!mainEntry) {
     throw new Error(`No entry found for URL: ${url} in HAR file: ${harPath}`)
   }
-
-  return mainEntry.response.content.text || ''
+  return mainEntry.response.content.text!
 }
 
-export function createDOMFromHar(html: string, url: string): TestDOMGlobals {
+async function loadHtmlStringFromHtml(key: keyof typeof CORPUS): Promise<string> {
+  const entry = CORPUS[key]
+  if (!entry || entry.type !== 'html') {
+    throw new Error(`Invalid HTML corpus key: ${String(key)}`)
+  }
+  const htmlPath = path.join(__dirname, 'corpus', `${String(key)}.html`)
+  return await fs.readFile(htmlPath, 'utf-8')
+}
+
+function createDOMFromString(html: string, url: string): TestDOMGlobals {
   const dom = parseHTML(html)
 
   return {
@@ -68,7 +98,7 @@ export function createDOMFromHar(html: string, url: string): TestDOMGlobals {
   }
 }
 
-export function setupDOMFromHar(domGlobals: TestDOMGlobals): void {
+function setupDOMFromHar(domGlobals: TestDOMGlobals): void {
   // Store original globals for cleanup
   originalGlobals = {
     Document: (globalThis as any).Document,
@@ -99,12 +129,4 @@ export function cleanupDOM(): void {
     currentDOMInstance = null
     originalGlobals = {}
   }
-}
-
-export async function setupHarDOM(key: keyof typeof PAGES): Promise<TestDOMGlobals> {
-  const html = await loadHtmlFromHar(key)
-  const url = PAGES[key]
-  const domGlobals = createDOMFromHar(html, url)
-  setupDOMFromHar(domGlobals)
-  return domGlobals
 }
