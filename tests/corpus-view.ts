@@ -477,28 +477,28 @@ function createCommentSpotDisplayScript(urlParts: ReturnType<typeof getUrlParts>
 
     function updateCommentSpotDisplay() {
       const textareas = document.querySelectorAll('textarea');
-      const spotsFound = [];
+      const allTextAreas = [];
 
       for (const textarea of textareas) {
-        const forValue = 'id=' + textarea.id + ' name=' + textarea.name + ' className=' + textarea.className;
+        const forValue = "id='" + textarea.id + "' name='" + textarea.name + "' className='" + textarea.className + "'";
         const enhancedItem = window.gitcassoTextareaRegistry ? window.gitcassoTextareaRegistry.get(textarea) : undefined;
         if (enhancedItem) {
-          spotsFound.push({
-            for: forValue,
+          allTextAreas.push({
+            textarea: forValue,
             spot: enhancedItem.spot,
-            title: enhancedItem.enhancer.tableTitle(enhancedItem.spot),
           });
         } else {
-          spotsFound.push({
-            for: forValue,
+          allTextAreas.push({
+            textarea: forValue,
             spot: 'NO_SPOT',
           });
         }
       }
-
-      console.log('Enhanced textareas:', spotsFound.filter(s => s.spot !== 'NO_SPOT').length);
-      console.log('All textareas on page:', textareas.length);
-      commentSpotDisplay.innerHTML = '<div style="' + styles.header + '"><pre>${urlParts.href}\\n' + JSON.stringify(spotsFound, null, 2) + '</pre></div>';
+      const harness = {
+        url: '${urlParts.href}',
+        allTextAreas: allTextAreas
+      }
+      commentSpotDisplay.innerHTML = '<div style="' + styles.header + '"><pre>' + JSON.stringify(harness, null, 1) + '</pre></div>';
     }
 
     // Initial update
@@ -507,9 +507,6 @@ function createCommentSpotDisplayScript(urlParts: ReturnType<typeof getUrlParts>
     setTimeout(updateCommentSpotDisplay, 200);
     setTimeout(updateCommentSpotDisplay, 400);
     setTimeout(updateCommentSpotDisplay, 800);
-
-    // Update display periodically
-    setInterval(updateCommentSpotDisplay, 2000);
 
     document.body.appendChild(commentSpotDisplay);
   `
@@ -540,7 +537,7 @@ function createGitcassoScript(
 ): string {
   const contentScriptSetup = contentScriptCode
     ? // Direct embedding (for HTML corpus)
-      `
+    `
       // Set up mocked location
       window.gitcassoMockLocation = {
         host: '${urlParts.host}',
@@ -567,7 +564,7 @@ function createGitcassoScript(
       }
       `
     : // Fetch-based loading (for HAR corpus)
-      `
+    `
       // Fetch and patch the content script to remove webextension-polyfill issues
       fetch('/chrome-mv3-dev/content-scripts/content.js')
         .then(response => response.text())
