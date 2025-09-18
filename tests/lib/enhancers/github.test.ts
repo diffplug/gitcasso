@@ -111,45 +111,6 @@ describe('github', () => {
     expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
-          "for": "id=feedback name=feedback className=form-control width-full mb-2",
-          "spot": "NO_SPOT",
-        },
-      ]
-    `)
-  })
-  withCorpus('gh_issue_new_populated').it('has enhancement on initial page load', async () => {
-    expect(enhancements(document, window)).toMatchInlineSnapshot(`
-      [
-        {
-          "for": "id=:r34: name=null className=prc-Textarea-TextArea-13q4j focus-visible overtype-input",
-          "spot": {
-            "domain": "github.com",
-            "slug": "diffplug/gitcasso",
-            "title": "New issue title",
-            "type": "GH_ISSUE_NEW_COMMENT",
-            "unique_key": "github.com:diffplug/gitcasso:new",
-          },
-          "title": "New issue title",
-          "upperDecoration": <React.Fragment>
-            <span>
-              New Issue
-            </span>
-            <span
-              className="font-mono text-muted-foreground text-sm"
-            >
-               
-              diffplug/gitcasso
-               
-            </span>
-          </React.Fragment>,
-        },
-      ]
-    `)
-  })
-  withCorpus('gh_issue_populated_comment').it('should create the correct spot object', async () => {
-    expect(enhancements(document, window)).toMatchInlineSnapshot(`
-      [
-        {
           "for": "id=:rn: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
           "spot": {
             "domain": "github.com",
@@ -181,12 +142,66 @@ describe('github', () => {
       ]
     `)
   })
-  withCorpus('gh_new_issue').it('should create the correct spot object', async () => {
+  withCorpus('gh_issue_new').it('has enhancement on initial page load', async () => {
     expect(enhancements(document, window)).toMatchInlineSnapshot(`
       [
         {
-          "for": "id=feedback name=feedback className=form-control width-full mb-2",
-          "spot": "NO_SPOT",
+          "for": "id=:r34: name=null className=prc-Textarea-TextArea-13q4j focus-visible overtype-input",
+          "spot": {
+            "domain": "github.com",
+            "slug": "diffplug/gitcasso",
+            "title": "New issue title",
+            "type": "GH_ISSUE_NEW_COMMENT",
+            "unique_key": "github.com:diffplug/gitcasso:new",
+          },
+          "title": "New issue title",
+          "upperDecoration": <React.Fragment>
+            <span>
+              New Issue
+            </span>
+            <span
+              className="font-mono text-muted-foreground text-sm"
+            >
+               
+              diffplug/gitcasso
+               
+            </span>
+          </React.Fragment>,
+        },
+      ]
+    `)
+  })
+  withCorpus('gh_issue').it('should create the correct spot object', async () => {
+    expect(enhancements(document, window)).toMatchInlineSnapshot(`
+      [
+        {
+          "for": "id=:rn: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+          "spot": {
+            "domain": "github.com",
+            "number": 523,
+            "slug": "diffplug/selfie",
+            "title": "[jvm] docs for VCR",
+            "type": "GH_ISSUE_ADD_COMMENT",
+            "unique_key": "github.com:diffplug/selfie:523",
+          },
+          "title": "[jvm] docs for VCR",
+          "upperDecoration": <React.Fragment>
+            <span
+              className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
+            >
+              <IssueOpenedIcon
+                size={16}
+              />
+            </span>
+            #
+            523
+            <a
+              className="truncate hover:underline"
+              href="https://github.com/diffplug/selfie"
+            >
+              diffplug/selfie
+            </a>
+          </React.Fragment>,
         },
       ]
     `)
