@@ -80,32 +80,6 @@ exports[`github ui > gh_issue_new:should render correct UI elements 1`] = `
 ]
 `;
 
-exports[`github ui > gh_new_pr:should render correct UI elements 1`] = `
-[
-  {
-    "for": "id=feedback name=feedback className=form-control width-full mb-2",
-    "title": null,
-    "upperDecoration": null,
-  },
-  {
-    "for": "id=pull_request_body name=pull_request[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit FormControl-textarea CommentBox-input js-size-to-fit size-to-fit js-session-resumable js-saved-reply-shortcut-comment-field CommentBox-input--large overtype-input",
-    "title": "Update README.md",
-    "upperDecoration": <React.Fragment>
-      <span>
-        New PR
-      </span>
-      <span
-        className="font-mono text-muted-foreground text-sm"
-      >
-         
-        diffplug/selfie
-         
-      </span>
-    </React.Fragment>,
-  },
-]
-`;
-
 exports[`github ui > gh_pr:should render correct UI elements 1`] = `
 [
   {
@@ -159,6 +133,32 @@ exports[`github ui > gh_pr_edit:should render correct UI elements 1`] = `
       >
         PR #
         58
+      </span>
+    </React.Fragment>,
+  },
+]
+`;
+
+exports[`github ui > gh_pr_new:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=feedback name=feedback className=form-control width-full mb-2",
+    "title": null,
+    "upperDecoration": null,
+  },
+  {
+    "for": "id=pull_request_body name=pull_request[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit FormControl-textarea CommentBox-input js-size-to-fit size-to-fit js-session-resumable js-saved-reply-shortcut-comment-field CommentBox-input--large overtype-input",
+    "title": "Update README.md",
+    "upperDecoration": <React.Fragment>
+      <span>
+        New PR
+      </span>
+      <span
+        className="font-mono text-muted-foreground text-sm"
+      >
+         
+        diffplug/selfie
+         
       </span>
     </React.Fragment>,
   },

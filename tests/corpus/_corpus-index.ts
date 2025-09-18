@@ -23,10 +23,6 @@ export const CORPUS: Record<string, CorpusEntry> = {
     type: 'html',
     url: 'https://github.com/diffplug/gitcasso/issues/new',
   },
-  gh_new_pr: {
-    type: 'har',
-    url: 'https://github.com/diffplug/selfie/compare/main...cavia-porcellus:selfie:main?expand=1',
-  },
   gh_pr: {
     type: 'har',
     url: 'https://github.com/diffplug/selfie/pull/517',
@@ -35,6 +31,10 @@ export const CORPUS: Record<string, CorpusEntry> = {
     description: 'editing an existing comment on a PR',
     type: 'html',
     url: 'https://github.com/diffplug/gitcasso/pull/58',
+  },
+  gh_pr_new: {
+    type: 'har',
+    url: 'https://github.com/diffplug/selfie/compare/main...cavia-porcellus:selfie:main?expand=1',
   },
   gh_project: {
     description: 'github project board initial load',
