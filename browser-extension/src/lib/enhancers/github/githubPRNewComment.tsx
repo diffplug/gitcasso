@@ -29,12 +29,12 @@ export class GitHubPRNewCommentEnhancer implements CommentEnhancer<GitHubPRNewCo
 
     // /owner/repo/compare/feature/more-enhancers?expand=1
     // or /owner/repo/compare/feat/issue-static-and-dynamic...feature/more-enhancers?expand=1
-    logger.info(`${this.constructor.name} examing url`, location.pathname)
+    logger.debug(`${this.constructor.name} examing url`, window.location.pathname)
 
     const match = location.pathname.match(
       /^\/([^/]+)\/([^/]+)\/compare\/(?:([^.?]+)\.\.\.)?([^?]+)/,
     )
-    logger.info(`${this.constructor.name} found match`, location.pathname, match)
+    logger.debug(`${this.constructor.name} found match`, window.location.pathname, match)
 
     if (!match) return null
     const [, owner, repo, baseBranch, compareBranch] = match
