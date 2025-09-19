@@ -107,21 +107,21 @@ export class TextareaRegistry {
     this.sendEvent = sendEvent
   }
 
-  register<T extends CommentSpot>(textareaInfo: EnhancedTextarea<T>): void {
-    this.textareas.set(textareaInfo.textarea, textareaInfo)
+  register<T extends CommentSpot>(enhanced: EnhancedTextarea<T>): void {
+    this.textareas.set(enhanced.textarea, enhanced)
     this.sendEvent({
-      draft: textareaInfo.textarea.value,
-      spot: textareaInfo.spot,
+      draft: enhanced.textarea.value,
+      spot: enhanced.spot,
       type: 'ENHANCED',
     })
   }
 
   unregisterDueToModification(textarea: HTMLTextAreaElement): void {
-    const textareaInfo = this.textareas.get(textarea)
-    if (textareaInfo) {
+    const enhanced = this.textareas.get(textarea)
+    if (enhanced) {
       this.sendEvent({
-        draft: textareaInfo.textarea.value,
-        spot: textareaInfo.spot,
+        draft: enhanced.textarea.value,
+        spot: enhanced.spot,
         type: 'DESTROYED',
       })
       this.textareas.delete(textarea)
@@ -130,9 +130,5 @@ export class TextareaRegistry {
 
   get(textarea: HTMLTextAreaElement): EnhancedTextarea | undefined {
     return this.textareas.get(textarea)
-  }
-
-  getAllEnhanced(): EnhancedTextarea[] {
-    return Array.from(this.textareas.values())
   }
 }
