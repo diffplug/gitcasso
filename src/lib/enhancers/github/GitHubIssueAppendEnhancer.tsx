@@ -4,26 +4,27 @@ import type React from 'react'
 import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhancer'
 import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
-import { commonGithubOptions } from './ghOptions'
-import { prepareGitHubHighlighter } from './githubHighlighter'
+import { commonGitHubOptions, prepareGitHubHighlighter } from './github-common'
 
-export interface GitHubIssueAddCommentSpot extends CommentSpot {
-  type: 'GH_ISSUE_ADD_COMMENT'
+const GH_ISSUE_APPEND = 'GH_ISSUE_APPEND' as const
+
+export interface GitHubIssueAppendSpot extends CommentSpot {
+  type: typeof GH_ISSUE_APPEND
   title: string
   domain: string
   slug: string // owner/repo
   number: number // issue number, undefined for new issues
 }
 
-export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssueAddCommentSpot> {
+export class GitHubIssueAppendEnhancer implements CommentEnhancer<GitHubIssueAppendSpot> {
   forSpotTypes(): string[] {
-    return ['GH_ISSUE_ADD_COMMENT']
+    return [GH_ISSUE_APPEND]
   }
 
   tryToEnhance(
     textarea: HTMLTextAreaElement,
     location: StrippedLocation,
-  ): GitHubIssueAddCommentSpot | null {
+  ): GitHubIssueAppendSpot | null {
     if (textarea.id === 'feedback') {
       return null
     }
@@ -57,22 +58,22 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
       number,
       slug,
       title,
-      type: 'GH_ISSUE_ADD_COMMENT',
+      type: GH_ISSUE_APPEND,
       unique_key,
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueAddCommentSpot): OverTypeInstance {
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueAppendSpot): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
-      ...commonGithubOptions,
+      ...commonGitHubOptions,
       minHeight: '100px',
       placeholder: 'Use Markdown to format your comment',
     })[0]!
   }
 
-  tableUpperDecoration(spot: GitHubIssueAddCommentSpot): React.ReactNode {
+  tableUpperDecoration(spot: GitHubIssueAppendSpot): React.ReactNode {
     return (
       <>
         <span className='flex h-4 w-4 flex-shrink-0 items-center justify-center'>
@@ -86,7 +87,7 @@ export class GitHubIssueAddCommentEnhancer implements CommentEnhancer<GitHubIssu
     )
   }
 
-  tableTitle(spot: GitHubIssueAddCommentSpot): string {
+  tableTitle(spot: GitHubIssueAppendSpot): string {
     return spot.title
   }
 }

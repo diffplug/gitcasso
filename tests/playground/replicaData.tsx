@@ -1,7 +1,7 @@
 import type { CommentTableRow } from '@/entrypoints/background'
 import type { CommentSpot } from '@/lib/enhancer'
-import type { GitHubIssueAddCommentSpot } from '@/lib/enhancers/github/githubIssueAddComment'
-import type { GitHubPRAddCommentSpot } from '@/lib/enhancers/github/githubPRAddComment'
+import type { GitHubIssueAppendSpot } from '@/lib/enhancers/github/GitHubIssueAppendEnhancer'
+import type { GitHubPrAppendSpot } from '@/lib/enhancers/github/GitHubPrAppendEnhancer'
 
 export interface RedditSpot extends CommentSpot {
   title: string
@@ -42,9 +42,9 @@ export const generateMockDrafts = (): CommentTableRow[] => [
       number: 1234,
       slug: 'microsoft/vscode',
       title: "Fix memory leak in extension host (why is this so hard! It's been months!)",
-      type: 'GH_PR_ADD_COMMENT',
+      type: 'GH_PR_APPEND',
       unique_key: '1',
-    } satisfies GitHubPRAddCommentSpot),
+    } satisfies GitHubPrAppendSpot),
   },
   {
     isOpenTab: false,
@@ -93,9 +93,9 @@ export const generateMockDrafts = (): CommentTableRow[] => [
       number: 5678,
       slug: 'facebook/react',
       title: 'Unexpected behavior with useEffect cleanup',
-      type: 'GH_ISSUE_ADD_COMMENT',
+      type: 'GH_ISSUE_APPEND',
       unique_key: '3',
-    } satisfies GitHubIssueAddCommentSpot),
+    } satisfies GitHubIssueAppendSpot),
   },
   {
     isOpenTab: false,
@@ -129,9 +129,9 @@ export const generateMockDrafts = (): CommentTableRow[] => [
       number: 9012,
       slug: 'vercel/next.js',
       title: 'Update routing documentation',
-      type: 'GH_PR_ADD_COMMENT',
+      type: 'GH_PR_APPEND',
       unique_key: '4',
-    } satisfies GitHubPRAddCommentSpot),
+    } satisfies GitHubPrAppendSpot),
   },
   {
     isOpenTab: true,
@@ -170,8 +170,8 @@ export const generateMockDrafts = (): CommentTableRow[] => [
       number: 3456,
       slug: 'nodejs/node',
       title: 'Add support for ESM in worker threads',
-      type: 'GH_PR_ADD_COMMENT',
+      type: 'GH_PR_APPEND',
       unique_key: '5',
-    } satisfies GitHubPRAddCommentSpot),
+    } satisfies GitHubPrAppendSpot),
   },
 ]

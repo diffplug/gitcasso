@@ -1,6 +1,13 @@
 import hljs from 'highlight.js'
+import type { Options } from 'overtype'
 import OverType from 'overtype'
 import { oncePerRefresh } from '@/lib/once-per-refresh'
+
+export const commonGitHubOptions: Options = {
+  autoResize: true,
+  lineHeight: 'var(--text-body-lineHeight-medium, 1.4285)',
+  padding: 'var(--base-size-16)',
+}
 
 export function prepareGitHubHighlighter() {
   oncePerRefresh('github-highlighter', () => {

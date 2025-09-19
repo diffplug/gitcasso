@@ -2,25 +2,26 @@ import OverType, { type OverTypeInstance } from 'overtype'
 import type { CommentEnhancer, CommentSpot, StrippedLocation } from '../../enhancer'
 import { logger } from '../../logger'
 import { modifyDOM } from '../modifyDOM'
-import { commonGithubOptions } from './ghOptions'
-import { prepareGitHubHighlighter } from './githubHighlighter'
+import { commonGitHubOptions, prepareGitHubHighlighter } from './github-common'
 
-interface GitHubIssueNewCommentSpot extends CommentSpot {
-  type: 'GH_ISSUE_NEW_COMMENT'
+const GH_ISSUE_CREATE = 'GH_ISSUE_CREATE' as const
+
+interface GitHubIssueCreateSpot extends CommentSpot {
+  type: typeof GH_ISSUE_CREATE
   domain: string
   slug: string // owner/repo
   title: string
 }
 
-export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssueNewCommentSpot> {
+export class GitHubIssueCreateEnhancer implements CommentEnhancer<GitHubIssueCreateSpot> {
   forSpotTypes(): string[] {
-    return ['GH_ISSUE_NEW_COMMENT']
+    return [GH_ISSUE_CREATE]
   }
 
   tryToEnhance(
     textarea: HTMLTextAreaElement,
     location: StrippedLocation,
-  ): GitHubIssueNewCommentSpot | null {
+  ): GitHubIssueCreateSpot | null {
     if (textarea.id === 'feedback') {
       return null
     }
@@ -44,22 +45,22 @@ export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssu
       domain: location.host,
       slug,
       title,
-      type: 'GH_ISSUE_NEW_COMMENT',
+      type: GH_ISSUE_CREATE,
       unique_key,
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueNewCommentSpot): OverTypeInstance {
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueCreateSpot): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
-      ...commonGithubOptions,
+      ...commonGitHubOptions,
       minHeight: '400px',
       placeholder: 'Type your description here...',
     })[0]!
   }
 
-  tableUpperDecoration(spot: GitHubIssueNewCommentSpot): React.ReactNode {
+  tableUpperDecoration(spot: GitHubIssueCreateSpot): React.ReactNode {
     const { slug } = spot
     return (
       <>
@@ -69,11 +70,11 @@ export class GitHubIssueNewCommentEnhancer implements CommentEnhancer<GitHubIssu
     )
   }
 
-  tableTitle(spot: GitHubIssueNewCommentSpot): string {
+  tableTitle(spot: GitHubIssueCreateSpot): string {
     return spot.title || 'New Issue'
   }
 
-  buildUrl(spot: GitHubIssueNewCommentSpot): string {
+  buildUrl(spot: GitHubIssueCreateSpot): string {
     return `https://${spot.domain}/${spot.slug}/issue/new`
   }
 }

@@ -3,22 +3,20 @@ import type React from 'react'
 import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhancer'
 import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
-import { commonGithubOptions } from './ghOptions'
-import { prepareGitHubHighlighter } from './githubHighlighter'
+import { commonGitHubOptions, prepareGitHubHighlighter } from './github-common'
 
-export interface GitHubEditCommentSpot extends CommentSpot {
-  type: 'GH_EDIT_COMMENT'
+const GH_EDIT = 'GH_EDIT' as const
+
+export interface GitHubEditSpot extends CommentSpot {
+  type: typeof GH_EDIT
 }
 
-export class GitHubEditCommentEnhancer implements CommentEnhancer<GitHubEditCommentSpot> {
+export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
   forSpotTypes(): string[] {
-    return ['GH_EDIT_COMMENT']
+    return [GH_EDIT]
   }
 
-  tryToEnhance(
-    textarea: HTMLTextAreaElement,
-    location: StrippedLocation,
-  ): GitHubEditCommentSpot | null {
+  tryToEnhance(textarea: HTMLTextAreaElement, location: StrippedLocation): GitHubEditSpot | null {
     if (location.host !== 'github.com') {
       return null
     }
@@ -44,27 +42,27 @@ export class GitHubEditCommentEnhancer implements CommentEnhancer<GitHubEditComm
 
     logger.debug(`${this.constructor.name} enhanced issue/PR body textarea`, unique_key)
     return {
-      type: 'GH_EDIT_COMMENT',
+      type: GH_EDIT,
       unique_key,
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubEditCommentSpot): OverTypeInstance {
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubEditSpot): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
-      ...commonGithubOptions,
+      ...commonGitHubOptions,
       minHeight: '102px',
       padding: 'var(--base-size-8)',
       placeholder: 'Add your comment here...',
     })[0]!
   }
 
-  tableUpperDecoration(_spot: GitHubEditCommentSpot): React.ReactNode {
+  tableUpperDecoration(_spot: GitHubEditSpot): React.ReactNode {
     return <span>N/A</span>
   }
 
-  tableTitle(_spot: GitHubEditCommentSpot): string {
+  tableTitle(_spot: GitHubEditSpot): string {
     return 'N/A'
   }
 }

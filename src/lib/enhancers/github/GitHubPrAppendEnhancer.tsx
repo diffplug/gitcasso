@@ -3,28 +3,29 @@ import type React from 'react'
 import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhancer'
 import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
-import { commonGithubOptions } from './ghOptions'
-import { prepareGitHubHighlighter } from './githubHighlighter'
+import { commonGitHubOptions, prepareGitHubHighlighter } from './github-common'
 
-export interface GitHubPRAddCommentSpot extends CommentSpot {
-  type: 'GH_PR_ADD_COMMENT' // Override to narrow from string to specific union
+const GH_PR_APPEND = 'GH_PR_APPEND' as const
+
+export interface GitHubPrAppendSpot extends CommentSpot {
+  type: typeof GH_PR_APPEND
   title: string
   domain: string
   slug: string // owner/repo
   number: number // issue/PR number, undefined for new issues and PRs
 }
 
-export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCommentSpot> {
+export class GitHubPrAppendEnhancer implements CommentEnhancer<GitHubPrAppendSpot> {
   forSpotTypes(): string[] {
-    return ['GH_PR_ADD_COMMENT']
+    return [GH_PR_APPEND]
   }
 
   tryToEnhance(
-    _textarea: HTMLTextAreaElement,
+    textarea: HTMLTextAreaElement,
     location: StrippedLocation,
-  ): GitHubPRAddCommentSpot | null {
+  ): GitHubPrAppendSpot | null {
     // Only handle github.com domains TODO: identify GitHub Enterprise somehow
-    if (location.host !== 'github.com' || _textarea.id !== 'new_comment_field') {
+    if (location.host !== 'github.com' || textarea.id !== 'new_comment_field') {
       return null
     }
 
@@ -47,23 +48,23 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
       number,
       slug,
       title,
-      type: 'GH_PR_ADD_COMMENT',
+      type: GH_PR_APPEND,
       unique_key,
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubPRAddCommentSpot): OverTypeInstance {
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubPrAppendSpot): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
-      ...commonGithubOptions,
+      ...commonGitHubOptions,
       minHeight: '102px',
       padding: 'var(--base-size-8)',
       placeholder: 'Add your comment here...',
     })[0]!
   }
 
-  tableUpperDecoration(spot: GitHubPRAddCommentSpot): React.ReactNode {
+  tableUpperDecoration(spot: GitHubPrAppendSpot): React.ReactNode {
     const { slug, number } = spot
     return (
       <>
@@ -73,7 +74,7 @@ export class GitHubPRAddCommentEnhancer implements CommentEnhancer<GitHubPRAddCo
     )
   }
 
-  tableTitle(spot: GitHubPRAddCommentSpot): string {
+  tableTitle(spot: GitHubPrAppendSpot): string {
     return spot.title
   }
 }
