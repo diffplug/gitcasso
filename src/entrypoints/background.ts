@@ -2,7 +2,6 @@ import type { CommentEvent, CommentSpot } from '@/lib/enhancer'
 import { type DraftStats, statsFor } from '@/lib/enhancers/draft-stats'
 import { logger } from '@/lib/logger'
 import type { GetTableRowsResponse, ToBackgroundMessage } from '@/lib/messages'
-
 import {
   CLOSE_MESSAGE_PORT,
   isContentToBackgroundMessage,
@@ -113,6 +112,18 @@ export default defineBackground(() => {
       return handleCommentEvent(message, sender)
     } else {
       return handlePopupMessage(message, sender, sendResponse)
+    }
+  })
+
+  browser.tabs.onRemoved.addListener((tabId: number) => {
+    logger.debug('tab removed', { tabId })
+
+    // Clean up openSpots entries for the closed tab
+    for (const [key, value] of openSpots) {
+      if (tabId === value.tab.tabId) {
+        openSpots.delete(key)
+        logger.debug('closed tab which contained spot', value.spot.unique_key)
+      }
     }
   })
 })
