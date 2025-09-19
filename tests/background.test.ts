@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { handleCommentEvent, openSpots } from '../src/entrypoints/background'
 import type { CommentEvent, CommentSpot } from '../src/lib/enhancer'
 
@@ -14,7 +14,12 @@ const mockSpot = {
 }
 describe('Background Event Handler', () => {
   beforeEach(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2025-09-19T10:00:00.000Z'))
     openSpots.clear()
+  })
+  afterEach(() => {
+    vi.useRealTimers()
   })
   describe('ENHANCED Event', () => {
     it('should create new comment state when textarea is enhanced', () => {
@@ -30,7 +35,12 @@ describe('Background Event Handler', () => {
           [
             "test-key",
             {
-              "drafts": [],
+              "drafts": [
+                [
+                  1758276000000,
+                  "",
+                ],
+              ],
               "sentOn": null,
               "spot": {
                 "type": "TEST_SPOT",
