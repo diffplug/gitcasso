@@ -1,5 +1,6 @@
 import type { CommentEvent, CommentSpot } from '@/lib/enhancer'
 import { type DraftStats, statsFor } from '@/lib/enhancers/draft-stats'
+import { logger } from '@/lib/logger'
 import type { GetTableRowsResponse, ToBackgroundMessage } from '@/lib/messages'
 import {
   CLOSE_MESSAGE_PORT,
@@ -36,6 +37,7 @@ export interface CommentTableRow {
 export const openSpots = new Map<string, CommentStorage>()
 
 export function handleCommentEvent(message: CommentEvent, sender: any): boolean {
+  logger.debug('received comment event', message)
   if (
     (message.type === 'ENHANCED' || message.type === 'DESTROYED') &&
     sender.tab?.id &&
@@ -43,7 +45,7 @@ export function handleCommentEvent(message: CommentEvent, sender: any): boolean 
   ) {
     if (message.type === 'ENHANCED') {
       const commentState: CommentStorage = {
-        drafts: [],
+        drafts: [[Date.now(), message.draft || '']],
         sentOn: null,
         spot: message.spot,
         tab: {
@@ -68,6 +70,7 @@ export function handlePopupMessage(
   sendResponse: (response: any) => void,
 ): typeof CLOSE_MESSAGE_PORT | typeof KEEP_PORT_OPEN {
   if (isGetOpenSpotsMessage(message)) {
+    logger.debug('received open spots message', message)
     const rows: CommentTableRow[] = Array.from(openSpots.values()).map((storage) => {
       const [time, content] = storage.drafts.at(-1)!
       const row: CommentTableRow = {
@@ -87,6 +90,7 @@ export function handlePopupMessage(
     sendResponse(response)
     return KEEP_PORT_OPEN
   } else if (isSwitchToTabMessage(message)) {
+    logger.debug('received switch tab message', message)
     browser.windows
       .update(message.windowId, { focused: true })
       .then(() => {
@@ -97,6 +101,7 @@ export function handlePopupMessage(
       })
     return CLOSE_MESSAGE_PORT
   } else {
+    logger.error('received unknown message', message)
     throw new Error(`Unhandled popup message type: ${message?.type || 'unknown'}`)
   }
 }
@@ -107,6 +112,18 @@ export default defineBackground(() => {
       return handleCommentEvent(message, sender)
     } else {
       return handlePopupMessage(message, sender, sendResponse)
+    }
+  })
+
+  browser.tabs.onRemoved.addListener((tabId: number) => {
+    logger.debug('tab removed', { tabId })
+
+    // Clean up openSpots entries for the closed tab
+    for (const [key, value] of openSpots) {
+      if (tabId === value.tab.tabId) {
+        openSpots.delete(key)
+        logger.debug('closed tab which contained spot', value.spot.unique_key)
+      }
     }
   })
 })

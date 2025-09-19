@@ -91,7 +91,7 @@ export class EnhancerRegistry {
     }, 400)
     setTimeout(() => {
       overtype.updatePreview()
-    }, 8000)
+    }, 800)
   }
 
   getEnhancerCount(): number {
