@@ -1,6 +1,12 @@
 import type { OverTypeInstance } from 'overtype'
 import OverType from 'overtype'
-import type { CommentEnhancer, CommentEvent, CommentSpot, StrippedLocation } from './enhancer'
+import type {
+  CommentEnhancer,
+  CommentEvent,
+  CommentEventType,
+  CommentSpot,
+  StrippedLocation,
+} from './enhancer'
 import { CommentEnhancerMissing } from './enhancers/CommentEnhancerMissing'
 import { GitHubEditEnhancer } from './enhancers/github/GitHubEditEnhancer'
 import { GitHubIssueAppendEnhancer } from './enhancers/github/GitHubIssueAppendEnhancer'
@@ -101,29 +107,32 @@ export class EnhancerRegistry {
 
 export class TextareaRegistry {
   private textareas = new Map<HTMLTextAreaElement, EnhancedTextarea>()
-  private sendEvent: (event: CommentEvent) => void = () => {}
+  private eventSender: (event: CommentEvent) => void = () => {}
 
   setCommentEventSender(sendEvent: (event: CommentEvent) => void): void {
-    this.sendEvent = sendEvent
+    this.eventSender = sendEvent
+  }
+
+  private sendEvent(eventType: CommentEventType, enhanced: EnhancedTextarea): void {
+    this.eventSender({
+      draft: enhanced.textarea.value,
+      spot: enhanced.spot,
+      type: eventType,
+    })
   }
 
   register<T extends CommentSpot>(enhanced: EnhancedTextarea<T>): void {
     this.textareas.set(enhanced.textarea, enhanced)
-    this.sendEvent({
-      draft: enhanced.textarea.value,
-      spot: enhanced.spot,
-      type: 'ENHANCED',
+    enhanced.textarea.addEventListener('blur', () => {
+      this.sendEvent('LOST_FOCUS', enhanced)
     })
+    this.sendEvent('ENHANCED', enhanced)
   }
 
   unregisterDueToModification(textarea: HTMLTextAreaElement): void {
     const enhanced = this.textareas.get(textarea)
     if (enhanced) {
-      this.sendEvent({
-        draft: enhanced.textarea.value,
-        spot: enhanced.spot,
-        type: 'DESTROYED',
-      })
+      this.sendEvent('DESTROYED', enhanced)
       this.textareas.delete(textarea)
     }
   }
