@@ -101,33 +101,29 @@ export class EnhancerRegistry {
 
 export class TextareaRegistry {
   private textareas = new Map<HTMLTextAreaElement, EnhancedTextarea>()
-  private onEnhanced?: (textareaInfo: EnhancedTextarea) => void
-  private onDestroyed?: (textareaInfo: EnhancedTextarea) => void
+  private sendEvent: (event: CommentEvent) => void = () => {}
 
   setCommentEventSender(sendEvent: (event: CommentEvent) => void): void {
-    this.onEnhanced = (textareaInfo) =>
-      sendEvent({
-        draft: textareaInfo.textarea.value,
-        spot: textareaInfo.spot,
-        type: 'ENHANCED',
-      })
-    this.onDestroyed = (textareaInfo) =>
-      sendEvent({
-        draft: textareaInfo.textarea.value,
-        spot: textareaInfo.spot,
-        type: 'DESTROYED',
-      })
+    this.sendEvent = sendEvent
   }
 
   register<T extends CommentSpot>(textareaInfo: EnhancedTextarea<T>): void {
     this.textareas.set(textareaInfo.textarea, textareaInfo)
-    this.onEnhanced?.(textareaInfo)
+    this.sendEvent({
+      draft: textareaInfo.textarea.value,
+      spot: textareaInfo.spot,
+      type: 'ENHANCED',
+    })
   }
 
   unregisterDueToModification(textarea: HTMLTextAreaElement): void {
     const textareaInfo = this.textareas.get(textarea)
     if (textareaInfo) {
-      this.onDestroyed?.(textareaInfo)
+      this.sendEvent({
+        draft: textareaInfo.textarea.value,
+        spot: textareaInfo.spot,
+        type: 'DESTROYED',
+      })
       this.textareas.delete(textarea)
     }
   }
