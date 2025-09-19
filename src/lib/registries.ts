@@ -101,12 +101,12 @@ export class EnhancerRegistry {
 
 export class TextareaRegistry {
   private textareas = new Map<HTMLTextAreaElement, EnhancedTextarea>()
-  private onEnhanced?: (spot: CommentSpot) => void
-  private onDestroyed?: (spot: CommentSpot) => void
+  private onEnhanced?: (textareaInfo: EnhancedTextarea) => void
+  private onDestroyed?: (textareaInfo: EnhancedTextarea) => void
 
   setEventHandlers(
-    onEnhanced: (spot: CommentSpot) => void,
-    onDestroyed: (spot: CommentSpot) => void,
+    onEnhanced: (textareaInfo: EnhancedTextarea) => void,
+    onDestroyed: (textareaInfo: EnhancedTextarea) => void,
   ): void {
     this.onEnhanced = onEnhanced
     this.onDestroyed = onDestroyed
@@ -114,13 +114,13 @@ export class TextareaRegistry {
 
   register<T extends CommentSpot>(textareaInfo: EnhancedTextarea<T>): void {
     this.textareas.set(textareaInfo.textarea, textareaInfo)
-    this.onEnhanced?.(textareaInfo.spot)
+    this.onEnhanced?.(textareaInfo)
   }
 
   unregisterDueToModification(textarea: HTMLTextAreaElement): void {
     const textareaInfo = this.textareas.get(textarea)
     if (textareaInfo) {
-      this.onDestroyed?.(textareaInfo.spot)
+      this.onDestroyed?.(textareaInfo)
       this.textareas.delete(textarea)
     }
   }

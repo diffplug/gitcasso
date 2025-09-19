@@ -20,19 +20,26 @@ function detectLocation(): StrippedLocation {
   return result
 }
 
-function sendEventToBackground(type: 'ENHANCED' | 'DESTROYED', spot: CommentSpot): void {
+function sendEventToBackground(
+  type: 'ENHANCED' | 'DESTROYED',
+  spot: CommentSpot,
+  draft: string,
+): void {
   const message: CommentEvent = {
+    draft,
     spot,
     type,
   }
   browser.runtime.sendMessage(message).catch((error) => {
-    logger.debug('Failed to send event to background:', error)
+    logger.error('Failed to send event to background:', error)
   })
 }
 
 enhancedTextareas.setEventHandlers(
-  (spot) => sendEventToBackground('ENHANCED', spot),
-  (spot) => sendEventToBackground('DESTROYED', spot),
+  (textareaInfo) =>
+    sendEventToBackground('ENHANCED', textareaInfo.spot, textareaInfo.textarea.value),
+  (textareaInfo) =>
+    sendEventToBackground('DESTROYED', textareaInfo.spot, textareaInfo.textarea.value),
 )
 
 export default defineContentScript({
