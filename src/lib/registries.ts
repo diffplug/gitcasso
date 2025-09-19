@@ -1,6 +1,6 @@
 import type { OverTypeInstance } from 'overtype'
 import OverType from 'overtype'
-import type { CommentEnhancer, CommentSpot, StrippedLocation } from './enhancer'
+import type { CommentEnhancer, CommentEvent, CommentSpot, StrippedLocation } from './enhancer'
 import { CommentEnhancerMissing } from './enhancers/CommentEnhancerMissing'
 import { GitHubEditEnhancer } from './enhancers/github/GitHubEditEnhancer'
 import { GitHubIssueAppendEnhancer } from './enhancers/github/GitHubIssueAppendEnhancer'
@@ -104,12 +104,19 @@ export class TextareaRegistry {
   private onEnhanced?: (textareaInfo: EnhancedTextarea) => void
   private onDestroyed?: (textareaInfo: EnhancedTextarea) => void
 
-  setEventHandlers(
-    onEnhanced: (textareaInfo: EnhancedTextarea) => void,
-    onDestroyed: (textareaInfo: EnhancedTextarea) => void,
-  ): void {
-    this.onEnhanced = onEnhanced
-    this.onDestroyed = onDestroyed
+  setCommentEventSender(sendEvent: (event: CommentEvent) => void): void {
+    this.onEnhanced = (textareaInfo) =>
+      sendEvent({
+        draft: textareaInfo.textarea.value,
+        spot: textareaInfo.spot,
+        type: 'ENHANCED',
+      })
+    this.onDestroyed = (textareaInfo) =>
+      sendEvent({
+        draft: textareaInfo.textarea.value,
+        spot: textareaInfo.spot,
+        type: 'DESTROYED',
+      })
   }
 
   register<T extends CommentSpot>(textareaInfo: EnhancedTextarea<T>): void {

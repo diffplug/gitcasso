@@ -1,4 +1,4 @@
-import type { CommentEvent, CommentSpot, StrippedLocation } from '../lib/enhancer'
+import type { CommentEvent, StrippedLocation } from '../lib/enhancer'
 import { logger } from '../lib/logger'
 import { EnhancerRegistry, TextareaRegistry } from '../lib/registries'
 
@@ -20,27 +20,13 @@ function detectLocation(): StrippedLocation {
   return result
 }
 
-function sendEventToBackground(
-  type: 'ENHANCED' | 'DESTROYED',
-  spot: CommentSpot,
-  draft: string,
-): void {
-  const message: CommentEvent = {
-    draft,
-    spot,
-    type,
-  }
+function sendEventToBackground(message: CommentEvent): void {
   browser.runtime.sendMessage(message).catch((error) => {
     logger.error('Failed to send event to background:', error)
   })
 }
 
-enhancedTextareas.setEventHandlers(
-  (textareaInfo) =>
-    sendEventToBackground('ENHANCED', textareaInfo.spot, textareaInfo.textarea.value),
-  (textareaInfo) =>
-    sendEventToBackground('DESTROYED', textareaInfo.spot, textareaInfo.textarea.value),
-)
+enhancedTextareas.setCommentEventSender(sendEventToBackground)
 
 export default defineContentScript({
   main() {
