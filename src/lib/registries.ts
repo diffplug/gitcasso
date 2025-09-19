@@ -140,4 +140,10 @@ export class TextareaRegistry {
   get(textarea: HTMLTextAreaElement): EnhancedTextarea | undefined {
     return this.textareas.get(textarea)
   }
+
+  tabLostFocus(): void {
+    for (const enhanced of this.textareas.values()) {
+      this.sendEvent('LOST_FOCUS', enhanced)
+    }
+  }
 }

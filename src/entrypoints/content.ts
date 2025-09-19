@@ -40,6 +40,14 @@ export default defineContentScript({
       childList: true,
       subtree: true,
     })
+
+    // Listen for tab visibility changes to capture draft content when switching tabs
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        enhancedTextareas.tabLostFocus()
+      }
+    })
+
     logger.debug('Extension loaded with', enhancers.getEnhancerCount(), 'handlers')
   },
   matches: ['<all_urls>'],
