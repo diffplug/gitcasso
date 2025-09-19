@@ -16,23 +16,22 @@ This extension ***must never transmit any data outside the browser***.
 
 ## Developer quickstart
 
-### Hotreload development
-
 - `pnpm install`
-- `pnpm dev`
-- open [`chrome://extensions`](chrome://extensions)
-- toggle **Developer mode** (top-right)
-- click "Load unpacked" (far left)
-  - `.output/chrome-mv3-dev`
-  - if you can't find `.output`, it's probably hidden, `command+shift+period` will show it
-- click the puzzle icon next to the url bar, then pin the Gitcasso icon
-
-### Testing and quality
-- `pnpm biome` - runs `biome check` (lint & formatting)
-- `pnpm biome:fix` - fixes most of what `biome check` finds
-- `pnpm typecheck` - typechecking
-- `pnpm test` - vitest
-- `pnpm test -u` - updates all snapshots
+- to update the popup:
+  - `pnpm playground` gives react hotreload environment
+- to improve comment detection and metadata extraction:
+  - `pnpm corpus` gives dev environment for gitcasso's behavior on specific pages and page states
+- to open a PR:
+  - `pnpm precommit` fixes formatting and lints (biome), runs typechecking and tests
+  - no worries if some intermediate commits don't pass
+- to run the entire end-to-end browser extension with [WXT](https://wxt.dev/) hotreload:
+  - `pnpm dev`
+  - open [`chrome://extensions`](chrome://extensions)
+  - toggle **Developer mode** (top-right)
+  - click "Load unpacked" (far left)
+    - `.output/chrome-mv3-dev`
+    - if you can't find `.output`, it's probably hidden, `command+shift+period` will show it
+  - click the puzzle icon next to the url bar, then pin the Gitcasso icon
 
 ## How it works
 
@@ -76,46 +75,52 @@ Those `Spot` values get bundled up with the `HTMLTextAreaElement` itself into an
 
 When the `textarea` gets removed from the page, the `TextareaRegistry` is notified so that the `CommentSpot` can be marked as abandoned or submitted as appropriate.
 
-## Testing
-
-- `pnpm playground` gives you a test environment where you can tinker with the popup with various test data, supports hot reload
-- `pnpm corpus` gives you recordings of various web pages which you can see with and without enhancement by the browser extension
-
-### Test Corpus
+## Test corpus
 
 We maintain a corpus of test pages in two formats for testing the browser extension:
+- `html` created by the [SingleFile](https://chromewebstore.google.com/detail/singlefile/mpiodijhokgodhhofbcjdecpffjipkle) browser extension
+  - allows snapshotting the DOM at an intermediate step in the user's experience
+  - most interactivity will be broken
+- `har` recording of all network traffic of an initial pageload
+  - limited to initial page load, but most interactivity will work
 
-#### HAR Corpus (Automated)
+This corpus of pages is used to power snapshot tests and interactive dev environments.
 
-- For testing initial page loads and network requests
-- HAR recordings live in `tests/corpus/*.har`, complete recordings of the network requests of a single page load
-- You can add or change URLs in `tests/corpus/_corpus-index.ts`
-- **Recording new HAR files:**
-  - `npx playwright codegen https://github.com/login --save-storage=playwright/.auth/gh.json` will store new auth tokens
-    - login manually, then close the browser
-    - ***these cookies are very sensitive! we only run this script using a test account that has no permissions or memberships to anything, recommend you do the same!***
-  - `pnpm corpus:har:record` records new HAR files using those auth tokens (it needs args, run it with no args for docs)
-    - DO NOT COMMIT AND PUSH NEW OR CHANGED HAR files!
-    - we try to sanitize these (see `corpus-har-record.ts` for details) but there may be important PII in them
-    - if you need new HAR files for something, let us know and we will generate them ourselves using a dummy account
-    - IF YOUR PR CHANGES OR ADDS HAR FILES WE WILL CLOSE IT. Ask for HAR files and we'll be happy to generate clean ones you can test against.
+### Viewing corpus
 
-#### HTML Corpus (Manual)
+- **DISABLE GITCASSO IN YOUR BROWSER!!**
+- Run `pnpm corpus` to start the test server at http://localhost:3001
+- Select any corpus file to view in two modes:
+  - **Clean**: Original unaltered page
+  - **Gitcasso**: Page with extension injected for testing
+    - it shows all data Gitcasso is extracting (if any)
+    - click the rebuild button to test changes to the Gitcasso source
+
+### Unit testing against corpus
+
+- `gh-detection.test.ts` does snapshot testing on the data which gitcasso extracts
+- `gh-ui.test.ts` does snapshot testing on the popup table decoration for all data extracted from the snapshots
+
+### Adding HTML to the corpus (Manual)
 
 - For testing post-interaction states (e.g., expanded textareas, modal dialogs, dynamic content)
-- HTML snapshots live in `tests/corpus/*.html`, manually captured using SingleFile browser extension
-- All assets are inlined in a single HTML file by SingleFile
-- **Creating new HTML corpus files:**
+- HTML snapshots live in `tests/corpus/*.html`, manually captured using SingleFile
+- how-to
   1. Navigate to the desired page state (click buttons, expand textareas, etc.)
   2. Use SingleFile browser extension to save the complete page
-  3. Save the `.html` file to `tests/corpus/html/` with a descriptive name
+  3. Save the `.html` file to `tests/corpus/` with a descriptive slug
   4. Add an entry to `tests/corpus/_corpus-index.ts` with `type: 'html'` and a description of the captured state
   5. Feel free to contribute these if you want, but be mindful that they will be part of our immutable git history
 
-#### Viewing Corpus Files
+### Adding HAR to the corpus (Automated)
 
-- Run `pnpm corpus` to start the test server at http://localhost:3001
-- Select any corpus file to view in two modes:
-  - **Clean**: Original page without extension
-  - **Gitcasso**: Page with extension injected for testing
-- Both HAR and HTML corpus types are supported
+- For testing initial page loads and network requests
+- HAR recordings live in `tests/corpus/*.har`, complete recordings of the network requests of a single page load
+- how-to
+  - update `tests/corpus/_corpus-index.ts` with a descriptive slug and URL which you want to add
+  - `npx playwright codegen https://github.com/login --save-storage=playwright/.auth/gh.json` will store new auth tokens
+    - login manually, then close the browser
+    - ***these cookies are very sensitive! we only run this script using a test account that has no permissions or memberships to anything, recommend you do the same!***
+  - `pnpm corpus:har:record {slug}` records new HAR files using those auth tokens (it needs args, run it with no args for docs)
+    - **CONTRIBUTING THESE IS RISKY!**
+    - we try to sanitize these (see `corpus-har-record.ts` for details) but there may be important PII in them, which is why we only use a test account

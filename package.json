@@ -55,7 +55,7 @@
     "build": "pnpm run build:overtype && wxt build",
     "build:dev": "pnpm run build:overtype && wxt build --mode development",
     "build:firefox": "wxt build -b firefox",
-    "precommit": "npm run biome:fix && npm run typecheck && npm run test",
+    "precommit": "pnpm biome:fix && pnpm typecheck && pnpm test",
     "typecheck": "tsc --noEmit",
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",

@@ -1,4 +1,4 @@
-import type { CommentEvent, CommentSpot, StrippedLocation } from '../lib/enhancer'
+import type { CommentEvent, StrippedLocation } from '../lib/enhancer'
 import { logger } from '../lib/logger'
 import { EnhancerRegistry, TextareaRegistry } from '../lib/registries'
 
@@ -20,20 +20,13 @@ function detectLocation(): StrippedLocation {
   return result
 }
 
-function sendEventToBackground(type: 'ENHANCED' | 'DESTROYED', spot: CommentSpot): void {
-  const message: CommentEvent = {
-    spot,
-    type,
-  }
+function sendEventToBackground(message: CommentEvent): void {
   browser.runtime.sendMessage(message).catch((error) => {
-    logger.debug('Failed to send event to background:', error)
+    logger.error('Failed to send event to background:', error)
   })
 }
 
-enhancedTextareas.setEventHandlers(
-  (spot) => sendEventToBackground('ENHANCED', spot),
-  (spot) => sendEventToBackground('DESTROYED', spot),
-)
+enhancedTextareas.setCommentEventSender(sendEventToBackground)
 
 export default defineContentScript({
   main() {
@@ -47,6 +40,14 @@ export default defineContentScript({
       childList: true,
       subtree: true,
     })
+
+    // Listen for tab visibility changes to capture draft content when switching tabs
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        enhancedTextareas.tabLostFocus()
+      }
+    })
+
     logger.debug('Extension loaded with', enhancers.getEnhancerCount(), 'handlers')
   },
   matches: ['<all_urls>'],

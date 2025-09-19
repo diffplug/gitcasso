@@ -1,4 +1,4 @@
-import type { CommentEvent, CommentSpot } from '@/lib/enhancer'
+import type { CommentEvent, CommentEventType, CommentSpot } from '@/lib/enhancer'
 import { type DraftStats, statsFor } from '@/lib/enhancers/draft-stats'
 import { logger } from '@/lib/logger'
 import type { GetTableRowsResponse, ToBackgroundMessage } from '@/lib/messages'
@@ -38,12 +38,14 @@ export const openSpots = new Map<string, CommentStorage>()
 
 export function handleCommentEvent(message: CommentEvent, sender: any): boolean {
   logger.debug('received comment event', message)
-  if (
-    (message.type === 'ENHANCED' || message.type === 'DESTROYED') &&
-    sender.tab?.id &&
-    sender.tab?.windowId
-  ) {
-    if (message.type === 'ENHANCED') {
+
+  // Only process events with valid tab information
+  if (!sender.tab?.id || !sender.tab?.windowId) {
+    return CLOSE_MESSAGE_PORT
+  }
+
+  switch (message.type) {
+    case 'ENHANCED': {
       const commentState: CommentStorage = {
         drafts: [[Date.now(), message.draft || '']],
         sentOn: null,
@@ -55,12 +57,27 @@ export function handleCommentEvent(message: CommentEvent, sender: any): boolean 
         trashedOn: null,
       }
       openSpots.set(message.spot.unique_key, commentState)
-    } else if (message.type === 'DESTROYED') {
+      break
+    }
+    case 'DESTROYED': {
       openSpots.delete(message.spot.unique_key)
-    } else {
-      throw new Error(`Unhandled comment event type: ${message.type}`)
+      break
+    }
+    case 'LOST_FOCUS': {
+      // Update the draft content for existing comment state
+      const existingState = openSpots.get(message.spot.unique_key)
+      if (existingState) {
+        existingState.drafts.push([Date.now(), message.draft || ''])
+      }
+      break
+    }
+    default: {
+      // TypeScript exhaustiveness check - will error if we miss any CommentEventType
+      const exhaustiveCheck: never = message.type satisfies CommentEventType
+      throw new Error(`Unhandled comment event type: ${exhaustiveCheck}`)
     }
   }
+
   return CLOSE_MESSAGE_PORT
 }
 

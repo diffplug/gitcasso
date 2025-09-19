@@ -1,6 +1,12 @@
 import type { OverTypeInstance } from 'overtype'
 import OverType from 'overtype'
-import type { CommentEnhancer, CommentSpot, StrippedLocation } from './enhancer'
+import type {
+  CommentEnhancer,
+  CommentEvent,
+  CommentEventType,
+  CommentSpot,
+  StrippedLocation,
+} from './enhancer'
 import { CommentEnhancerMissing } from './enhancers/CommentEnhancerMissing'
 import { GitHubEditEnhancer } from './enhancers/github/GitHubEditEnhancer'
 import { GitHubIssueAppendEnhancer } from './enhancers/github/GitHubIssueAppendEnhancer'
@@ -101,26 +107,32 @@ export class EnhancerRegistry {
 
 export class TextareaRegistry {
   private textareas = new Map<HTMLTextAreaElement, EnhancedTextarea>()
-  private onEnhanced?: (spot: CommentSpot) => void
-  private onDestroyed?: (spot: CommentSpot) => void
+  private eventSender: (event: CommentEvent) => void = () => {}
 
-  setEventHandlers(
-    onEnhanced: (spot: CommentSpot) => void,
-    onDestroyed: (spot: CommentSpot) => void,
-  ): void {
-    this.onEnhanced = onEnhanced
-    this.onDestroyed = onDestroyed
+  setCommentEventSender(sendEvent: (event: CommentEvent) => void): void {
+    this.eventSender = sendEvent
   }
 
-  register<T extends CommentSpot>(textareaInfo: EnhancedTextarea<T>): void {
-    this.textareas.set(textareaInfo.textarea, textareaInfo)
-    this.onEnhanced?.(textareaInfo.spot)
+  private sendEvent(eventType: CommentEventType, enhanced: EnhancedTextarea): void {
+    this.eventSender({
+      draft: enhanced.textarea.value,
+      spot: enhanced.spot,
+      type: eventType,
+    })
+  }
+
+  register<T extends CommentSpot>(enhanced: EnhancedTextarea<T>): void {
+    this.textareas.set(enhanced.textarea, enhanced)
+    enhanced.textarea.addEventListener('blur', () => {
+      this.sendEvent('LOST_FOCUS', enhanced)
+    })
+    this.sendEvent('ENHANCED', enhanced)
   }
 
   unregisterDueToModification(textarea: HTMLTextAreaElement): void {
-    const textareaInfo = this.textareas.get(textarea)
-    if (textareaInfo) {
-      this.onDestroyed?.(textareaInfo.spot)
+    const enhanced = this.textareas.get(textarea)
+    if (enhanced) {
+      this.sendEvent('DESTROYED', enhanced)
       this.textareas.delete(textarea)
     }
   }
@@ -129,7 +141,9 @@ export class TextareaRegistry {
     return this.textareas.get(textarea)
   }
 
-  getAllEnhanced(): EnhancedTextarea[] {
-    return Array.from(this.textareas.values())
+  tabLostFocus(): void {
+    for (const enhanced of this.textareas.values()) {
+      this.sendEvent('LOST_FOCUS', enhanced)
+    }
   }
 }
