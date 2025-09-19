@@ -1,5 +1,5 @@
 import type { CommentTableRow } from '@/entrypoints/background'
-import type { CommentEvent } from './enhancer'
+import type { CommentEvent, CommentEventType } from './enhancer'
 
 // Message handler response types
 export const CLOSE_MESSAGE_PORT = false as const // No response will be sent
@@ -29,12 +29,24 @@ export interface GetTableRowsResponse {
   rows: CommentTableRow[]
 }
 
+// Exhaustive list of valid comment event types - TypeScript will error if CommentEventType changes
+const COMMENT_EVENT_TYPES = {
+  DESTROYED: true,
+  ENHANCED: true,
+  LOST_FOCUS: true,
+} as const satisfies Record<CommentEventType, true>
+
+// Helper function to check if a string is a valid CommentEventType
+function isValidCommentEventType(type: string): type is CommentEventType {
+  return type in COMMENT_EVENT_TYPES
+}
+
 // Type guard functions
 export function isContentToBackgroundMessage(message: any): message is ContentToBackgroundMessage {
   return (
     message &&
     typeof message.type === 'string' &&
-    (message.type === 'ENHANCED' || message.type === 'DESTROYED') &&
+    isValidCommentEventType(message.type) &&
     message.spot
   )
 }
