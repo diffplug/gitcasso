@@ -39,7 +39,7 @@ export class EnhancerRegistry {
         blockquote: 'rgb(89, 99, 110)',
         code: '#59636e',
         codeBg: '#f6f8fa',
-        cursor: '#f95738',
+        cursor: '#000000',
         em: 'rgb(126, 123, 255)',
         h1: headingColor,
         h2: headingColor,
