@@ -11,13 +11,7 @@ import {
   TextSelect,
   Trash2,
 } from 'lucide-react'
-import type { JSX } from 'react'
 import { tv } from 'tailwind-variants'
-import { CodePreview } from './BadgePreviews/CodePreview'
-import { ImagePreview } from './BadgePreviews/ImagePreview'
-import { LinkPreview } from './BadgePreviews/LinkPreview'
-import { TextPreview } from './BadgePreviews/TextPreview'
-import { TimePreview } from './BadgePreviews/TimePreview'
 
 // Map types to their icons - source of truth for badge types
 export const typeIcons = {
@@ -69,11 +63,3 @@ export const badgeCVA = tv({
     type: typeColors,
   },
 })
-
-export const typeTooltips = {
-  code: CodePreview,
-  image: ImagePreview,
-  link: LinkPreview,
-  text: TextPreview,
-  time: TimePreview,
-} satisfies Partial<Record<keyof typeof typeIcons, () => JSX.Element | undefined>>

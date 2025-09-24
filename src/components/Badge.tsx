@@ -1,7 +1,21 @@
-import { useState } from 'react'
+import { type JSX, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import type { VariantProps } from 'tailwind-variants'
-import { badgeCVA, typeColors, typeIcons, typeTooltips } from '@/components/design'
+import { badgeCVA, typeColors, typeIcons } from '@/components/design'
+
+import { CodePreview } from './BadgePreviews/CodePreview'
+import { ImagePreview } from './BadgePreviews/ImagePreview'
+import { LinkPreview } from './BadgePreviews/LinkPreview'
+import { TextPreview } from './BadgePreviews/TextPreview'
+import { TimePreview } from './BadgePreviews/TimePreview'
+
+const typeTooltips = {
+  code: CodePreview,
+  image: ImagePreview,
+  link: LinkPreview,
+  text: TextPreview,
+  time: TimePreview,
+} satisfies Partial<Record<keyof typeof typeIcons, () => JSX.Element>>
 
 export type BadgeProps = VariantProps<typeof badgeCVA> & {
   type: keyof typeof typeIcons
