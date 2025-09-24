@@ -33,7 +33,7 @@ const Badge = ({ text, type }: BadgeProps) => {
       {TooltipComponent && (
         <div
           className={
-            'absolute top-full w-max rounded bg-gray-800 px-2 py-1 text-white text-xs shadow-lg z-10'
+            'absolute top-full z-10 w-max rounded bg-gray-800 px-2 py-1 text-white text-xs shadow-lg'
           }
         >
           <TooltipComponent />
