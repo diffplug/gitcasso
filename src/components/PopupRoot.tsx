@@ -1,13 +1,15 @@
 import { Eye, EyeOff, Search, Settings, Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
-import Badge from '@/components/Badge'
 import { badgeCVA } from '@/components/design'
 import MultiSegment from '@/components/MultiSegment'
-import { allLeafValues, timeAgo } from '@/components/misc'
+import { allLeafValues } from '@/components/misc'
 import type { CommentTableRow } from '@/entrypoints/background'
 import type { FilterState } from '@/entrypoints/popup/popup'
-import { EnhancerRegistry } from '@/lib/registries'
+import { BulkActionsBar } from './BulkActionsBar'
+import { CommentRow } from './CommentRow'
+import { EmptyState } from './EmptyState'
+import { NoMatchesState } from './NoMatchesState'
 
 const initialFilter: FilterState = {
   searchQuery: '',
@@ -20,7 +22,7 @@ interface PopupRootProps {
 }
 
 export function PopupRoot({ drafts }: PopupRootProps) {
-  const [selectedIds, setSelectedIds] = useState(new Set())
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [filters, setFilters] = useState<FilterState>(initialFilter)
 
   const updateFilter = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
@@ -100,31 +102,22 @@ export function PopupRoot({ drafts }: PopupRootProps) {
       return <NoMatchesState onClearFilters={clearFilters} />
     }
 
-    return filteredDrafts.map((row) =>
-      commentRow(row, selectedIds, toggleSelection, handleOpen, handleTrash),
-    )
+    return filteredDrafts.map((row) => (
+      <CommentRow
+        key={row.spot.unique_key}
+        row={row}
+        selectedIds={selectedIds}
+        toggleSelection={toggleSelection}
+        handleOpen={handleOpen}
+        handleTrash={handleTrash}
+      />
+    ))
   }
 
   return (
     <div className='bg-white'>
       {/* Bulk actions bar - floating popup */}
-      {selectedIds.size > 0 && (
-        <div className='-translate-x-1/2 fixed bottom-6 left-1/2 z-50 flex transform items-center gap-3 rounded-md border border-blue-200 bg-blue-50 p-3 shadow-lg'>
-          <span className='font-medium text-sm'>{selectedIds.size} selected</span>
-          <button type='button' className='text-blue-600 text-sm hover:underline'>
-            Copy
-          </button>
-          <button type='button' className='text-blue-600 text-sm hover:underline'>
-            Preview
-          </button>
-          <button type='button' className='text-blue-600 text-sm hover:underline'>
-            Discard
-          </button>
-          <button type='button' className='text-blue-600 text-sm hover:underline'>
-            Open
-          </button>
-        </div>
-      )}
+      {selectedIds.size > 0 && <BulkActionsBar selectedIds={selectedIds} />}
 
       {/* Table */}
       <div className='overflow-x-auto'>
@@ -221,90 +214,3 @@ export function PopupRoot({ drafts }: PopupRootProps) {
     </div>
   )
 }
-
-const enhancers = new EnhancerRegistry()
-function commentRow(
-  row: CommentTableRow,
-  selectedIds: Set<unknown>,
-  toggleSelection: (id: string) => void,
-  _handleOpen: (url: string) => void,
-  _handleTrash: (row: CommentTableRow) => void,
-) {
-  const enhancer = enhancers.enhancerFor(row.spot)
-  return (
-    <tr key={row.spot.unique_key} className='hover:bg-gray-50'>
-      <td className='px-3 py-3'>
-        <input
-          type='checkbox'
-          checked={selectedIds.has(row.spot.unique_key)}
-          onChange={() => toggleSelection(row.spot.unique_key)}
-          className='rounded'
-        />
-      </td>
-      <td className='px-3 py-3'>
-        <div className='space-y-1'>
-          {/* Context line */}
-          <div className='flex items-center justify-between gap-1.5 text-gray-600 text-xs'>
-            <div className='flex min-w-0 flex-1 items-center gap-1.5'>
-              {enhancer.tableUpperDecoration(row.spot)}
-            </div>
-            <div className='flex flex-shrink-0 items-center gap-1'>
-              {row.latestDraft.stats.links.length > 0 && (
-                <Badge type='link' text={row.latestDraft.stats.links.length} />
-              )}
-              {row.latestDraft.stats.images.length > 0 && (
-                <Badge type='image' text={row.latestDraft.stats.images.length} />
-              )}
-              {row.latestDraft.stats.codeBlocks.length > 0 && (
-                <Badge type='code' text={row.latestDraft.stats.codeBlocks.length} />
-              )}
-              <Badge type='text' text={row.latestDraft.stats.charCount} />
-              <Badge type='time' text={timeAgo(row.latestDraft.time)} />
-              {row.isOpenTab && <Badge type='open' />}
-            </div>
-          </div>
-
-          {/* Title */}
-          <div className='flex items-center gap-1'>
-            <a href='TODO' className='truncate font-medium text-sm hover:underline'>
-              {enhancer.tableTitle(row.spot)}
-            </a>
-            <Badge type={row.isSent ? 'sent' : 'unsent'} />
-            {row.isTrashed && <Badge type='trashed' />}
-          </div>
-          {/* Draft */}
-          <div className='truncate text-sm'>
-            <span className='text-gray-500'>{row.latestDraft.content.substring(0, 100)}…</span>
-          </div>
-        </div>
-      </td>
-    </tr>
-  )
-}
-
-const EmptyState = () => (
-  <div className='mx-auto max-w-4xl py-16 text-center'>
-    <h2 className='mb-4 font-semibold text-2xl'>No comments open</h2>
-    <p className='mb-6 text-gray-600'>
-      Your drafts will appear here when you start typing in comment boxes across GitHub and Reddit.
-    </p>
-    <div className='space-y-2'>
-      <button type='button' className='text-blue-600 hover:underline'>
-        How it works
-      </button>
-      <span className='mx-2'>·</span>
-      <button type='button' className='text-blue-600 hover:underline'>
-        Check permissions
-      </button>
-    </div>
-  </div>
-)
-
-const NoMatchesState = ({ onClearFilters }: { onClearFilters: () => void }) => (
-  <div className='py-16 text-center'>
-    <p className='mb-4 text-gray-600'>No matches found</p>
-    <button type='button' onClick={onClearFilters} className='text-blue-600 hover:underline'>
-      Clear filters
-    </button>
-  </div>
-)

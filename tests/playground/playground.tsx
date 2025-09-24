@@ -14,6 +14,7 @@ type Mode = keyof typeof MODES
 
 const App = () => {
   const [activeComponent, setActiveComponent] = useState<Mode>('claude')
+  const ModeComponent = MODES[activeComponent].component
 
   return (
     <div className='min-h-screen bg-slate-100'>
@@ -43,10 +44,7 @@ const App = () => {
         </div>
 
         <div className='popup-frame'>
-          {(() => {
-            const Component = MODES[activeComponent].component
-            return <Component />
-          })()}
+          <ModeComponent />
         </div>
       </div>
     </div>
