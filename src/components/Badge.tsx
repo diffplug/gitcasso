@@ -3,13 +3,13 @@ import { twMerge } from 'tailwind-merge'
 import type { VariantProps } from 'tailwind-variants'
 import { badgeCVA, typeColors, typeIcons } from '@/components/design'
 
-import { CodePreview } from './BadgePreviews/CodePreview'
-import { ImagePreview } from './BadgePreviews/ImagePreview'
-import { LinkPreview } from './BadgePreviews/LinkPreview'
-import { TextPreview } from './BadgePreviews/TextPreview'
-import { TimePreview } from './BadgePreviews/TimePreview'
+import { CodePreview } from './BadgePopups/CodePreview'
+import { ImagePreview } from './BadgePopups/ImagePreview'
+import { LinkPreview } from './BadgePopups/LinkPreview'
+import { TextPreview } from './BadgePopups/TextPreview'
+import { TimePreview } from './BadgePopups/TimePreview'
 
-const typeTooltips = {
+const typePopups = {
   code: CodePreview,
   image: ImagePreview,
   link: LinkPreview,
@@ -25,8 +25,8 @@ export type BadgeProps = VariantProps<typeof badgeCVA> & {
 const Badge = ({ text, type }: BadgeProps) => {
   const Icon = typeIcons[type]
   const [showTooltip, setShowTooltip] = useState(false)
-  const TooltipComponent =
-    showTooltip && type in typeTooltips && typeTooltips[type as keyof typeof typeTooltips]
+  const PopupComponent =
+    showTooltip && type in typePopups && typePopups[type as keyof typeof typePopups]
   return (
     <button
       type='button'
@@ -37,7 +37,7 @@ const Badge = ({ text, type }: BadgeProps) => {
       <span
         className={twMerge(
           badgeCVA({
-            clickable: type in typeTooltips,
+            clickable: type in typePopups,
             type,
           }),
         )}
@@ -45,14 +45,14 @@ const Badge = ({ text, type }: BadgeProps) => {
         {type === 'blank' || <Icon className='h-3 w-3' />}
         {text || type}
       </span>
-      {TooltipComponent && (
+      {PopupComponent && (
         <div
           className={twMerge(
             'absolute top-full z-10 w-30 rounded border px-2 py-1 text-left text-xs shadow-lg',
             typeColors[type],
           )}
         >
-          <TooltipComponent />
+          <PopupComponent />
         </div>
       )}
     </button>
