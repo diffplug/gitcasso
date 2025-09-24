@@ -21,8 +21,7 @@ function githubHighlighter(code: string, language?: string) {
       const result = hljs.highlight(code, { language })
       return result.value
     } else {
-      const result = hljs.highlightAuto(code)
-      return result.value
+      return code
     }
   } catch (error) {
     console.warn('highlight.js highlighting failed:', error)
