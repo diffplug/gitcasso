@@ -46,7 +46,7 @@ export class EnhancerRegistry {
         h3: headingColor,
         hr: '#5a7a9b',
         link: 'rgb(9, 105, 218)',
-        selection: 'rgba(244, 211, 94, 0.4)',
+        selection: 'rgba(0, 123, 255, 0.3)',
         strong: 'rgb(45, 1, 142)',
         syntaxMarker: textColor,
         text: textColor,
