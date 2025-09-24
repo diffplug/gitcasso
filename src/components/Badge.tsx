@@ -6,6 +6,7 @@ import { badgeCVA, typeColors, typeIcons } from '@/components/design'
 import { CodePreview } from './BadgePopups/CodePreview'
 import { ImagePreview } from './BadgePopups/ImagePreview'
 import { LinkPreview } from './BadgePopups/LinkPreview'
+import { OpenTabPopup } from './BadgePopups/OpenTabPopup'
 import { TextPreview } from './BadgePopups/TextPreview'
 import { TimePreview } from './BadgePopups/TimePreview'
 
@@ -13,6 +14,7 @@ const typePopups = {
   code: CodePreview,
   image: ImagePreview,
   link: LinkPreview,
+  open: OpenTabPopup,
   text: TextPreview,
   time: TimePreview,
 } satisfies Partial<Record<keyof typeof typeIcons, () => JSX.Element>>
