@@ -11,7 +11,13 @@ import {
   TextSelect,
   Trash2,
 } from 'lucide-react'
+import type { JSX } from 'react'
 import { tv } from 'tailwind-variants'
+import { CodePreview } from './BadgePreviews/CodePreview'
+import { ImagePreview } from './BadgePreviews/ImagePreview'
+import { LinkPreview } from './BadgePreviews/LinkPreview'
+import { TextPreview } from './BadgePreviews/TextPreview'
+import { TimePreview } from './BadgePreviews/TimePreview'
 
 // TV configuration for stat badges
 export const badgeCVA = tv({
@@ -60,3 +66,11 @@ export const typeIcons = {
   trashed: Trash2,
   unsent: MessageSquareDashed,
 } as const
+
+export const typeTooltips: { [key: string]: () => JSX.Element | undefined } = {
+  code: CodePreview,
+  image: ImagePreview,
+  link: LinkPreview,
+  text: TextPreview,
+  time: TimePreview,
+}
