@@ -19,7 +19,23 @@ import { LinkPreview } from './BadgePreviews/LinkPreview'
 import { TextPreview } from './BadgePreviews/TextPreview'
 import { TimePreview } from './BadgePreviews/TimePreview'
 
-// Type colors definition - single source of truth
+// Map types to their icons - source of truth for badge types
+export const typeIcons = {
+  blank: Code,
+  code: Code,
+  hideTrashed: EyeOff,
+  image: Image,
+  link: Link,
+  open: Monitor,
+  sent: MailCheck,
+  settings: Settings,
+  text: TextSelect,
+  time: Clock,
+  trashed: Trash2,
+  unsent: MessageSquareDashed,
+} as const
+
+// Type colors definition - must be exhaustive with typeIcons
 export const typeColors = {
   blank: 'bg-transparent text-gray-700',
   code: 'bg-pink-50 text-pink-700',
@@ -33,7 +49,7 @@ export const typeColors = {
   time: 'bg-gray-50 text-gray-700',
   trashed: 'bg-gray-50 text-yellow-700',
   unsent: 'bg-amber-100 text-amber-700',
-} as const
+} as const satisfies Record<keyof typeof typeIcons, string>
 
 // TV configuration for stat badges
 export const badgeCVA = tv({
@@ -54,26 +70,10 @@ export const badgeCVA = tv({
   },
 })
 
-// Map types to their icons
-export const typeIcons = {
-  blank: Code,
-  code: Code,
-  hideTrashed: EyeOff,
-  image: Image,
-  link: Link,
-  open: Monitor,
-  sent: MailCheck,
-  settings: Settings,
-  text: TextSelect,
-  time: Clock,
-  trashed: Trash2,
-  unsent: MessageSquareDashed,
-} as const
-
-export const typeTooltips: { [key: string]: () => JSX.Element | undefined } = {
+export const typeTooltips = {
   code: CodePreview,
   image: ImagePreview,
   link: LinkPreview,
   text: TextPreview,
   time: TimePreview,
-}
+} satisfies Partial<Record<keyof typeof typeIcons, () => JSX.Element | undefined>>
