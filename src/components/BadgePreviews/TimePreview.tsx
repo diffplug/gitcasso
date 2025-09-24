@@ -1,3 +1,11 @@
 export function TimePreview() {
-  return <a href='https://github.com/diffplug/gitcasso/issues/83'>TODO #83</a>
+  return (
+    <>
+      TODO{' '}
+      <a href='https://github.com/diffplug/gitcasso/issues/83' className='underline'>
+        #83
+      </a>
+      : show the revision history of the comment
+    </>
+  )
 }

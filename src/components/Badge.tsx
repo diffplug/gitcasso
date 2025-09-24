@@ -48,7 +48,7 @@ const Badge = ({ text, type }: BadgeProps) => {
       {TooltipComponent && (
         <div
           className={twMerge(
-            'absolute top-full z-10 w-50 rounded border px-2 py-1 text-xs shadow-lg',
+            'absolute top-full z-10 w-30 rounded border px-2 py-1 text-left text-xs shadow-lg',
             typeColors[type],
           )}
         >
