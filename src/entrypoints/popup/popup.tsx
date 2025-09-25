@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { PopupRoot } from '@/components/PopupRoot'
 import type { CommentTableRow } from '@/entrypoints/background'
 import { logger } from '@/lib/logger'
-import type { GetOpenSpotsMessage, GetTableRowsResponse } from '@/lib/messages'
+import type { GetOpenSpotsMessage, GetTableRowsResponse, OpenOrFocusMessage } from '@/lib/messages'
 
 export interface FilterState {
   sentFilter: 'both' | 'sent' | 'unsent'
@@ -24,20 +24,14 @@ async function getOpenSpots(): Promise<CommentTableRow[]> {
   }
 }
 
-// function switchToTab(tabId: number, windowId: number): void {
-//   const message: SwitchToTabMessage = {
-//     tabId,
-//     type: 'SWITCH_TO_TAB',
-//     windowId,
-//   }
-//   browser.runtime.sendMessage(message)
-//   window.close()
-// }
-
-// const handleSpotClick = (spot: CommentTableRow) => {
-//   console.log('TODO: switchToTab')
-//   //switchToTab(spot.tab.tabId, spot.tab.windowId)
-// }
+export function openOrFocusComment(uniqueKey: string): void {
+  const message: OpenOrFocusMessage = {
+    type: 'OPEN_OR_FOCUS_COMMENT',
+    uniqueKey,
+  }
+  browser.runtime.sendMessage(message)
+  window.close()
+}
 
 const app = document.getElementById('app')
 if (app) {

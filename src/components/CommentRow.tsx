@@ -1,6 +1,7 @@
 import Badge from '@/components/Badge'
 import { timeAgo } from '@/components/misc'
 import type { CommentTableRow } from '@/entrypoints/background'
+import { openOrFocusComment } from '@/entrypoints/popup/popup'
 import { EnhancerRegistry } from '@/lib/registries'
 
 const enhancers = new EnhancerRegistry()
@@ -15,6 +16,10 @@ type CommentRowProps = {
 
 export function CommentRow({ row, selectedIds, toggleSelection }: CommentRowProps) {
   const enhancer = enhancers.enhancerFor(row.spot)
+
+  const handleTitleClick = () => {
+    openOrFocusComment(row.spot.unique_key)
+  }
   return (
     <tr className='hover:bg-gray-50'>
       <td className='px-3 py-3'>
@@ -34,25 +39,29 @@ export function CommentRow({ row, selectedIds, toggleSelection }: CommentRowProp
             </div>
             <div className='flex flex-shrink-0 items-center gap-1'>
               {row.latestDraft.stats.links.length > 0 && (
-                <Badge type='link' text={row.latestDraft.stats.links.length} />
+                <Badge type='link' text={row.latestDraft.stats.links.length} data={row} />
               )}
               {row.latestDraft.stats.images.length > 0 && (
-                <Badge type='image' text={row.latestDraft.stats.images.length} />
+                <Badge type='image' text={row.latestDraft.stats.images.length} data={row} />
               )}
               {row.latestDraft.stats.codeBlocks.length > 0 && (
-                <Badge type='code' text={row.latestDraft.stats.codeBlocks.length} />
+                <Badge type='code' text={row.latestDraft.stats.codeBlocks.length} data={row} />
               )}
-              <Badge type='text' text={row.latestDraft.stats.charCount} />
-              <Badge type='time' text={timeAgo(row.latestDraft.time)} />
-              {row.isOpenTab && <Badge type='open' />}
+              <Badge type='text' text={row.latestDraft.stats.charCount} data={row} />
+              <Badge type='time' text={timeAgo(row.latestDraft.time)} data={row} />
+              {row.isOpenTab && <Badge type='open' data={row} />}
             </div>
           </div>
 
           {/* Title */}
           <div className='flex items-center gap-1'>
-            <a href='TODO' className='truncate font-medium text-sm hover:underline'>
+            <button
+              type='button'
+              onClick={handleTitleClick}
+              className='cursor-pointer truncate text-left font-medium text-sm hover:underline'
+            >
               {enhancer.tableTitle(row.spot)}
-            </a>
+            </button>
             <Badge type={row.isSent ? 'sent' : 'unsent'} />
             {row.isTrashed && <Badge type='trashed' />}
           </div>

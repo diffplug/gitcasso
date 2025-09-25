@@ -13,13 +13,12 @@ export interface GetOpenSpotsMessage {
   type: 'GET_OPEN_SPOTS'
 }
 
-export interface SwitchToTabMessage {
-  type: 'SWITCH_TO_TAB'
-  tabId: number
-  windowId: number
+export interface OpenOrFocusMessage {
+  type: 'OPEN_OR_FOCUS_COMMENT'
+  uniqueKey: string
 }
 
-export type PopupToBackgroundMessage = GetOpenSpotsMessage | SwitchToTabMessage
+export type PopupToBackgroundMessage = GetOpenSpotsMessage | OpenOrFocusMessage
 
 // All messages sent to background
 export type ToBackgroundMessage = ContentToBackgroundMessage | PopupToBackgroundMessage
@@ -63,12 +62,9 @@ export function isGetOpenSpotsMessage(message: any): message is GetOpenSpotsMess
   return message && message.type === 'GET_OPEN_SPOTS'
 }
 
-export function isSwitchToTabMessage(message: any): message is SwitchToTabMessage {
+export function isOpenOrFocusMessage(message: any): message is OpenOrFocusMessage {
   return (
-    message &&
-    message.type === 'SWITCH_TO_TAB' &&
-    typeof message.tabId === 'number' &&
-    typeof message.windowId === 'number'
+    message && message.type === 'OPEN_OR_FOCUS_COMMENT' && typeof message.uniqueKey === 'string'
   )
 }
 

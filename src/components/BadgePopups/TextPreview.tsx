@@ -1,4 +1,6 @@
-export function TextPreview() {
+import type { BadgePopupProps } from '@/components/Badge'
+
+export function TextPreview({ row: _row }: BadgePopupProps) {
   return (
     <>
       TODO{' '}
