@@ -17,14 +17,15 @@ const typePopups = {
   open: OpenTabPopup,
   text: TextPreview,
   time: TimePreview,
-} satisfies Partial<Record<keyof typeof typeIcons, () => JSX.Element>>
+} satisfies Partial<Record<keyof typeof typeIcons, (props?: any) => JSX.Element>>
 
 export type BadgeProps = VariantProps<typeof badgeCVA> & {
   type: keyof typeof typeIcons
   text?: number | string
+  data?: any
 }
 
-const Badge = ({ text, type }: BadgeProps) => {
+const Badge = ({ text, type, data }: BadgeProps) => {
   const Icon = typeIcons[type]
   const [showTooltip, setShowTooltip] = useState(false)
   const PopupComponent =
@@ -54,7 +55,7 @@ const Badge = ({ text, type }: BadgeProps) => {
             typeColors[type],
           )}
         >
-          <PopupComponent />
+          <PopupComponent {...data} />
         </div>
       )}
     </button>

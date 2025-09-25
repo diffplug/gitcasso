@@ -108,14 +108,19 @@ export function handlePopupMessage(
     return KEEP_PORT_OPEN
   } else if (isSwitchToTabMessage(message)) {
     logger.debug('received switch tab message', message)
-    browser.windows
-      .update(message.windowId, { focused: true })
-      .then(() => {
-        return browser.tabs.update(message.tabId, { active: true })
-      })
-      .catch((error) => {
-        console.error('Error switching to tab:', error)
-      })
+    const storage = openSpots.get(message.uniqueKey)
+    if (storage) {
+      browser.windows
+        .update(storage.tab.windowId, { focused: true })
+        .then(() => {
+          return browser.tabs.update(storage.tab.tabId, { active: true })
+        })
+        .catch((error) => {
+          console.error('Error switching to tab:', error)
+        })
+    } else {
+      console.error('No tab found for unique key:', message.uniqueKey)
+    }
     return CLOSE_MESSAGE_PORT
   } else {
     logger.error('received unknown message', message)

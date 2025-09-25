@@ -44,7 +44,7 @@ export function CommentRow({ row, selectedIds, toggleSelection }: CommentRowProp
               )}
               <Badge type='text' text={row.latestDraft.stats.charCount} />
               <Badge type='time' text={timeAgo(row.latestDraft.time)} />
-              {row.isOpenTab && <Badge type='open' />}
+              {row.isOpenTab && <Badge type='open' data={{ uniqueKey: row.spot.unique_key }} />}
             </div>
           </div>
 

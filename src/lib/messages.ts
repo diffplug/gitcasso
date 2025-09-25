@@ -15,8 +15,7 @@ export interface GetOpenSpotsMessage {
 
 export interface SwitchToTabMessage {
   type: 'SWITCH_TO_TAB'
-  tabId: number
-  windowId: number
+  uniqueKey: string
 }
 
 export type PopupToBackgroundMessage = GetOpenSpotsMessage | SwitchToTabMessage
@@ -64,12 +63,7 @@ export function isGetOpenSpotsMessage(message: any): message is GetOpenSpotsMess
 }
 
 export function isSwitchToTabMessage(message: any): message is SwitchToTabMessage {
-  return (
-    message &&
-    message.type === 'SWITCH_TO_TAB' &&
-    typeof message.tabId === 'number' &&
-    typeof message.windowId === 'number'
-  )
+  return message && message.type === 'SWITCH_TO_TAB' && typeof message.uniqueKey === 'string'
 }
 
 // Message handler types
