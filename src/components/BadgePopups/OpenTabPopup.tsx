@@ -1,12 +1,9 @@
+import type { BadgePopupProps } from '@/components/Badge'
 import { openOrFocusComment } from '@/entrypoints/popup/popup'
 
-interface OpenTabPopupProps {
-  uniqueKey: string
-}
-
-export function OpenTabPopup({ uniqueKey }: OpenTabPopupProps) {
+export function OpenTabPopup({ row }: BadgePopupProps) {
   const handleClick = () => {
-    openOrFocusComment(uniqueKey)
+    openOrFocusComment(row.spot.unique_key)
   }
 
   return (

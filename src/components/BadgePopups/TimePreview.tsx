@@ -1,4 +1,6 @@
-export function TimePreview() {
+import type { BadgePopupProps } from '@/components/Badge'
+
+export function TimePreview({ row: _row }: BadgePopupProps) {
   return (
     <>
       TODO{' '}

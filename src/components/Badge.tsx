@@ -2,6 +2,7 @@ import { type JSX, useState } from 'react'
 import { twMerge } from 'tailwind-merge'
 import type { VariantProps } from 'tailwind-variants'
 import { badgeCVA, typeColors, typeIcons } from '@/components/design'
+import type { CommentTableRow } from '@/entrypoints/background'
 
 import { CodePreview } from './BadgePopups/CodePreview'
 import { ImagePreview } from './BadgePopups/ImagePreview'
@@ -17,12 +18,16 @@ const typePopups = {
   open: OpenTabPopup,
   text: TextPreview,
   time: TimePreview,
-} satisfies Partial<Record<keyof typeof typeIcons, (props?: any) => JSX.Element>>
+} satisfies Partial<Record<keyof typeof typeIcons, (props: BadgePopupProps) => JSX.Element>>
+
+export interface BadgePopupProps {
+  row: CommentTableRow
+}
 
 export type BadgeProps = VariantProps<typeof badgeCVA> & {
   type: keyof typeof typeIcons
   text?: number | string
-  data?: any
+  data?: CommentTableRow
 }
 
 const Badge = ({ text, type, data }: BadgeProps) => {
@@ -48,14 +53,14 @@ const Badge = ({ text, type, data }: BadgeProps) => {
         {type === 'blank' || <Icon className='h-3 w-3' />}
         {text || type}
       </span>
-      {PopupComponent && (
+      {PopupComponent && data && (
         <div
           className={twMerge(
             'absolute top-full z-10 w-30 rounded border px-2 py-1 text-left text-xs shadow-lg',
             typeColors[type],
           )}
         >
-          <PopupComponent {...data} />
+          <PopupComponent row={data} />
         </div>
       )}
     </button>
