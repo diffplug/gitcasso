@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { PopupRoot } from '@/components/PopupRoot'
 import type { CommentTableRow } from '@/entrypoints/background'
 import { logger } from '@/lib/logger'
-import type { GetOpenSpotsMessage, GetTableRowsResponse, SwitchToTabMessage } from '@/lib/messages'
+import type { GetOpenSpotsMessage, GetTableRowsResponse, OpenOrFocusMessage } from '@/lib/messages'
 
 export interface FilterState {
   sentFilter: 'both' | 'sent' | 'unsent'
@@ -24,9 +24,9 @@ async function getOpenSpots(): Promise<CommentTableRow[]> {
   }
 }
 
-export function switchToTab(uniqueKey: string): void {
-  const message: SwitchToTabMessage = {
-    type: 'SWITCH_TO_TAB',
+export function openOrFocusComment(uniqueKey: string): void {
+  const message: OpenOrFocusMessage = {
+    type: 'OPEN_OR_FOCUS_COMMENT',
     uniqueKey,
   }
   browser.runtime.sendMessage(message)

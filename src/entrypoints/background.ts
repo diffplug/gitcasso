@@ -6,7 +6,7 @@ import {
   CLOSE_MESSAGE_PORT,
   isContentToBackgroundMessage,
   isGetOpenSpotsMessage,
-  isSwitchToTabMessage,
+  isOpenOrFocusMessage,
   KEEP_PORT_OPEN,
 } from '@/lib/messages'
 
@@ -106,7 +106,7 @@ export function handlePopupMessage(
     const response: GetTableRowsResponse = { rows }
     sendResponse(response)
     return KEEP_PORT_OPEN
-  } else if (isSwitchToTabMessage(message)) {
+  } else if (isOpenOrFocusMessage(message)) {
     logger.debug('received switch tab message', message)
     const storage = openSpots.get(message.uniqueKey)
     if (storage) {
@@ -119,7 +119,7 @@ export function handlePopupMessage(
           console.error('Error switching to tab:', error)
         })
     } else {
-      console.error('No tab found for unique key:', message.uniqueKey)
+      console.error('TODO: implement opening a previous comment', message.uniqueKey)
     }
     return CLOSE_MESSAGE_PORT
   } else {

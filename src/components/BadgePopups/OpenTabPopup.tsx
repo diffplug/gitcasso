@@ -1,4 +1,4 @@
-import { switchToTab } from '@/entrypoints/popup/popup'
+import { openOrFocusComment } from '@/entrypoints/popup/popup'
 
 interface OpenTabPopupProps {
   uniqueKey: string
@@ -6,7 +6,7 @@ interface OpenTabPopupProps {
 
 export function OpenTabPopup({ uniqueKey }: OpenTabPopupProps) {
   const handleClick = () => {
-    switchToTab(uniqueKey)
+    openOrFocusComment(uniqueKey)
   }
 
   return (

@@ -1,7 +1,7 @@
 import Badge from '@/components/Badge'
 import { timeAgo } from '@/components/misc'
 import type { CommentTableRow } from '@/entrypoints/background'
-import { switchToTab } from '@/entrypoints/popup/popup'
+import { openOrFocusComment } from '@/entrypoints/popup/popup'
 import { EnhancerRegistry } from '@/lib/registries'
 
 const enhancers = new EnhancerRegistry()
@@ -18,7 +18,7 @@ export function CommentRow({ row, selectedIds, toggleSelection }: CommentRowProp
   const enhancer = enhancers.enhancerFor(row.spot)
 
   const handleTitleClick = () => {
-    switchToTab(row.spot.unique_key)
+    openOrFocusComment(row.spot.unique_key)
   }
   return (
     <tr className='hover:bg-gray-50'>
