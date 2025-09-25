@@ -3,6 +3,7 @@ import OverType, { type OverTypeInstance } from 'overtype'
 import type React from 'react'
 import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhancer'
 import { logger } from '@/lib/logger'
+import { oncePerRefresh } from '@/lib/once-per-refresh'
 import { modifyDOM } from '../modifyDOM'
 import { commonGitHubOptions, prepareGitHubHighlighter } from './github-common'
 
@@ -63,14 +64,39 @@ export class GitHubIssueAppendEnhancer implements CommentEnhancer<GitHubIssueApp
     }
   }
 
+  instance: OverTypeInstance | undefined
+
   enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueAppendSpot): OverTypeInstance {
+    this.registerSubmitHandler(textArea, _spot)
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
-    return new OverType(overtypeContainer, {
+    if (this.instance) {
+      OverType.instances.delete(overtypeContainer)
+      ;(overtypeContainer as any).overTypeInstance = undefined
+    }
+    const thing = new OverType(overtypeContainer, {
       ...commonGitHubOptions,
       minHeight: '100px',
       placeholder: 'Use Markdown to format your comment',
     })[0]!
+    this.instance = thing
+    return thing
+  }
+
+  private registerSubmitHandler(textArea: HTMLTextAreaElement, _spot: GitHubIssueAppendSpot) {
+    oncePerRefresh('gh-issue-append-events', () => {
+      document.addEventListener('click', (e) => {
+        const target = e.target
+        if (!target) return false
+        const btn = (e.target as HTMLElement).closest('button')
+        if (!btn) return false
+        if (btn.textContent.trim() === 'Comment' || btn.matches('button[data-variant="primary"]')) {
+          this.enhance(textArea, _spot)
+          return true
+        }
+        return false
+      })
+    })
   }
 
   tableUpperDecoration(spot: GitHubIssueAppendSpot): React.ReactNode {
