@@ -52,7 +52,7 @@ If you see `"title": "TODO_TITLE"` or similar hardcoded `TODO` values in the JSO
 
 ## Extraction code style
 
-- Don't hedge your bets and write lots of fallback code or strings of `?.`. Have a specific piece of data you want to get, use non-null `!` assertions where necessary to be clear about getting.
+- Don't hedge your bets and write lots of fallback code or strings of `?.`. Have a specific piece of data you want to get, use non-null ! assertions where necessary to be clear about getting.
 - If a field is empty, represent it with an empty string. Don't use placeholders when extracting data.
 - The pages we are scraping are going to change over time, and it's easier to fix broken ones if we know exactly what used to work. If the code has lots of branching paths, it's harder to tell what it was doing.
 
