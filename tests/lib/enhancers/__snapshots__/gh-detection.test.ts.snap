@@ -21,6 +21,7 @@ exports[`github detection > gh_issue_edit:should detect correct spots 1`] = `
   {
     "for": "id=:rc3: name=null className=prc-Textarea-TextArea-13q4j focus-visible overtype-input",
     "spot": {
+      "isIssue": true,
       "type": "GH_EDIT",
       "unique_key": "github.com:diffplug/gitcasso:56:edit-body",
     },
@@ -80,6 +81,7 @@ exports[`github detection > gh_pr_edit:should detect correct spots 1`] = `
   {
     "for": "id=issue-3429313834-body name=pull_request[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit js-size-to-fit size-to-fit js-session-resumable CommentBox-input FormControl-textarea js-saved-reply-shortcut-comment-field focus-visible overtype-input",
     "spot": {
+      "isIssue": false,
       "type": "GH_EDIT",
       "unique_key": "github.com:diffplug/gitcasso:58:edit-body",
     },

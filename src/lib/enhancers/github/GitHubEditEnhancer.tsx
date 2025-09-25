@@ -8,6 +8,7 @@ import { commonGitHubOptions, prepareGitHubHighlighter } from './github-common'
 const GH_EDIT = 'GH_EDIT' as const
 
 export interface GitHubEditSpot extends CommentSpot {
+  isIssue: boolean
   type: typeof GH_EDIT
 }
 
@@ -22,9 +23,10 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
     }
 
     // Only enhance textareas that are for editing issue/PR body
-    const isIssueBodyEdit = textarea.closest('.react-issue-body')
+    const isIssueBodyEdit = textarea.closest('.react-issue-body') // this works for root and appended comments
     const isPRBodyEdit =
-      textarea.id?.match(/^issue-\d+-body$/) || textarea.name === 'pull_request[body]'
+      textarea.name === 'pull_request[body]' || textarea.name === 'issue_comment[body]'
+    //                   ^this is the root pr comment              ^this is the other pr comments (surprising!)
 
     if (!isIssueBodyEdit && !isPRBodyEdit) {
       return null
@@ -42,20 +44,23 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
 
     logger.debug(`${this.constructor.name} enhanced issue/PR body textarea`, unique_key)
     return {
+      isIssue: !!isIssueBodyEdit,
       type: GH_EDIT,
       unique_key,
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubEditSpot): OverTypeInstance {
+  enhance(textArea: HTMLTextAreaElement, spot: GitHubEditSpot): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
-    return new OverType(overtypeContainer, {
+    const overtype = new OverType(overtypeContainer, {
       ...commonGitHubOptions,
-      minHeight: '102px',
-      padding: 'var(--base-size-8)',
-      placeholder: 'Add your comment here...',
+      padding: spot.isIssue ? 'var(--base-size-16)' : 'var(--base-size-8)',
     })[0]!
+    if (!spot.isIssue) {
+      // TODO: autoheight not working
+    }
+    return overtype
   }
 
   tableUpperDecoration(_spot: GitHubEditSpot): React.ReactNode {
