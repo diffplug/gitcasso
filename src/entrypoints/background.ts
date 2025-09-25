@@ -150,18 +150,18 @@ export default defineBackground(() => {
     }
   })
 
-  browser.tabs.onRemoved.addListener((tabId: number) => {
-    logger.debug('tab removed', { tabId })
+  browser.tabs.onRemoved.addListener((closedTabId: number) => {
+    logger.debug('tab removed', { tabId: closedTabId })
 
     // Clean up openSpots entries for the closed tab
     for (const [key, tabs] of openTabs) {
-      const remainingTabs = tabs.filter((tab) => tab.tabId !== tabId)
+      const remainingTabs = tabs.filter((tab) => tab.tabId !== closedTabId)
       if (remainingTabs.length === 0) {
         logger.debug('closed every tab which contained spot', key)
         openSpots.delete(key)
         openTabs.delete(key)
       } else if (remainingTabs.length < tabs.length) {
-        logger.debug('closed tab which contained spot, other tabs still open', key)
+        logger.debug('closed tab which contained a spot, other tabs still open', key)
         openTabs.set(key, remainingTabs)
       }
     }
