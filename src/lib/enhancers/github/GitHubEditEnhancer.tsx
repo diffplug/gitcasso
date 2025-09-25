@@ -28,7 +28,16 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
       textarea.name === 'pull_request[body]' || textarea.name === 'issue_comment[body]'
     //                   ^this is the root pr comment              ^this is the other pr comments (surprising!)
 
-    if (!isIssueBodyEdit && !isPRBodyEdit) {
+    // Also detect comment editing textareas (have "Update comment" button)
+    // Look for "Update comment" button in the same container as the textarea
+    const container =
+      textarea.closest('[class*="markdown"], [class*="comment"], .js-comment-edit-form') ||
+      textarea.closest('form') ||
+      textarea.parentElement?.parentElement?.parentElement
+    const buttons = container ? Array.from(container.querySelectorAll('button')) : []
+    const isCommentEdit = buttons.some((btn) => btn.textContent?.includes('Update comment'))
+
+    if (!isIssueBodyEdit && !isPRBodyEdit && !isCommentEdit) {
       return null
     }
 

@@ -70,24 +70,10 @@ exports[`github ui > gh_issue_edit_multiple:should render correct UI elements 1`
   },
   {
     "for": "id=:r8k: name=null className=prc-Textarea-TextArea-13q4j focus-visible overtype-input",
-    "title": "Test 3",
-    "upperDecoration": <React.Fragment>
-      <span
-        className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
-      >
-        <IssueOpenedIcon
-          size={16}
-        />
-      </span>
-      #
-      3
-      <a
-        className="truncate hover:underline"
-        href="https://github.com/diffplug/testing-deletable"
-      >
-        diffplug/testing-deletable
-      </a>
-    </React.Fragment>,
+    "title": "N/A",
+    "upperDecoration": <span>
+      N/A
+    </span>,
   },
   {
     "for": "id=:r5b: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
