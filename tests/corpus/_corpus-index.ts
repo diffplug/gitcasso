@@ -14,9 +14,14 @@ export const CORPUS: Record<string, CorpusEntry> = {
   },
   // HAR corpus (initial page loads)
   gh_issue_edit: {
-    description: 'editing an existing comment on an issue',
+    description: 'edit an existing comment on an issue',
     type: 'html',
     url: 'https://github.com/diffplug/gitcasso/issues/56',
+  },
+  gh_issue_edit_multiple: {
+    description: 'edit an existing comment on an issue (root and appended)',
+    type: 'html',
+    url: 'https://github.com/diffplug/testing-deletable/issues/3',
   },
   gh_issue_new: {
     description: 'a new issue wiht some fields filled out',
@@ -28,9 +33,14 @@ export const CORPUS: Record<string, CorpusEntry> = {
     url: 'https://github.com/diffplug/selfie/pull/517',
   },
   gh_pr_edit: {
-    description: 'editing an existing comment on a PR',
+    description: 'edit an existing comment on a PR',
     type: 'html',
     url: 'https://github.com/diffplug/gitcasso/pull/58',
+  },
+  gh_pr_edit_multiple: {
+    description: 'edit an existing comment on a PR  (root and appended)',
+    type: 'html',
+    url: 'https://github.com/diffplug/testing-deletable/pull/5',
   },
   gh_pr_new: {
     type: 'har',

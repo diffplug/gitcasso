@@ -59,6 +59,60 @@ exports[`github ui > gh_issue_edit:should render correct UI elements 1`] = `
 ]
 `;
 
+exports[`github ui > gh_issue_edit_multiple:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=:r76: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+    "title": "N/A",
+    "upperDecoration": <span>
+      N/A
+    </span>,
+  },
+  {
+    "for": "id=:r8k: name=null className=prc-Textarea-TextArea-13q4j focus-visible overtype-input",
+    "title": "Test 3",
+    "upperDecoration": <React.Fragment>
+      <span
+        className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
+      >
+        <IssueOpenedIcon
+          size={16}
+        />
+      </span>
+      #
+      3
+      <a
+        className="truncate hover:underline"
+        href="https://github.com/diffplug/testing-deletable"
+      >
+        diffplug/testing-deletable
+      </a>
+    </React.Fragment>,
+  },
+  {
+    "for": "id=:r5b: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+    "title": "Test 3",
+    "upperDecoration": <React.Fragment>
+      <span
+        className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
+      >
+        <IssueOpenedIcon
+          size={16}
+        />
+      </span>
+      #
+      3
+      <a
+        className="truncate hover:underline"
+        href="https://github.com/diffplug/testing-deletable"
+      >
+        diffplug/testing-deletable
+      </a>
+    </React.Fragment>,
+  },
+]
+`;
+
 exports[`github ui > gh_issue_new:should render correct UI elements 1`] = `
 [
   {
@@ -128,6 +182,43 @@ exports[`github ui > gh_pr_edit:should render correct UI elements 1`] = `
       >
         PR #
         58
+      </span>
+    </React.Fragment>,
+  },
+]
+`;
+
+exports[`github ui > gh_pr_edit_multiple:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=issue-3454672384-body name=pull_request[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit js-size-to-fit size-to-fit js-session-resumable CommentBox-input FormControl-textarea js-saved-reply-shortcut-comment-field overtype-input",
+    "title": "N/A",
+    "upperDecoration": <span>
+      N/A
+    </span>,
+  },
+  {
+    "for": "id=issuecomment-3335416053-body name=issue_comment[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit js-size-to-fit size-to-fit js-session-resumable CommentBox-input FormControl-textarea js-saved-reply-shortcut-comment-field focus-visible overtype-input",
+    "title": "N/A",
+    "upperDecoration": <span>
+      N/A
+    </span>,
+  },
+  {
+    "for": "id=new_comment_field name=comment[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit FormControl-textarea CommentBox-input js-size-to-fit size-to-fit js-session-resumable js-saved-reply-shortcut-comment-field overtype-input",
+    "title": "Update README.md
+ #5",
+    "upperDecoration": <React.Fragment>
+      <span
+        className="font-mono text-muted-foreground text-sm"
+      >
+        diffplug/testing-deletable
+      </span>
+      <span
+        className="ml-2 font-medium"
+      >
+        PR #
+        5
       </span>
     </React.Fragment>,
   },
