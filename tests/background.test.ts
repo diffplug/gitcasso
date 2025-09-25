@@ -46,10 +46,6 @@ describe('Background Event Handler', () => {
                 "type": "TEST_SPOT",
                 "unique_key": "test-key",
               },
-              "tab": {
-                "tabId": 123,
-                "windowId": 456,
-              },
               "trashedOn": null,
             },
           ],

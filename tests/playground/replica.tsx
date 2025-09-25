@@ -27,10 +27,6 @@ const sampleSpots: CommentStorage[] = spots.map((spot) => {
     drafts: [[0, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.']],
     sentOn: null,
     spot,
-    tab: {
-      tabId: 123,
-      windowId: 456,
-    },
     trashedOn: null,
   }
   return state

@@ -15,7 +15,6 @@ export interface Tab {
   windowId: number
 }
 export interface CommentStorage {
-  tab: Tab
   spot: CommentSpot
   drafts: [number, string][]
   sentOn: number | null
@@ -35,6 +34,7 @@ export interface CommentTableRow {
 }
 
 export const openSpots = new Map<string, CommentStorage>()
+export const openTabs = new Map<string, Array<Tab>>()
 
 export function handleCommentEvent(message: CommentEvent, sender: any): boolean {
   logger.debug('received comment event', message)
@@ -46,17 +46,30 @@ export function handleCommentEvent(message: CommentEvent, sender: any): boolean 
 
   switch (message.type) {
     case 'ENHANCED': {
-      const commentState: CommentStorage = {
-        drafts: [[Date.now(), message.draft || '']],
-        sentOn: null,
-        spot: message.spot,
-        tab: {
-          tabId: sender.tab.id,
-          windowId: sender.tab.windowId,
-        },
-        trashedOn: null,
+      // track the draft
+      const existingState = openSpots.get(message.spot.unique_key)
+      if (existingState) {
+        existingState.drafts.push([Date.now(), message.draft || ''])
+      } else {
+        const commentState: CommentStorage = {
+          drafts: [[Date.now(), message.draft || '']],
+          sentOn: null,
+          spot: message.spot,
+          trashedOn: null,
+        }
+        openSpots.set(message.spot.unique_key, commentState)
       }
-      openSpots.set(message.spot.unique_key, commentState)
+      // and track the tab (could be multiple)
+      const eventTab: Tab = {
+        tabId: sender.tab.id,
+        windowId: sender.tab.windowId,
+      }
+      const existingTabs = openTabs.get(message.spot.unique_key)
+      if (existingTabs) {
+        existingTabs.push(eventTab)
+      } else {
+        openTabs.set(message.spot.unique_key, [eventTab])
+      }
       break
     }
     case 'DESTROYED': {
@@ -108,12 +121,12 @@ export function handlePopupMessage(
     return KEEP_PORT_OPEN
   } else if (isOpenOrFocusMessage(message)) {
     logger.debug('received switch tab message', message)
-    const storage = openSpots.get(message.uniqueKey)
-    if (storage) {
+    const tabs = openTabs.get(message.uniqueKey)
+    if (tabs) {
       browser.windows
-        .update(storage.tab.windowId, { focused: true })
+        .update(tabs[0]!.windowId, { focused: true })
         .then(() => {
-          return browser.tabs.update(storage.tab.tabId, { active: true })
+          return browser.tabs.update(tabs[0]!.tabId, { active: true })
         })
         .catch((error) => {
           console.error('Error switching to tab:', error)
@@ -141,10 +154,15 @@ export default defineBackground(() => {
     logger.debug('tab removed', { tabId })
 
     // Clean up openSpots entries for the closed tab
-    for (const [key, value] of openSpots) {
-      if (tabId === value.tab.tabId) {
+    for (const [key, tabs] of openTabs) {
+      const remainingTabs = tabs.filter((tab) => tab.tabId !== tabId)
+      if (remainingTabs.length === 0) {
+        logger.debug('closed every tab which contained spot', key)
         openSpots.delete(key)
-        logger.debug('closed tab which contained spot', value.spot.unique_key)
+        openTabs.delete(key)
+      } else if (remainingTabs.length < tabs.length) {
+        logger.debug('closed tab which contained spot, other tabs still open', key)
+        openTabs.set(key, remainingTabs)
       }
     }
   })
