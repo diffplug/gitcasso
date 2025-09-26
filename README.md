@@ -1,6 +1,6 @@
 # <img align="left" src="public/icons/icon-128.png" width=48 height=48> Gitcasso
 
-*Syntax highlighting and autosave for comments on GitHub (and other other markdown-friendly websites).*
+*Syntax highlighting and autosave for comments on GitHub (and other markdown-friendly websites).*
 
 - "Syntax highlighting is the lie that enables us to see the truth."
 - "The meaning of life is to find your lost comment drafts. The purpose of life is to post them."
