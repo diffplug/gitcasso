@@ -19,6 +19,7 @@ export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
   spot: T
   enhancer: CommentEnhancer<T>
   overtype: OverTypeInstance
+  cleanup?: () => void
 }
 
 export class EnhancerRegistry {
@@ -71,9 +72,9 @@ export class EnhancerRegistry {
       try {
         const spot = enhancer.tryToEnhance(textarea, location)
         if (spot) {
-          const overtype = enhancer.enhance(textarea, spot)
+          const { instance: overtype, cleanup } = enhancer.enhance(textarea, spot)
           this.handleDelayedValueInjection(overtype)
-          return { enhancer, overtype, spot, textarea }
+          return { enhancer, overtype, spot, textarea, ...(cleanup && { cleanup }) }
         }
       } catch (error) {
         console.warn('Handler failed to identify textarea:', error)

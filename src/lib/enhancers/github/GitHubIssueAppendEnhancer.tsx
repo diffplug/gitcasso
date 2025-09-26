@@ -1,7 +1,12 @@
 import { IssueOpenedIcon } from '@primer/octicons-react'
 import OverType, { type OverTypeInstance } from 'overtype'
 import type React from 'react'
-import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhancer'
+import type {
+  CommentEnhancer,
+  CommentSpot,
+  OvertypeWithCleanup,
+  StrippedLocation,
+} from '@/lib/enhancer'
 import { logger } from '@/lib/logger'
 import { oncePerRefresh } from '@/lib/once-per-refresh'
 import { modifyDOM } from '../modifyDOM'
@@ -66,12 +71,12 @@ export class GitHubIssueAppendEnhancer implements CommentEnhancer<GitHubIssueApp
 
   instance: OverTypeInstance | undefined
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueAppendSpot): OverTypeInstance {
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueAppendSpot): OvertypeWithCleanup {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     if (this.instance) {
       OverType.instances.delete(overtypeContainer)
-        ; (overtypeContainer as any).overTypeInstance = undefined
+      ;(overtypeContainer as any).overTypeInstance = undefined
     }
     this.registerSubmitHandler(textArea, _spot)
     const thing = new OverType(overtypeContainer, {
@@ -80,7 +85,7 @@ export class GitHubIssueAppendEnhancer implements CommentEnhancer<GitHubIssueApp
       placeholder: 'Use Markdown to format your comment',
     })[0]!
     this.instance = thing
-    return thing
+    return { instance: thing }
   }
 
   private registerSubmitHandler(textArea: HTMLTextAreaElement, _spot: GitHubIssueAppendSpot) {
@@ -90,7 +95,10 @@ export class GitHubIssueAppendEnhancer implements CommentEnhancer<GitHubIssueApp
         if (target) {
           const btn = (e.target as HTMLElement).closest('button')
           if (btn) {
-            if (btn.textContent.trim() === 'Comment' || btn.matches('button[data-variant="primary"]')) {
+            if (
+              btn.textContent.trim() === 'Comment' ||
+              btn.matches('button[data-variant="primary"]')
+            ) {
               this.enhance(textArea, _spot)
               return true
             }
