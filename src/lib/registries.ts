@@ -133,6 +133,9 @@ export class TextareaRegistry {
   unregisterDueToModification(textarea: HTMLTextAreaElement): void {
     const enhanced = this.textareas.get(textarea)
     if (enhanced) {
+      if (enhanced.cleanup) {
+        enhanced.cleanup()
+      }
       this.sendEvent('DESTROYED', enhanced)
       this.textareas.delete(textarea)
     }
