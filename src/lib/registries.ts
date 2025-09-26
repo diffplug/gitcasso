@@ -129,9 +129,15 @@ export class TextareaRegistry {
     this.sendEvent('ENHANCED', enhanced)
   }
 
+  private cleanupOvertype(overtype: OverTypeInstance) {
+    const container = overtype.element
+    OverType.instances.delete(container)
+    ;(container as any).overTypeInstance = undefined
+  }
   unregisterDueToModification(textarea: HTMLTextAreaElement): void {
     const enhanced = this.textareas.get(textarea)
     if (enhanced) {
+      this.cleanupOvertype(enhanced.overtype)
       this.sendEvent('DESTROYED', enhanced)
       this.textareas.delete(textarea)
     }

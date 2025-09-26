@@ -56,12 +56,19 @@ export class GitHubPrAppendEnhancer implements CommentEnhancer<GitHubPrAppendSpo
   enhance(textArea: HTMLTextAreaElement, _spot: GitHubPrAppendSpot): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
-    return new OverType(overtypeContainer, {
+    const overtype = new OverType(overtypeContainer, {
       ...commonGitHubOptions,
       minHeight: '102px',
       padding: 'var(--base-size-8)',
       placeholder: 'Add your comment here...',
     })[0]!
+    const listenForEmpty = new MutationObserver(() => {
+      if (textArea.value === '') {
+        overtype.updatePreview()
+      }
+    })
+    listenForEmpty.observe(textArea, { attributes: true, characterData: true })
+    return overtype
   }
 
   tableUpperDecoration(spot: GitHubPrAppendSpot): React.ReactNode {
