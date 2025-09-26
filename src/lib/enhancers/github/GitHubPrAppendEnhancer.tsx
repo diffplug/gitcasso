@@ -67,26 +67,13 @@ export class GitHubPrAppendEnhancer implements CommentEnhancer<GitHubPrAppendSpo
       padding: 'var(--base-size-8)',
       placeholder: 'Add your comment here...',
     })[0]!
-    console.log('C')
-    textArea.addEventListener('input', () => {
+    const listenForEmpty = new MutationObserver(() => {
       if (textArea.value === '') {
-        console.log('input event fired')
         instance.updatePreview()
       }
     })
-    const observer = new MutationObserver(() => {
-      if (textArea.value === '') {
-        console.log('MutationObserver fired')
-        instance.updatePreview()
-      }
-    })
-    observer.observe(textArea, { attributes: true, characterData: true })
-    const cleanup = () => {
-      OverType.instances.delete(overtypeContainer)
-      ;(overtypeContainer as any).overTypeInstance = undefined
-    }
+    listenForEmpty.observe(textArea, { attributes: true, characterData: true })
     return {
-      cleanup,
       instance,
     }
   }
