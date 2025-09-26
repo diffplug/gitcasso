@@ -22,38 +22,29 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
       return null
     }
 
-    // Only enhance textareas that are for editing issue/PR body
-    const isIssueBodyEdit = textarea.closest('.react-issue-body') // this works for root and appended comments
-    const isPRBodyEdit =
-      textarea.name === 'pull_request[body]' || textarea.name === 'issue_comment[body]'
-    //                   ^this is the root pr comment              ^this is the other pr comments (surprising!)
-
-    // Also detect comment editing textareas (have "Update comment" button)
-    // Look for "Update comment" button in the same container as the textarea
-    const container =
-      textarea.closest('[class*="markdown"], [class*="comment"], .js-comment-edit-form') ||
-      textarea.closest('form') ||
-      textarea.parentElement?.parentElement?.parentElement
-    const buttons = container ? Array.from(container.querySelectorAll('button')) : []
-    const isCommentEdit = buttons.some((btn) => btn.textContent?.includes('Update comment'))
-
-    if (!isIssueBodyEdit && !isPRBodyEdit && !isCommentEdit) {
-      return null
-    }
-
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
     const match = location.pathname.match(/^\/([^/]+)\/([^/]+)\/(?:issues|pull)\/(\d+)/)
     if (!match) {
       return null
     }
-
     const [, owner, repo, numberStr] = match
     const number = parseInt(numberStr!, 10)
     const unique_key = `github.com:${owner}/${repo}:${number}:edit-body`
 
+    // Only enhance textareas that are for editing issue/PR body
+    const isIssueBodyRootEdit = textarea.closest('.react-issue-body')
+    const isIssueBodyCommentEdit = textarea.closest('[data-wrapper-timeline-id]')
+    const isPRBodyEdit =
+      textarea.name === 'pull_request[body]' || textarea.name === 'issue_comment[body]'
+    //                   ^this is the root pr comment              ^this is the other pr comments (surprising!)
+
+    if (!isIssueBodyRootEdit && !isIssueBodyCommentEdit && !isPRBodyEdit) {
+      return null
+    }
+
     logger.debug(`${this.constructor.name} enhanced issue/PR body textarea`, unique_key)
     return {
-      isIssue: !!isIssueBodyEdit,
+      isIssue: !!(isIssueBodyRootEdit || isIssueBodyCommentEdit),
       type: GH_EDIT,
       unique_key,
     }

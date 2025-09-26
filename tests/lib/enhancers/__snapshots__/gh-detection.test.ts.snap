@@ -53,7 +53,7 @@ exports[`github detection > gh_issue_edit_multiple:should detect correct spots 1
   {
     "for": "id=:r8k: name=null className=prc-Textarea-TextArea-13q4j focus-visible overtype-input",
     "spot": {
-      "isIssue": false,
+      "isIssue": true,
       "type": "GH_EDIT",
       "unique_key": "github.com:diffplug/testing-deletable:3:edit-body",
     },
