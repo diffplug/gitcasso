@@ -1,4 +1,4 @@
-# <img align="left" src="public/icons/icon-48.png"> Gitcasso
+# <img align="left" src="public/icons/icon-128.png" width=48 height=48> Gitcasso
 
 *Syntax highlighting and autosave for comments on GitHub (and other other markdown-friendly websites).*
 
