@@ -67,13 +67,13 @@ export class GitHubIssueAppendEnhancer implements CommentEnhancer<GitHubIssueApp
   instance: OverTypeInstance | undefined
 
   enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueAppendSpot): OverTypeInstance {
-    this.registerSubmitHandler(textArea, _spot)
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     if (this.instance) {
       OverType.instances.delete(overtypeContainer)
-      ;(overtypeContainer as any).overTypeInstance = undefined
+        ; (overtypeContainer as any).overTypeInstance = undefined
     }
+    this.registerSubmitHandler(textArea, _spot)
     const thing = new OverType(overtypeContainer, {
       ...commonGitHubOptions,
       minHeight: '100px',
@@ -87,12 +87,14 @@ export class GitHubIssueAppendEnhancer implements CommentEnhancer<GitHubIssueApp
     oncePerRefresh('gh-issue-append-events', () => {
       document.addEventListener('click', (e) => {
         const target = e.target
-        if (!target) return false
-        const btn = (e.target as HTMLElement).closest('button')
-        if (!btn) return false
-        if (btn.textContent.trim() === 'Comment' || btn.matches('button[data-variant="primary"]')) {
-          this.enhance(textArea, _spot)
-          return true
+        if (target) {
+          const btn = (e.target as HTMLElement).closest('button')
+          if (btn) {
+            if (btn.textContent.trim() === 'Comment' || btn.matches('button[data-variant="primary"]')) {
+              this.enhance(textArea, _spot)
+              return true
+            }
+          }
         }
         return false
       })
