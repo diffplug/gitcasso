@@ -1,12 +1,7 @@
 import { IssueOpenedIcon } from '@primer/octicons-react'
-import OverType from 'overtype'
+import OverType, { type OverTypeInstance } from 'overtype'
 import type React from 'react'
-import type {
-  CommentEnhancer,
-  CommentSpot,
-  OvertypeWithCleanup,
-  StrippedLocation,
-} from '@/lib/enhancer'
+import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhancer'
 import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGitHubOptions, prepareGitHubHighlighter } from './github-common'
@@ -68,22 +63,14 @@ export class GitHubIssueAppendEnhancer implements CommentEnhancer<GitHubIssueApp
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueAppendSpot): OvertypeWithCleanup {
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueAppendSpot): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
-    const instance = new OverType(overtypeContainer, {
+    return new OverType(overtypeContainer, {
       ...commonGitHubOptions,
       minHeight: '100px',
       placeholder: 'Use Markdown to format your comment',
     })[0]!
-    const cleanup = () => {
-      OverType.instances.delete(overtypeContainer)
-      ;(overtypeContainer as any).overTypeInstance = undefined
-    }
-    return {
-      cleanup,
-      instance,
-    }
   }
 
   tableUpperDecoration(spot: GitHubIssueAppendSpot): React.ReactNode {

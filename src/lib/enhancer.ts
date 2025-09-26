@@ -40,15 +40,9 @@ export interface CommentEnhancer<Spot extends CommentSpot = CommentSpot> {
   /**
    * If `tryToEnhance` returns non-null, then this gets called.
    */
-  enhance(textarea: HTMLTextAreaElement, spot: Spot): OvertypeWithCleanup
+  enhance(textarea: HTMLTextAreaElement, spot: Spot): OverTypeInstance
   /** Returns a ReactNode which will be displayed in the table row. */
   tableUpperDecoration(spot: Spot): ReactNode
   /** The default title of a row */
   tableTitle(spot: Spot): string
-}
-
-/** Allows enhancers to attach an optional cleanup field to the return value of `enhance()`. */
-export interface OvertypeWithCleanup {
-  instance: OverTypeInstance
-  cleanup?: () => void
 }

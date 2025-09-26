@@ -19,7 +19,6 @@ export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
   spot: T
   enhancer: CommentEnhancer<T>
   overtype: OverTypeInstance
-  cleanup?: () => void
 }
 
 export class EnhancerRegistry {
@@ -72,9 +71,9 @@ export class EnhancerRegistry {
       try {
         const spot = enhancer.tryToEnhance(textarea, location)
         if (spot) {
-          const { instance: overtype, cleanup } = enhancer.enhance(textarea, spot)
+          const overtype = enhancer.enhance(textarea, spot)
           this.handleDelayedValueInjection(overtype)
-          return { enhancer, overtype, spot, textarea, ...(cleanup && { cleanup }) }
+          return { enhancer, overtype, spot, textarea }
         }
       } catch (error) {
         console.warn('Handler failed to identify textarea:', error)
@@ -130,12 +129,15 @@ export class TextareaRegistry {
     this.sendEvent('ENHANCED', enhanced)
   }
 
+  private cleanupOvertype(overtype: OverTypeInstance) {
+    const container = overtype.element
+    OverType.instances.delete(container)
+    ;(container as any).overTypeInstance = undefined
+  }
   unregisterDueToModification(textarea: HTMLTextAreaElement): void {
     const enhanced = this.textareas.get(textarea)
     if (enhanced) {
-      if (enhanced.cleanup) {
-        enhanced.cleanup()
-      }
+      this.cleanupOvertype(enhanced.overtype)
       this.sendEvent('DESTROYED', enhanced)
       this.textareas.delete(textarea)
     }

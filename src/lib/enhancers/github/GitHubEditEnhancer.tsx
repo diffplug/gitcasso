@@ -1,11 +1,6 @@
-import OverType from 'overtype'
+import OverType, { type OverTypeInstance } from 'overtype'
 import type React from 'react'
-import type {
-  CommentEnhancer,
-  CommentSpot,
-  OvertypeWithCleanup,
-  StrippedLocation,
-} from '@/lib/enhancer'
+import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhancer'
 import { logger } from '@/lib/logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGitHubOptions, prepareGitHubHighlighter } from './github-common'
@@ -55,7 +50,7 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, spot: GitHubEditSpot): OvertypeWithCleanup {
+  enhance(textArea: HTMLTextAreaElement, spot: GitHubEditSpot): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     const overtype = new OverType(overtypeContainer, {
@@ -65,7 +60,7 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
     if (!spot.isIssue) {
       // TODO: autoheight not working
     }
-    return { instance: overtype }
+    return overtype
   }
 
   tableUpperDecoration(_spot: GitHubEditSpot): React.ReactNode {

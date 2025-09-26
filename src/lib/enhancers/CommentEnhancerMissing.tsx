@@ -1,10 +1,6 @@
+import type { OverTypeInstance } from 'overtype'
 import type { ReactNode } from 'react'
-import type {
-  CommentEnhancer,
-  CommentSpot,
-  OvertypeWithCleanup,
-  StrippedLocation,
-} from '../enhancer'
+import type { CommentEnhancer, CommentSpot, StrippedLocation } from '../enhancer'
 
 /** Used when an entry is in the table which we don't recognize. */
 export class CommentEnhancerMissing implements CommentEnhancer {
@@ -47,7 +43,7 @@ export class CommentEnhancerMissing implements CommentEnhancer {
   tryToEnhance(_textarea: HTMLTextAreaElement, _location: StrippedLocation): CommentSpot | null {
     throw new Error('Method not implemented.')
   }
-  enhance(_textarea: HTMLTextAreaElement, _spot: CommentSpot): OvertypeWithCleanup {
+  enhance(_textarea: HTMLTextAreaElement, _spot: CommentSpot): OverTypeInstance {
     throw new Error('Method not implemented.')
   }
 }

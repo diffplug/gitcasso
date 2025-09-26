@@ -1,10 +1,5 @@
-import OverType from 'overtype'
-import type {
-  CommentEnhancer,
-  CommentSpot,
-  OvertypeWithCleanup,
-  StrippedLocation,
-} from '../../enhancer'
+import OverType, { type OverTypeInstance } from 'overtype'
+import type { CommentEnhancer, CommentSpot, StrippedLocation } from '../../enhancer'
 import { logger } from '../../logger'
 import { modifyDOM } from '../modifyDOM'
 import { commonGitHubOptions, prepareGitHubHighlighter } from './github-common'
@@ -55,16 +50,14 @@ export class GitHubIssueCreateEnhancer implements CommentEnhancer<GitHubIssueCre
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueCreateSpot): OvertypeWithCleanup {
+  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueCreateSpot): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
-    return {
-      instance: new OverType(overtypeContainer, {
-        ...commonGitHubOptions,
-        minHeight: '400px',
-        placeholder: 'Type your description here...',
-      })[0]!,
-    }
+    return new OverType(overtypeContainer, {
+      ...commonGitHubOptions,
+      minHeight: '400px',
+      placeholder: 'Type your description here...',
+    })[0]!
   }
 
   tableUpperDecoration(spot: GitHubIssueCreateSpot): React.ReactNode {
