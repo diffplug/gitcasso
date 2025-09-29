@@ -1,11 +1,15 @@
-import OverType, { type OverTypeInstance } from 'overtype'
-import type React from 'react'
-import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhancer'
-import { logger } from '@/lib/logger'
-import { modifyDOM } from '../modifyDOM'
-import { commonGitHubOptions, prepareGitHubHighlighter } from './github-common'
+import OverType, { type OverTypeInstance } from "overtype"
+import type React from "react"
+import type {
+  CommentEnhancer,
+  CommentSpot,
+  StrippedLocation,
+} from "@/lib/enhancer"
+import { logger } from "@/lib/logger"
+import { modifyDOM } from "../modifyDOM"
+import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
 
-const GH_EDIT = 'GH_EDIT' as const
+const GH_EDIT = "GH_EDIT" as const
 
 export interface GitHubEditSpot extends CommentSpot {
   isIssue: boolean
@@ -17,13 +21,18 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
     return [GH_EDIT]
   }
 
-  tryToEnhance(textarea: HTMLTextAreaElement, location: StrippedLocation): GitHubEditSpot | null {
-    if (location.host !== 'github.com') {
+  tryToEnhance(
+    textarea: HTMLTextAreaElement,
+    location: StrippedLocation
+  ): GitHubEditSpot | null {
+    if (location.host !== "github.com") {
       return null
     }
 
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
-    const match = location.pathname.match(/^\/([^/]+)\/([^/]+)\/(?:issues|pull)\/(\d+)/)
+    const match = location.pathname.match(
+      /^\/([^/]+)\/([^/]+)\/(?:issues|pull)\/(\d+)/
+    )
     if (!match) {
       return null
     }
@@ -32,17 +41,23 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
     const unique_key = `github.com:${owner}/${repo}:${number}:edit-body`
 
     // Only enhance textareas that are for editing issue/PR body
-    const isIssueBodyRootEdit = textarea.closest('.react-issue-body')
-    const isIssueBodyCommentEdit = textarea.closest('[data-wrapper-timeline-id]')
+    const isIssueBodyRootEdit = textarea.closest(".react-issue-body")
+    const isIssueBodyCommentEdit = textarea.closest(
+      "[data-wrapper-timeline-id]"
+    )
     const isPRBodyEdit =
-      textarea.name === 'pull_request[body]' || textarea.name === 'issue_comment[body]'
+      textarea.name === "pull_request[body]" ||
+      textarea.name === "issue_comment[body]"
     //                   ^this is the root pr comment              ^this is the other pr comments (surprising!)
 
     if (!isIssueBodyRootEdit && !isIssueBodyCommentEdit && !isPRBodyEdit) {
       return null
     }
 
-    logger.debug(`${this.constructor.name} enhanced issue/PR body textarea`, unique_key)
+    logger.debug(
+      `${this.constructor.name} enhanced issue/PR body textarea`,
+      unique_key
+    )
     return {
       isIssue: !!(isIssueBodyRootEdit || isIssueBodyCommentEdit),
       type: GH_EDIT,
@@ -50,12 +65,15 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, spot: GitHubEditSpot): OverTypeInstance {
+  enhance(
+    textArea: HTMLTextAreaElement,
+    spot: GitHubEditSpot
+  ): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     const overtype = new OverType(overtypeContainer, {
       ...commonGitHubOptions,
-      padding: spot.isIssue ? 'var(--base-size-16)' : 'var(--base-size-8)',
+      padding: spot.isIssue ? "var(--base-size-16)" : "var(--base-size-8)",
     })[0]!
     if (!spot.isIssue) {
       // TODO: autoheight not working
@@ -68,6 +86,6 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
   }
 
   tableTitle(_spot: GitHubEditSpot): string {
-    return 'N/A'
+    return "N/A"
   }
 }

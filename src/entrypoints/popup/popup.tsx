@@ -1,39 +1,45 @@
-import './style.css'
-import { createRoot } from 'react-dom/client'
-import { PopupRoot } from '@/components/PopupRoot'
-import type { CommentTableRow } from '@/entrypoints/background'
-import { logger } from '@/lib/logger'
-import type { GetOpenSpotsMessage, GetTableRowsResponse, OpenOrFocusMessage } from '@/lib/messages'
+import "./style.css"
+import { createRoot } from "react-dom/client"
+import { PopupRoot } from "@/components/PopupRoot"
+import type { CommentTableRow } from "@/entrypoints/background"
+import { logger } from "@/lib/logger"
+import type {
+  GetOpenSpotsMessage,
+  GetTableRowsResponse,
+  OpenOrFocusMessage,
+} from "@/lib/messages"
 
 export interface FilterState {
-  sentFilter: 'both' | 'sent' | 'unsent'
+  sentFilter: "both" | "sent" | "unsent"
   searchQuery: string
   showTrashed: boolean
 }
 
 async function getOpenSpots(): Promise<CommentTableRow[]> {
-  logger.debug('Sending message to background script...')
+  logger.debug("Sending message to background script...")
   try {
-    const message: GetOpenSpotsMessage = { type: 'GET_OPEN_SPOTS' }
-    const response = (await browser.runtime.sendMessage(message)) as GetTableRowsResponse
-    logger.debug('Received response:', response)
+    const message: GetOpenSpotsMessage = { type: "GET_OPEN_SPOTS" }
+    const response = (await browser.runtime.sendMessage(
+      message
+    )) as GetTableRowsResponse
+    logger.debug("Received response:", response)
     return response.rows
   } catch (error) {
-    logger.error('Error sending message to background:', error)
+    logger.error("Error sending message to background:", error)
     return []
   }
 }
 
 export function openOrFocusComment(uniqueKey: string): void {
   const message: OpenOrFocusMessage = {
-    type: 'OPEN_OR_FOCUS_COMMENT',
+    type: "OPEN_OR_FOCUS_COMMENT",
     uniqueKey,
   }
   browser.runtime.sendMessage(message)
   window.close()
 }
 
-const app = document.getElementById('app')
+const app = document.getElementById("app")
 if (app) {
   const root = createRoot(app)
 
@@ -43,9 +49,9 @@ if (app) {
       root.render(<PopupRoot drafts={drafts} />)
     })
     .catch((error) => {
-      logger.error('Failed to load initial data:', error)
+      logger.error("Failed to load initial data:", error)
       root.render(<PopupRoot drafts={[]} />)
     })
 } else {
-  logger.error('App element not found')
+  logger.error("App element not found")
 }

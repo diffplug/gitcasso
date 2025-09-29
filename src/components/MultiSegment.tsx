@@ -1,4 +1,4 @@
-import { badgeCVA, typeIcons } from '@/components/design'
+import { badgeCVA, typeIcons } from "@/components/design"
 
 interface Segment<T> {
   text?: string
@@ -11,9 +11,13 @@ interface MultiSegmentProps<T> {
   onValueChange: (value: T) => void
 }
 
-const MultiSegment = <T,>({ segments, value, onValueChange }: MultiSegmentProps<T>) => {
+const MultiSegment = <T,>({
+  segments,
+  value,
+  onValueChange,
+}: MultiSegmentProps<T>) => {
   return (
-    <div className='inline-flex items-center gap-0'>
+    <div className="inline-flex items-center gap-0">
       {segments.map((segment, index) => {
         const Icon = typeIcons[segment.type]
         const isFirst = index === 0
@@ -21,12 +25,12 @@ const MultiSegment = <T,>({ segments, value, onValueChange }: MultiSegmentProps<
 
         const roundedClasses =
           isFirst && isLast
-            ? ''
+            ? ""
             : isFirst
-              ? '!rounded-r-none'
+              ? "!rounded-r-none"
               : isLast
-                ? '!rounded-l-none'
-                : '!rounded-none'
+                ? "!rounded-l-none"
+                : "!rounded-none"
 
         return (
           <button
@@ -37,9 +41,9 @@ const MultiSegment = <T,>({ segments, value, onValueChange }: MultiSegmentProps<
               type: segment.type,
             })} ${roundedClasses}`}
             onClick={() => onValueChange(segment.value)}
-            type='button'
+            type="button"
           >
-            {segment.type === 'blank' || <Icon className='h-3 w-3' />}
+            {segment.type === "blank" || <Icon className="h-3 w-3" />}
             {segment.text}
           </button>
         )

@@ -1,9 +1,9 @@
-import { describe, expect, it } from 'vitest'
-import { statsFor } from '../../../src/lib/enhancers/draft-stats'
+import { describe, expect, it } from "vitest"
+import { statsFor } from "../../../src/lib/enhancers/draft-stats"
 
-describe('statsFor', () => {
-  it('should handle empty markdown', () => {
-    expect(statsFor('')).toMatchInlineSnapshot(`
+describe("statsFor", () => {
+  it("should handle empty markdown", () => {
+    expect(statsFor("")).toMatchInlineSnapshot(`
       {
         "charCount": 0,
         "codeBlocks": [],
@@ -13,8 +13,8 @@ describe('statsFor', () => {
     `)
   })
 
-  it('should count characters', () => {
-    expect(statsFor('Hello world')).toMatchInlineSnapshot(`
+  it("should count characters", () => {
+    expect(statsFor("Hello world")).toMatchInlineSnapshot(`
       {
         "charCount": 11,
         "codeBlocks": [],
@@ -24,8 +24,10 @@ describe('statsFor', () => {
     `)
   })
 
-  it('should extract images with alt text', () => {
-    expect(statsFor('![Alt text](https://example.com/image.png)')).toMatchInlineSnapshot(`
+  it("should extract images with alt text", () => {
+    expect(
+      statsFor("![Alt text](https://example.com/image.png)")
+    ).toMatchInlineSnapshot(`
       {
         "charCount": 42,
         "codeBlocks": [],
@@ -40,8 +42,10 @@ describe('statsFor', () => {
     `)
   })
 
-  it('should extract images without alt text', () => {
-    expect(statsFor('![](https://example.com/image.png)')).toMatchInlineSnapshot(`
+  it("should extract images without alt text", () => {
+    expect(
+      statsFor("![](https://example.com/image.png)")
+    ).toMatchInlineSnapshot(`
       {
         "charCount": 34,
         "codeBlocks": [],
@@ -55,8 +59,8 @@ describe('statsFor', () => {
     `)
   })
 
-  it('should extract links', () => {
-    expect(statsFor('[Link text](https://example.com)')).toMatchInlineSnapshot(`
+  it("should extract links", () => {
+    expect(statsFor("[Link text](https://example.com)")).toMatchInlineSnapshot(`
       {
         "charCount": 32,
         "codeBlocks": [],
@@ -71,8 +75,10 @@ describe('statsFor', () => {
     `)
   })
 
-  it('should extract code blocks with language', () => {
-    expect(statsFor('```javascript\nconsole.log("hello")\n```')).toMatchInlineSnapshot(`
+  it("should extract code blocks with language", () => {
+    expect(
+      statsFor('```javascript\nconsole.log("hello")\n```')
+    ).toMatchInlineSnapshot(`
       {
         "charCount": 38,
         "codeBlocks": [
@@ -88,7 +94,7 @@ describe('statsFor', () => {
     `)
   })
 
-  it('should extract code blocks without language', () => {
+  it("should extract code blocks without language", () => {
     expect(statsFor('```\nconsole.log("hello")\n```')).toMatchInlineSnapshot(`
       {
         "charCount": 28,
@@ -104,7 +110,7 @@ describe('statsFor', () => {
     `)
   })
 
-  it('should handle complex markdown with multiple elements', () => {
+  it("should handle complex markdown with multiple elements", () => {
     const markdown = `# Title
 
 Here's some text with a [link](https://example.com) and an ![image](https://example.com/img.png).

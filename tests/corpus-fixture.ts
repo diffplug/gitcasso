@@ -1,4 +1,4 @@
-import { vi } from 'vitest'
+import { vi } from "vitest"
 
 // Mock MutationObserver for tests
 global.MutationObserver = vi.fn().mockImplementation(() => ({
@@ -8,18 +8,18 @@ global.MutationObserver = vi.fn().mockImplementation(() => ({
 }))
 
 // Mock the OverType editor component
-vi.mock('overtype', () => {
+vi.mock("overtype", () => {
   const mockConstructor = vi.fn().mockImplementation(() => [
     {
-      container: document.createElement('div'),
+      container: document.createElement("div"),
       destroy: vi.fn(),
       focus: vi.fn(),
-      getValue: vi.fn(() => ''),
-      preview: document.createElement('div'),
+      getValue: vi.fn(() => ""),
+      preview: document.createElement("div"),
       setValue: vi.fn(),
-      textarea: document.createElement('textarea'),
+      textarea: document.createElement("textarea"),
       updatePreview: vi.fn(),
-      wrapper: document.createElement('div'),
+      wrapper: document.createElement("div"),
     },
   ])
   ;(mockConstructor as any).setCodeHighlighter = vi.fn()
@@ -29,11 +29,11 @@ vi.mock('overtype', () => {
   }
 })
 
-import { describe as baseDescribe, test as baseTest, expect } from 'vitest'
-import type { StrippedLocation } from '@/lib/enhancer'
-import { EnhancerRegistry } from '../src/lib/registries'
-import type { CORPUS } from './corpus/_corpus-index'
-import { cleanupDOM, setupDOM } from './corpus-utils'
+import { describe as baseDescribe, test as baseTest, expect } from "vitest"
+import type { StrippedLocation } from "@/lib/enhancer"
+import { EnhancerRegistry } from "../src/lib/registries"
+import type { CORPUS } from "./corpus/_corpus-index"
+import { cleanupDOM, setupDOM } from "./corpus-utils"
 
 export const describe = baseDescribe
 
@@ -62,7 +62,7 @@ export function withCorpus(corpusKey: keyof typeof CORPUS) {
 // Helper function for detection tests
 export function detectedSpots() {
   const enhancers = new EnhancerRegistry()
-  const textareas = document.querySelectorAll('textarea')
+  const textareas = document.querySelectorAll("textarea")
   const location: StrippedLocation = {
     host: window.location.host,
     pathname: window.location.pathname,
@@ -73,7 +73,7 @@ export function detectedSpots() {
     const forValue = `id=${textarea.id} name=${textarea.name} className=${textarea.className}`
     detectionResults.push({
       for: forValue,
-      spot: enhanced ? enhanced.spot : 'NO_SPOT',
+      spot: enhanced ? enhanced.spot : "NO_SPOT",
     })
   }
   return detectionResults
@@ -82,7 +82,7 @@ export function detectedSpots() {
 // Helper function for UI tests
 export function tableUI() {
   const enhancers = new EnhancerRegistry()
-  const textareas = document.querySelectorAll('textarea')
+  const textareas = document.querySelectorAll("textarea")
   const location: StrippedLocation = {
     host: window.location.host,
     pathname: window.location.pathname,

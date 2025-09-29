@@ -1,15 +1,15 @@
-import { type JSX, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
-import type { VariantProps } from 'tailwind-variants'
-import { badgeCVA, typeColors, typeIcons } from '@/components/design'
-import type { CommentTableRow } from '@/entrypoints/background'
+import { type JSX, useState } from "react"
+import { twMerge } from "tailwind-merge"
+import type { VariantProps } from "tailwind-variants"
+import { badgeCVA, typeColors, typeIcons } from "@/components/design"
+import type { CommentTableRow } from "@/entrypoints/background"
 
-import { CodePreview } from './BadgePopups/CodePreview'
-import { ImagePreview } from './BadgePopups/ImagePreview'
-import { LinkPreview } from './BadgePopups/LinkPreview'
-import { OpenTabPopup } from './BadgePopups/OpenTabPopup'
-import { TextPreview } from './BadgePopups/TextPreview'
-import { TimePreview } from './BadgePopups/TimePreview'
+import { CodePreview } from "./BadgePopups/CodePreview"
+import { ImagePreview } from "./BadgePopups/ImagePreview"
+import { LinkPreview } from "./BadgePopups/LinkPreview"
+import { OpenTabPopup } from "./BadgePopups/OpenTabPopup"
+import { TextPreview } from "./BadgePopups/TextPreview"
+import { TimePreview } from "./BadgePopups/TimePreview"
 
 const typePopups = {
   code: CodePreview,
@@ -18,7 +18,9 @@ const typePopups = {
   open: OpenTabPopup,
   text: TextPreview,
   time: TimePreview,
-} satisfies Partial<Record<keyof typeof typeIcons, (props: BadgePopupProps) => JSX.Element>>
+} satisfies Partial<
+  Record<keyof typeof typeIcons, (props: BadgePopupProps) => JSX.Element>
+>
 
 export interface BadgePopupProps {
   row: CommentTableRow
@@ -34,11 +36,13 @@ const Badge = ({ text, type, data }: BadgeProps) => {
   const Icon = typeIcons[type]
   const [showTooltip, setShowTooltip] = useState(false)
   const PopupComponent =
-    showTooltip && type in typePopups && typePopups[type as keyof typeof typePopups]
+    showTooltip &&
+    type in typePopups &&
+    typePopups[type as keyof typeof typePopups]
   return (
     <button
-      type='button'
-      className='relative'
+      type="button"
+      className="relative"
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
@@ -47,17 +51,17 @@ const Badge = ({ text, type, data }: BadgeProps) => {
           badgeCVA({
             clickable: type in typePopups,
             type,
-          }),
+          })
         )}
       >
-        {type === 'blank' || <Icon className='h-3 w-3' />}
+        {type === "blank" || <Icon className="h-3 w-3" />}
         {text || type}
       </span>
       {PopupComponent && data && (
         <div
           className={twMerge(
-            'absolute top-full z-10 w-30 rounded border px-2 py-1 text-left text-xs shadow-lg',
-            typeColors[type],
+            "absolute top-full z-10 w-30 rounded border px-2 py-1 text-left text-xs shadow-lg",
+            typeColors[type]
           )}
         >
           <PopupComponent row={data} />
