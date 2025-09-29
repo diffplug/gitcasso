@@ -90,13 +90,15 @@ export class GitHubIssueAppendEnhancer
         <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center">
           <IssueOpenedIcon size={16} />
         </span>
-        #{spot.number}
-        <a
-          href={`https://${spot.domain}/${spot.slug}`}
-          className="truncate hover:underline"
-        >
-          {spot.slug}
-        </a>
+        <span>
+          #{spot.number} |{" "}
+          <a
+            href={`https://${spot.domain}/${spot.slug}`}
+            className="truncate hover:underline"
+          >
+            {spot.slug}
+          </a>
+        </span>
       </>
     )
   }

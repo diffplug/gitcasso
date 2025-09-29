@@ -1,3 +1,4 @@
+import { FeedPullRequestOpenIcon } from "@primer/octicons-react"
 import OverType, { type OverTypeInstance } from "overtype"
 import type {
   CommentEnhancer,
@@ -89,13 +90,19 @@ export class GitHubPrCreateEnhancer
   }
 
   tableUpperDecoration(spot: GitHubPrCreateSpot): React.ReactNode {
-    const { slug } = spot
     return (
       <>
-        <span>New PR</span>
-        <span className="font-mono text-muted-foreground text-sm">
-          {" "}
-          {slug}{" "}
+        <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center">
+          <FeedPullRequestOpenIcon size={16} />
+        </span>
+        <span>
+          New |{" "}
+          <a
+            href={`https://${spot.domain}/${spot.slug}`}
+            className="truncate hover:underline"
+          >
+            {spot.slug}
+          </a>
         </span>
       </>
     )

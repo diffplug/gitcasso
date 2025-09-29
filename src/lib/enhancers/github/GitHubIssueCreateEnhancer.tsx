@@ -1,3 +1,4 @@
+import { IssueOpenedIcon } from "@primer/octicons-react"
 import OverType, { type OverTypeInstance } from "overtype"
 import type {
   CommentEnhancer,
@@ -74,13 +75,19 @@ export class GitHubIssueCreateEnhancer
   }
 
   tableUpperDecoration(spot: GitHubIssueCreateSpot): React.ReactNode {
-    const { slug } = spot
     return (
       <>
-        <span>New Issue</span>
-        <span className="font-mono text-muted-foreground text-sm">
-          {" "}
-          {slug}{" "}
+        <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center">
+          <IssueOpenedIcon size={16} />
+        </span>
+        <span>
+          New |{" "}
+          <a
+            href={`https://${spot.domain}/${spot.slug}`}
+            className="truncate hover:underline"
+          >
+            {spot.slug}
+          </a>
         </span>
       </>
     )
