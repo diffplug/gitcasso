@@ -8,9 +8,8 @@
 
 body {
   width: var(--popup-width);
-  height: var(--popup-height);
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  max-height: var(--popup-height);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 14px;
   line-height: 1.4;
   margin: 0;
