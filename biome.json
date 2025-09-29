@@ -18,19 +18,22 @@
     "indentStyle": "space",
     "indentWidth": 2,
     "lineEnding": "lf",
-    "lineWidth": 100
+    "lineWidth": 80
   },
   "javascript": {
     "formatter": {
       "arrowParentheses": "always",
-      "attributePosition": "auto",
       "bracketSameLine": false,
       "bracketSpacing": true,
-      "jsxQuoteStyle": "single",
+      "enabled": true,
+      "indentStyle": "space",
+      "indentWidth": 2,
+      "jsxQuoteStyle": "double",
+      "lineEnding": "lf",
       "quoteProperties": "asNeeded",
-      "quoteStyle": "single",
+      "quoteStyle": "double",
       "semicolons": "asNeeded",
-      "trailingCommas": "all"
+      "trailingCommas": "es5"
     }
   },
   "json": {
