@@ -101,28 +101,8 @@ export function PopupRoot({ drafts }: PopupRootProps) {
     })
   }
 
-  const getTableBody = () => {
-    if (drafts.length === 0) {
-      return <EmptyState />
-    }
-
-    if (
-      filteredDrafts.length === 0 &&
-      (filters.searchQuery || filters.sentFilter !== "both")
-    ) {
-      return <NoMatchesState onClearFilters={clearFilters} />
-    }
-
-    return filteredDrafts.map((row) => (
-      <CommentRow
-        key={row.spot.unique_key}
-        row={row}
-        selectedIds={selectedIds}
-        toggleSelection={toggleSelection}
-        handleOpen={handleOpen}
-        handleTrash={handleTrash}
-      />
-    ))
+  if (drafts.length === 0) {
+    return <EmptyState />
   }
 
   return (
@@ -233,7 +213,25 @@ export function PopupRoot({ drafts }: PopupRootProps) {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">{getTableBody()}</tbody>
+          <tbody className="divide-y divide-gray-200">
+            {filteredDrafts.length === 0 && (
+              <tr>
+                <td colSpan={2}>
+                  <NoMatchesState onClearFilters={clearFilters} />
+                </td>
+              </tr>
+            )}
+            {filteredDrafts.map((row) => (
+              <CommentRow
+                key={row.spot.unique_key}
+                row={row}
+                selectedIds={selectedIds}
+                toggleSelection={toggleSelection}
+                handleOpen={handleOpen}
+                handleTrash={handleTrash}
+              />
+            ))}
+          </tbody>
         </table>
       </div>
     </div>

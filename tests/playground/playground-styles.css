@@ -17,7 +17,7 @@ body {
 /* Popup simulator frame */
 .popup-frame {
   width: var(--popup-width);
-  height: var(--popup-height);
+  max-height: var(--popup-height);
   font-size: 14px;
   line-height: 1.4;
   background: white;
