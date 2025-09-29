@@ -8,7 +8,7 @@ export function NoMatchesState({ onClearFilters }: NoMatchesStateProps) {
       <button
         type="button"
         onClick={onClearFilters}
-        className="text-blue-600 hover:underline cursor-pointer"
+        className="cursor-pointer text-blue-600 hover:underline"
       >
         Clear filters
       </button>
