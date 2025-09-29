@@ -13,14 +13,18 @@ exports[`github ui > gh_issue:should render correct UI elements 1`] = `
           size={16}
         />
       </span>
-      #
-      523
-      <a
-        className="truncate hover:underline"
-        href="https://github.com/diffplug/selfie"
-      >
-        diffplug/selfie
-      </a>
+      <span>
+        #
+        523
+         |
+         
+        <a
+          className="truncate hover:underline"
+          href="https://github.com/diffplug/selfie"
+        >
+          diffplug/selfie
+        </a>
+      </span>
     </React.Fragment>,
   },
 ]
@@ -46,14 +50,18 @@ exports[`github ui > gh_issue_edit:should render correct UI elements 1`] = `
           size={16}
         />
       </span>
-      #
-      56
-      <a
-        className="truncate hover:underline"
-        href="https://github.com/diffplug/gitcasso"
-      >
-        diffplug/gitcasso
-      </a>
+      <span>
+        #
+        56
+         |
+         
+        <a
+          className="truncate hover:underline"
+          href="https://github.com/diffplug/gitcasso"
+        >
+          diffplug/gitcasso
+        </a>
+      </span>
     </React.Fragment>,
   },
 ]
@@ -86,14 +94,18 @@ exports[`github ui > gh_issue_edit_multiple:should render correct UI elements 1`
           size={16}
         />
       </span>
-      #
-      3
-      <a
-        className="truncate hover:underline"
-        href="https://github.com/diffplug/testing-deletable"
-      >
-        diffplug/testing-deletable
-      </a>
+      <span>
+        #
+        3
+         |
+         
+        <a
+          className="truncate hover:underline"
+          href="https://github.com/diffplug/testing-deletable"
+        >
+          diffplug/testing-deletable
+        </a>
+      </span>
     </React.Fragment>,
   },
 ]
@@ -105,15 +117,22 @@ exports[`github ui > gh_issue_new:should render correct UI elements 1`] = `
     "for": "id=:r34: name=null className=prc-Textarea-TextArea-13q4j focus-visible overtype-input",
     "title": "New issue title",
     "upperDecoration": <React.Fragment>
-      <span>
-        New Issue
-      </span>
       <span
-        className="font-mono text-muted-foreground text-sm"
+        className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
       >
+        <IssueOpenedIcon
+          size={16}
+        />
+      </span>
+      <span>
+        New |
          
-        diffplug/gitcasso
-         
+        <a
+          className="truncate hover:underline"
+          href="https://github.com/diffplug/gitcasso"
+        >
+          diffplug/gitcasso
+        </a>
       </span>
     </React.Fragment>,
   },
@@ -128,15 +147,23 @@ exports[`github ui > gh_pr:should render correct UI elements 1`] = `
           #517",
     "upperDecoration": <React.Fragment>
       <span
-        className="font-mono text-muted-foreground text-sm"
+        className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
       >
-        diffplug/selfie
+        <FeedPullRequestOpenIcon
+          size={16}
+        />
       </span>
-      <span
-        className="ml-2 font-medium"
-      >
-        PR #
+      <span>
+        #
         517
+         |
+         
+        <a
+          className="truncate hover:underline"
+          href="https://github.com/diffplug/selfie"
+        >
+          diffplug/selfie
+        </a>
       </span>
     </React.Fragment>,
   },
@@ -159,15 +186,23 @@ exports[`github ui > gh_pr_edit:should render correct UI elements 1`] = `
  #58",
     "upperDecoration": <React.Fragment>
       <span
-        className="font-mono text-muted-foreground text-sm"
+        className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
       >
-        diffplug/gitcasso
+        <FeedPullRequestOpenIcon
+          size={16}
+        />
       </span>
-      <span
-        className="ml-2 font-medium"
-      >
-        PR #
+      <span>
+        #
         58
+         |
+         
+        <a
+          className="truncate hover:underline"
+          href="https://github.com/diffplug/gitcasso"
+        >
+          diffplug/gitcasso
+        </a>
       </span>
     </React.Fragment>,
   },
@@ -196,15 +231,23 @@ exports[`github ui > gh_pr_edit_multiple:should render correct UI elements 1`] =
  #5",
     "upperDecoration": <React.Fragment>
       <span
-        className="font-mono text-muted-foreground text-sm"
+        className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
       >
-        diffplug/testing-deletable
+        <FeedPullRequestOpenIcon
+          size={16}
+        />
       </span>
-      <span
-        className="ml-2 font-medium"
-      >
-        PR #
+      <span>
+        #
         5
+         |
+         
+        <a
+          className="truncate hover:underline"
+          href="https://github.com/diffplug/testing-deletable"
+        >
+          diffplug/testing-deletable
+        </a>
       </span>
     </React.Fragment>,
   },
@@ -217,15 +260,22 @@ exports[`github ui > gh_pr_new:should render correct UI elements 1`] = `
     "for": "id=pull_request_body name=pull_request[body] className=js-comment-field js-paste-markdown js-task-list-field js-quick-submit FormControl-textarea CommentBox-input js-size-to-fit size-to-fit js-session-resumable js-saved-reply-shortcut-comment-field CommentBox-input--large overtype-input",
     "title": "Update README.md",
     "upperDecoration": <React.Fragment>
-      <span>
-        New PR
-      </span>
       <span
-        className="font-mono text-muted-foreground text-sm"
+        className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
       >
+        <FeedPullRequestOpenIcon
+          size={16}
+        />
+      </span>
+      <span>
+        New |
          
-        diffplug/selfie
-         
+        <a
+          className="truncate hover:underline"
+          href="https://github.com/diffplug/selfie"
+        >
+          diffplug/selfie
+        </a>
       </span>
     </React.Fragment>,
   },
