@@ -1,4 +1,4 @@
-import { CONFIG, type LogLevel } from './config'
+import { CONFIG, type LogLevel } from "./config"
 
 /**
  * Simple logging utilities for the extension
@@ -24,10 +24,10 @@ const shouldLog = (level: LogLevel): boolean => {
 
 // Export simple logging functions
 export const logger = {
-  debug: shouldLog('DEBUG') ? console.log.bind(console, prefix) : noop,
-  error: shouldLog('ERROR') ? console.error.bind(console, prefix) : noop,
-  info: shouldLog('INFO') ? console.log.bind(console, prefix) : noop,
-  time: shouldLog('INFO') ? console.time.bind(console) : noop,
-  timeEnd: shouldLog('INFO') ? console.timeEnd.bind(console) : noop,
-  warn: shouldLog('WARN') ? console.warn.bind(console, prefix) : noop,
+  debug: shouldLog("DEBUG") ? console.log.bind(console, prefix) : noop,
+  error: shouldLog("ERROR") ? console.error.bind(console, prefix) : noop,
+  info: shouldLog("INFO") ? console.log.bind(console, prefix) : noop,
+  time: shouldLog("INFO") ? console.time.bind(console) : noop,
+  timeEnd: shouldLog("INFO") ? console.timeEnd.bind(console) : noop,
+  warn: shouldLog("WARN") ? console.warn.bind(console, prefix) : noop,
 }

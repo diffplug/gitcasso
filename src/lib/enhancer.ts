@@ -1,5 +1,5 @@
-import type { OverTypeInstance } from 'overtype'
-import type { ReactNode } from 'react'
+import type { OverTypeInstance } from "overtype"
+import type { ReactNode } from "react"
 
 /**
  * Stores enough info about the location of a draft to:
@@ -11,7 +11,7 @@ export interface CommentSpot {
   type: string
 }
 
-export type CommentEventType = 'ENHANCED' | 'LOST_FOCUS' | 'DESTROYED'
+export type CommentEventType = "ENHANCED" | "LOST_FOCUS" | "DESTROYED"
 
 export interface CommentEvent {
   type: CommentEventType
@@ -36,7 +36,10 @@ export interface CommentEnhancer<Spot extends CommentSpot = CommentSpot> {
    * Whenever a new `textarea` is added to any webpage, this method is called.
    * If we return non-null, then we become the handler for that text area.
    */
-  tryToEnhance(textarea: HTMLTextAreaElement, location: StrippedLocation): Spot | null
+  tryToEnhance(
+    textarea: HTMLTextAreaElement,
+    location: StrippedLocation
+  ): Spot | null
   /**
    * If `tryToEnhance` returns non-null, then this gets called.
    */

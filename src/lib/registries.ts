@@ -1,18 +1,18 @@
-import type { OverTypeInstance } from 'overtype'
-import OverType from 'overtype'
+import type { OverTypeInstance } from "overtype"
+import OverType from "overtype"
 import type {
   CommentEnhancer,
   CommentEvent,
   CommentEventType,
   CommentSpot,
   StrippedLocation,
-} from './enhancer'
-import { CommentEnhancerMissing } from './enhancers/CommentEnhancerMissing'
-import { GitHubEditEnhancer } from './enhancers/github/GitHubEditEnhancer'
-import { GitHubIssueAppendEnhancer } from './enhancers/github/GitHubIssueAppendEnhancer'
-import { GitHubIssueCreateEnhancer } from './enhancers/github/GitHubIssueCreateEnhancer'
-import { GitHubPrAppendEnhancer } from './enhancers/github/GitHubPrAppendEnhancer'
-import { GitHubPrCreateEnhancer } from './enhancers/github/GitHubPrCreateEnhancer'
+} from "./enhancer"
+import { CommentEnhancerMissing } from "./enhancers/CommentEnhancerMissing"
+import { GitHubEditEnhancer } from "./enhancers/github/GitHubEditEnhancer"
+import { GitHubIssueAppendEnhancer } from "./enhancers/github/GitHubIssueAppendEnhancer"
+import { GitHubIssueCreateEnhancer } from "./enhancers/github/GitHubIssueCreateEnhancer"
+import { GitHubPrAppendEnhancer } from "./enhancers/github/GitHubPrAppendEnhancer"
+import { GitHubPrCreateEnhancer } from "./enhancers/github/GitHubPrCreateEnhancer"
 
 export interface EnhancedTextarea<T extends CommentSpot = CommentSpot> {
   textarea: HTMLTextAreaElement
@@ -32,26 +32,26 @@ export class EnhancerRegistry {
     this.register(new GitHubIssueCreateEnhancer())
     this.register(new GitHubPrAppendEnhancer())
     this.register(new GitHubPrCreateEnhancer())
-    const textColor = 'rgb(31, 35, 40)'
-    const headingColor = 'rgb(174, 52, 151)'
+    const textColor = "rgb(31, 35, 40)"
+    const headingColor = "rgb(174, 52, 151)"
     OverType.setTheme({
       colors: {
-        blockquote: 'rgb(89, 99, 110)',
-        code: '#59636e',
-        codeBg: '#f6f8fa',
-        cursor: '#000000',
-        em: 'rgb(126, 123, 255)',
+        blockquote: "rgb(89, 99, 110)",
+        code: "#59636e",
+        codeBg: "#f6f8fa",
+        cursor: "#000000",
+        em: "rgb(126, 123, 255)",
         h1: headingColor,
         h2: headingColor,
         h3: headingColor,
-        hr: '#5a7a9b',
-        link: 'rgb(9, 105, 218)',
-        selection: 'rgba(0, 123, 255, 0.3)',
-        strong: 'rgb(45, 1, 142)',
+        hr: "#5a7a9b",
+        link: "rgb(9, 105, 218)",
+        selection: "rgba(0, 123, 255, 0.3)",
+        strong: "rgb(45, 1, 142)",
         syntaxMarker: textColor,
         text: textColor,
       },
-      name: 'custom-github',
+      name: "custom-github",
     })
   }
 
@@ -63,10 +63,14 @@ export class EnhancerRegistry {
   }
 
   enhancerFor<T extends CommentSpot>(spot: T): CommentEnhancer<T> {
-    return (this.byType.get(spot.type) || new CommentEnhancerMissing()) as CommentEnhancer<T>
+    return (this.byType.get(spot.type) ||
+      new CommentEnhancerMissing()) as CommentEnhancer<T>
   }
 
-  tryToEnhance(textarea: HTMLTextAreaElement, location: StrippedLocation): EnhancedTextarea | null {
+  tryToEnhance(
+    textarea: HTMLTextAreaElement,
+    location: StrippedLocation
+  ): EnhancedTextarea | null {
     for (const enhancer of this.enhancers) {
       try {
         const spot = enhancer.tryToEnhance(textarea, location)
@@ -76,7 +80,7 @@ export class EnhancerRegistry {
           return { enhancer, overtype, spot, textarea }
         }
       } catch (error) {
-        console.warn('Handler failed to identify textarea:', error)
+        console.warn("Handler failed to identify textarea:", error)
       }
     }
     return null
@@ -113,7 +117,10 @@ export class TextareaRegistry {
     this.eventSender = sendEvent
   }
 
-  private sendEvent(eventType: CommentEventType, enhanced: EnhancedTextarea): void {
+  private sendEvent(
+    eventType: CommentEventType,
+    enhanced: EnhancedTextarea
+  ): void {
     this.eventSender({
       draft: enhanced.textarea.value,
       spot: enhanced.spot,
@@ -123,10 +130,10 @@ export class TextareaRegistry {
 
   register<T extends CommentSpot>(enhanced: EnhancedTextarea<T>): void {
     this.textareas.set(enhanced.textarea, enhanced)
-    enhanced.textarea.addEventListener('blur', () => {
-      this.sendEvent('LOST_FOCUS', enhanced)
+    enhanced.textarea.addEventListener("blur", () => {
+      this.sendEvent("LOST_FOCUS", enhanced)
     })
-    this.sendEvent('ENHANCED', enhanced)
+    this.sendEvent("ENHANCED", enhanced)
   }
 
   private cleanupOvertype(overtype: OverTypeInstance) {
@@ -138,7 +145,7 @@ export class TextareaRegistry {
     const enhanced = this.textareas.get(textarea)
     if (enhanced) {
       this.cleanupOvertype(enhanced.overtype)
-      this.sendEvent('DESTROYED', enhanced)
+      this.sendEvent("DESTROYED", enhanced)
       this.textareas.delete(textarea)
     }
   }
@@ -149,7 +156,7 @@ export class TextareaRegistry {
 
   tabLostFocus(): void {
     for (const enhanced of this.textareas.values()) {
-      this.sendEvent('LOST_FOCUS', enhanced)
+      this.sendEvent("LOST_FOCUS", enhanced)
     }
   }
 }

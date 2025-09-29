@@ -1,19 +1,19 @@
-import { Eye, EyeOff, Search, Settings, Trash2 } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { twMerge } from 'tailwind-merge'
-import { badgeCVA } from '@/components/design'
-import MultiSegment from '@/components/MultiSegment'
-import { allLeafValues } from '@/components/misc'
-import type { CommentTableRow } from '@/entrypoints/background'
-import type { FilterState } from '@/entrypoints/popup/popup'
-import { BulkActionsBar } from './BulkActionsBar'
-import { CommentRow } from './CommentRow'
-import { EmptyState } from './EmptyState'
-import { NoMatchesState } from './NoMatchesState'
+import { Eye, EyeOff, Search, Settings, Trash2 } from "lucide-react"
+import { useMemo, useState } from "react"
+import { twMerge } from "tailwind-merge"
+import { badgeCVA } from "@/components/design"
+import MultiSegment from "@/components/MultiSegment"
+import { allLeafValues } from "@/components/misc"
+import type { CommentTableRow } from "@/entrypoints/background"
+import type { FilterState } from "@/entrypoints/popup/popup"
+import { BulkActionsBar } from "./BulkActionsBar"
+import { CommentRow } from "./CommentRow"
+import { EmptyState } from "./EmptyState"
+import { NoMatchesState } from "./NoMatchesState"
 
 const initialFilter: FilterState = {
-  searchQuery: '',
-  sentFilter: 'both',
+  searchQuery: "",
+  sentFilter: "both",
   showTrashed: false,
 }
 
@@ -25,7 +25,10 @@ export function PopupRoot({ drafts }: PopupRootProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [filters, setFilters] = useState<FilterState>(initialFilter)
 
-  const updateFilter = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
+  const updateFilter = <K extends keyof FilterState>(
+    key: K,
+    value: FilterState[K]
+  ) => {
     setFilters((prev) => ({ ...prev, [key]: value }))
   }
 
@@ -34,8 +37,10 @@ export function PopupRoot({ drafts }: PopupRootProps) {
     if (!filters.showTrashed) {
       filtered = filtered.filter((d) => !d.isTrashed)
     }
-    if (filters.sentFilter !== 'both') {
-      filtered = filtered.filter((d) => (filters.sentFilter === 'sent' ? d.isSent : !d.isSent))
+    if (filters.sentFilter !== "both") {
+      filtered = filtered.filter((d) =>
+        filters.sentFilter === "sent" ? d.isSent : !d.isSent
+      )
     }
     if (filters.searchQuery) {
       const query = filters.searchQuery.toLowerCase()
@@ -64,7 +69,10 @@ export function PopupRoot({ drafts }: PopupRootProps) {
   }
 
   const toggleSelectAll = () => {
-    if (selectedIds.size === filteredDrafts.length && filteredDrafts.length > 0) {
+    if (
+      selectedIds.size === filteredDrafts.length &&
+      filteredDrafts.length > 0
+    ) {
       setSelectedIds(new Set())
     } else {
       setSelectedIds(new Set(filteredDrafts.map((d) => d.spot.unique_key)))
@@ -72,23 +80,23 @@ export function PopupRoot({ drafts }: PopupRootProps) {
   }
 
   const handleOpen = (url: string) => {
-    window.open(url, '_blank')
+    window.open(url, "_blank")
   }
 
   const handleTrash = (row: CommentTableRow) => {
     if (row.latestDraft.stats.charCount > 20) {
-      if (confirm('Are you sure you want to discard this draft?')) {
-        console.log('Trashing draft:', row.spot.unique_key)
+      if (confirm("Are you sure you want to discard this draft?")) {
+        console.log("Trashing draft:", row.spot.unique_key)
       }
     } else {
-      console.log('Trashing draft:', row.spot.unique_key)
+      console.log("Trashing draft:", row.spot.unique_key)
     }
   }
 
   const clearFilters = () => {
     setFilters({
-      searchQuery: '',
-      sentFilter: 'both',
+      searchQuery: "",
+      sentFilter: "both",
       showTrashed: true,
     })
   }
@@ -98,7 +106,10 @@ export function PopupRoot({ drafts }: PopupRootProps) {
       return <EmptyState />
     }
 
-    if (filteredDrafts.length === 0 && (filters.searchQuery || filters.sentFilter !== 'both')) {
+    if (
+      filteredDrafts.length === 0 &&
+      (filters.searchQuery || filters.sentFilter !== "both")
+    ) {
       return <NoMatchesState onClearFilters={clearFilters} />
     }
 
@@ -115,92 +126,106 @@ export function PopupRoot({ drafts }: PopupRootProps) {
   }
 
   return (
-    <div className='bg-white'>
+    <div className="bg-white">
       {/* Bulk actions bar - floating popup */}
       {selectedIds.size > 0 && <BulkActionsBar selectedIds={selectedIds} />}
 
       {/* Table */}
-      <div className='overflow-x-auto'>
-        <table className='w-full table-fixed table-fixed'>
+      <div className="overflow-x-auto">
+        <table className="w-full table-fixed table-fixed">
           <colgroup>
-            <col className='w-10' />
+            <col className="w-10" />
             <col />
           </colgroup>
-          <thead className='border-gray-400 border-b'>
+          <thead className="border-gray-400 border-b">
             <tr>
-              <th scope='col' className='px-3 py-3'>
+              <th scope="col" className="px-3 py-3">
                 <input
-                  type='checkbox'
-                  checked={selectedIds.size === filteredDrafts.length && filteredDrafts.length > 0}
+                  type="checkbox"
+                  checked={
+                    selectedIds.size === filteredDrafts.length &&
+                    filteredDrafts.length > 0
+                  }
                   onChange={toggleSelectAll}
-                  aria-label='Select all'
-                  className='rounded'
+                  aria-label="Select all"
+                  className="rounded"
                 />
               </th>
-              <th scope='col' className='px-3 py-3 text-left text-gray-500 text-xs'>
-                <div className='relative'>
-                  <div className='flex items-center gap-1'>
-                    <div className='relative flex-1'>
-                      <Search className='-translate-y-1/2 absolute top-1/2 left-1 h-4 w-4 text-gray-400' />
+              <th
+                scope="col"
+                className="px-3 py-3 text-left text-gray-500 text-xs"
+              >
+                <div className="relative">
+                  <div className="flex items-center gap-1">
+                    <div className="relative flex-1">
+                      <Search className="-translate-y-1/2 absolute top-1/2 left-1 h-4 w-4 text-gray-400" />
                       <input
-                        type='text'
-                        placeholder='Search drafts...'
+                        type="text"
+                        placeholder="Search drafts..."
                         value={filters.searchQuery}
-                        onChange={(e) => updateFilter('searchQuery', e.target.value)}
-                        className='h-5 w-full rounded-sm border border-gray-300 pr-3 pl-5 font-normal text-sm focus:border-blue-500 focus:outline-none'
+                        onChange={(e) =>
+                          updateFilter("searchQuery", e.target.value)
+                        }
+                        className="h-5 w-full rounded-sm border border-gray-300 pr-3 pl-5 font-normal text-sm focus:border-blue-500 focus:outline-none"
                       />
                     </div>
-                    <div className='relative flex gap-1 overflow-hidden'>
+                    <div className="relative flex gap-1 overflow-hidden">
                       <button
-                        type='button'
-                        onClick={() => updateFilter('showTrashed', !filters.showTrashed)}
+                        type="button"
+                        onClick={() =>
+                          updateFilter("showTrashed", !filters.showTrashed)
+                        }
                         className={twMerge(
                           badgeCVA({
                             clickable: true,
-                            type: filters.showTrashed ? 'trashed' : 'hideTrashed',
+                            type: filters.showTrashed
+                              ? "trashed"
+                              : "hideTrashed",
                           }),
-                          'border',
+                          "border"
                         )}
                       >
-                        <Trash2 className='h-3 w-3' />
+                        <Trash2 className="h-3 w-3" />
                         {filters.showTrashed ? (
-                          <Eye className='h-3 w-3' />
+                          <Eye className="h-3 w-3" />
                         ) : (
-                          <EyeOff className='h-3 w-3' />
+                          <EyeOff className="h-3 w-3" />
                         )}
                       </button>
-                      <MultiSegment<FilterState['sentFilter']>
+                      <MultiSegment<FilterState["sentFilter"]>
                         value={filters.sentFilter}
-                        onValueChange={(value) => updateFilter('sentFilter', value)}
+                        onValueChange={(value) =>
+                          updateFilter("sentFilter", value)
+                        }
                         segments={[
                           {
-                            text: '',
-                            type: 'unsent',
-                            value: 'unsent',
+                            text: "",
+                            type: "unsent",
+                            value: "unsent",
                           },
                           {
-                            text: 'both',
-                            type: 'blank',
-                            value: 'both',
+                            text: "both",
+                            type: "blank",
+                            value: "both",
                           },
                           {
-                            text: '',
-                            type: 'sent',
-                            value: 'sent',
+                            text: "",
+                            type: "sent",
+                            value: "sent",
                           },
                         ]}
                       />
                       <button
-                        type='button'
+                        type="button"
                         className={twMerge(
                           badgeCVA({
                             clickable: true,
-                            type: 'settings',
+                            type: "settings",
                           }),
-                          'border',
+                          "border"
                         )}
                       >
-                        <Settings className='h-3 w-3' />
+                        <Settings className="h-3 w-3" />
                       </button>
                     </div>
                   </div>
@@ -208,7 +233,7 @@ export function PopupRoot({ drafts }: PopupRootProps) {
               </th>
             </tr>
           </thead>
-          <tbody className='divide-y divide-gray-200'>{getTableBody()}</tbody>
+          <tbody className="divide-y divide-gray-200">{getTableBody()}</tbody>
         </table>
       </div>
     </div>

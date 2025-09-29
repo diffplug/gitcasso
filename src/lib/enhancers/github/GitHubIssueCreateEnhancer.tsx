@@ -1,10 +1,14 @@
-import OverType, { type OverTypeInstance } from 'overtype'
-import type { CommentEnhancer, CommentSpot, StrippedLocation } from '../../enhancer'
-import { logger } from '../../logger'
-import { modifyDOM } from '../modifyDOM'
-import { commonGitHubOptions, prepareGitHubHighlighter } from './github-common'
+import OverType, { type OverTypeInstance } from "overtype"
+import type {
+  CommentEnhancer,
+  CommentSpot,
+  StrippedLocation,
+} from "../../enhancer"
+import { logger } from "../../logger"
+import { modifyDOM } from "../modifyDOM"
+import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
 
-const GH_ISSUE_CREATE = 'GH_ISSUE_CREATE' as const
+const GH_ISSUE_CREATE = "GH_ISSUE_CREATE" as const
 
 interface GitHubIssueCreateSpot extends CommentSpot {
   type: typeof GH_ISSUE_CREATE
@@ -13,34 +17,40 @@ interface GitHubIssueCreateSpot extends CommentSpot {
   title: string
 }
 
-export class GitHubIssueCreateEnhancer implements CommentEnhancer<GitHubIssueCreateSpot> {
+export class GitHubIssueCreateEnhancer
+  implements CommentEnhancer<GitHubIssueCreateSpot>
+{
   forSpotTypes(): string[] {
     return [GH_ISSUE_CREATE]
   }
 
   tryToEnhance(
     textarea: HTMLTextAreaElement,
-    location: StrippedLocation,
+    location: StrippedLocation
   ): GitHubIssueCreateSpot | null {
-    if (textarea.id === 'feedback') {
+    if (textarea.id === "feedback") {
       return null
     }
-    if (location.host !== 'github.com') {
+    if (location.host !== "github.com") {
       return null
     }
 
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
     logger.debug(`${this.constructor.name} examing url`, location.pathname)
 
-    const match = location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/issues\/new)/)
+    const match = location.pathname.match(
+      /^\/([^/]+)\/([^/]+)(?:\/issues\/new)/
+    )
     logger.debug(`${this.constructor.name} found match`, location.pathname)
 
     if (!match) return null
     const [, owner, repo] = match
     const slug = `${owner}/${repo}`
     const unique_key = `github.com:${slug}:new`
-    const titleInput = document.querySelector('input[placeholder="Title"]') as HTMLInputElement
-    const title = titleInput?.value || ''
+    const titleInput = document.querySelector(
+      'input[placeholder="Title"]'
+    ) as HTMLInputElement
+    const title = titleInput?.value || ""
     return {
       domain: location.host,
       slug,
@@ -50,13 +60,16 @@ export class GitHubIssueCreateEnhancer implements CommentEnhancer<GitHubIssueCre
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubIssueCreateSpot): OverTypeInstance {
+  enhance(
+    textArea: HTMLTextAreaElement,
+    _spot: GitHubIssueCreateSpot
+  ): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     return new OverType(overtypeContainer, {
       ...commonGitHubOptions,
-      minHeight: '400px',
-      placeholder: 'Type your description here...',
+      minHeight: "400px",
+      placeholder: "Type your description here...",
     })[0]!
   }
 
@@ -65,13 +78,16 @@ export class GitHubIssueCreateEnhancer implements CommentEnhancer<GitHubIssueCre
     return (
       <>
         <span>New Issue</span>
-        <span className='font-mono text-muted-foreground text-sm'> {slug} </span>
+        <span className="font-mono text-muted-foreground text-sm">
+          {" "}
+          {slug}{" "}
+        </span>
       </>
     )
   }
 
   tableTitle(spot: GitHubIssueCreateSpot): string {
-    return spot.title || 'New Issue'
+    return spot.title || "New Issue"
   }
 
   buildUrl(spot: GitHubIssueCreateSpot): string {

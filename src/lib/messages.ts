@@ -1,5 +1,5 @@
-import type { CommentTableRow } from '@/entrypoints/background'
-import type { CommentEvent, CommentEventType } from './enhancer'
+import type { CommentTableRow } from "@/entrypoints/background"
+import type { CommentEvent, CommentEventType } from "./enhancer"
 
 // Message handler response types
 export const CLOSE_MESSAGE_PORT = false as const // No response will be sent
@@ -10,18 +10,20 @@ export type ContentToBackgroundMessage = CommentEvent
 
 // Popup -> Background messages
 export interface GetOpenSpotsMessage {
-  type: 'GET_OPEN_SPOTS'
+  type: "GET_OPEN_SPOTS"
 }
 
 export interface OpenOrFocusMessage {
-  type: 'OPEN_OR_FOCUS_COMMENT'
+  type: "OPEN_OR_FOCUS_COMMENT"
   uniqueKey: string
 }
 
 export type PopupToBackgroundMessage = GetOpenSpotsMessage | OpenOrFocusMessage
 
 // All messages sent to background
-export type ToBackgroundMessage = ContentToBackgroundMessage | PopupToBackgroundMessage
+export type ToBackgroundMessage =
+  | ContentToBackgroundMessage
+  | PopupToBackgroundMessage
 
 // Background -> Popup responses
 export interface GetTableRowsResponse {
@@ -41,30 +43,40 @@ function isValidCommentEventType(type: string): type is CommentEventType {
 }
 
 // Type guard functions
-export function isContentToBackgroundMessage(message: any): message is ContentToBackgroundMessage {
+export function isContentToBackgroundMessage(
+  message: any
+): message is ContentToBackgroundMessage {
   return (
     message &&
-    typeof message.type === 'string' &&
+    typeof message.type === "string" &&
     isValidCommentEventType(message.type) &&
     message.spot
   )
 }
 
-export function isPopupToBackgroundMessage(message: any): message is PopupToBackgroundMessage {
+export function isPopupToBackgroundMessage(
+  message: any
+): message is PopupToBackgroundMessage {
   return (
     message &&
-    typeof message.type === 'string' &&
-    (message.type === 'GET_OPEN_SPOTS' || message.type === 'SWITCH_TO_TAB')
+    typeof message.type === "string" &&
+    (message.type === "GET_OPEN_SPOTS" || message.type === "SWITCH_TO_TAB")
   )
 }
 
-export function isGetOpenSpotsMessage(message: any): message is GetOpenSpotsMessage {
-  return message && message.type === 'GET_OPEN_SPOTS'
+export function isGetOpenSpotsMessage(
+  message: any
+): message is GetOpenSpotsMessage {
+  return message && message.type === "GET_OPEN_SPOTS"
 }
 
-export function isOpenOrFocusMessage(message: any): message is OpenOrFocusMessage {
+export function isOpenOrFocusMessage(
+  message: any
+): message is OpenOrFocusMessage {
   return (
-    message && message.type === 'OPEN_OR_FOCUS_COMMENT' && typeof message.uniqueKey === 'string'
+    message &&
+    message.type === "OPEN_OR_FOCUS_COMMENT" &&
+    typeof message.uniqueKey === "string"
   )
 }
 
@@ -72,11 +84,11 @@ export function isOpenOrFocusMessage(message: any): message is OpenOrFocusMessag
 export type BackgroundMessageHandler = (
   message: ToBackgroundMessage,
   sender: any,
-  sendResponse: (response?: any) => void,
+  sendResponse: (response?: any) => void
 ) => boolean | undefined
 
 export type PopupMessageSender = {
   sendMessage<T extends PopupToBackgroundMessage>(
-    message: T,
+    message: T
   ): Promise<T extends GetOpenSpotsMessage ? GetTableRowsResponse : void>
 }

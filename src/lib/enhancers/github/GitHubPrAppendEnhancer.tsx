@@ -1,11 +1,15 @@
-import OverType, { type OverTypeInstance } from 'overtype'
-import type React from 'react'
-import type { CommentEnhancer, CommentSpot, StrippedLocation } from '@/lib/enhancer'
-import { logger } from '@/lib/logger'
-import { modifyDOM } from '../modifyDOM'
-import { commonGitHubOptions, prepareGitHubHighlighter } from './github-common'
+import OverType, { type OverTypeInstance } from "overtype"
+import type React from "react"
+import type {
+  CommentEnhancer,
+  CommentSpot,
+  StrippedLocation,
+} from "@/lib/enhancer"
+import { logger } from "@/lib/logger"
+import { modifyDOM } from "../modifyDOM"
+import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
 
-const GH_PR_APPEND = 'GH_PR_APPEND' as const
+const GH_PR_APPEND = "GH_PR_APPEND" as const
 
 export interface GitHubPrAppendSpot extends CommentSpot {
   type: typeof GH_PR_APPEND
@@ -15,24 +19,28 @@ export interface GitHubPrAppendSpot extends CommentSpot {
   number: number // issue/PR number, undefined for new issues and PRs
 }
 
-export class GitHubPrAppendEnhancer implements CommentEnhancer<GitHubPrAppendSpot> {
+export class GitHubPrAppendEnhancer
+  implements CommentEnhancer<GitHubPrAppendSpot>
+{
   forSpotTypes(): string[] {
     return [GH_PR_APPEND]
   }
 
   tryToEnhance(
     textarea: HTMLTextAreaElement,
-    location: StrippedLocation,
+    location: StrippedLocation
   ): GitHubPrAppendSpot | null {
     // Only handle github.com domains TODO: identify GitHub Enterprise somehow
-    if (location.host !== 'github.com' || textarea.id !== 'new_comment_field') {
+    if (location.host !== "github.com" || textarea.id !== "new_comment_field") {
       return null
     }
 
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
     logger.debug(`${this.constructor.name} examing url`, location.pathname)
 
-    const match = location.pathname.match(/^\/([^/]+)\/([^/]+)(?:\/pull\/(\d+))/)
+    const match = location.pathname.match(
+      /^\/([^/]+)\/([^/]+)(?:\/pull\/(\d+))/
+    )
     logger.debug(`${this.constructor.name} found match`, location.pathname)
     if (!match) return null
     const [, owner, repo, numberStr] = match
@@ -40,8 +48,8 @@ export class GitHubPrAppendEnhancer implements CommentEnhancer<GitHubPrAppendSpo
     const number = parseInt(numberStr!, 10)
     const unique_key = `github.com:${slug}:${number}`
     const title = document
-      .querySelector('main h1')!
-      .textContent.replace(/\s*#\d+$/, '')
+      .querySelector("main h1")!
+      .textContent.replace(/\s*#\d+$/, "")
       .trim()
     return {
       domain: location.host,
@@ -53,17 +61,20 @@ export class GitHubPrAppendEnhancer implements CommentEnhancer<GitHubPrAppendSpo
     }
   }
 
-  enhance(textArea: HTMLTextAreaElement, _spot: GitHubPrAppendSpot): OverTypeInstance {
+  enhance(
+    textArea: HTMLTextAreaElement,
+    _spot: GitHubPrAppendSpot
+  ): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
     const overtype = new OverType(overtypeContainer, {
       ...commonGitHubOptions,
-      minHeight: '102px',
-      padding: 'var(--base-size-8)',
-      placeholder: 'Add your comment here...',
+      minHeight: "102px",
+      padding: "var(--base-size-8)",
+      placeholder: "Add your comment here...",
     })[0]!
     const listenForEmpty = new MutationObserver(() => {
-      if (textArea.value === '') {
+      if (textArea.value === "") {
         overtype.updatePreview()
       }
     })
@@ -75,8 +86,8 @@ export class GitHubPrAppendEnhancer implements CommentEnhancer<GitHubPrAppendSpo
     const { slug, number } = spot
     return (
       <>
-        <span className='font-mono text-muted-foreground text-sm'>{slug}</span>
-        <span className='ml-2 font-medium'>PR #{number}</span>
+        <span className="font-mono text-muted-foreground text-sm">{slug}</span>
+        <span className="ml-2 font-medium">PR #{number}</span>
       </>
     )
   }

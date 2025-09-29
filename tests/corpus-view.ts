@@ -20,13 +20,13 @@
  * - Real-time updates every 2 seconds to track textarea enhancement detection and debugging
  */
 
-import { spawn } from 'node:child_process'
-import fs from 'node:fs/promises'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import express from 'express'
-import type { Har } from 'har-format'
-import { CORPUS } from './corpus/_corpus-index'
+import { spawn } from "node:child_process"
+import fs from "node:fs/promises"
+import path from "node:path"
+import { fileURLToPath } from "node:url"
+import express from "express"
+import type { Har } from "har-format"
+import { CORPUS } from "./corpus/_corpus-index"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
@@ -66,15 +66,16 @@ const REBUILD_BUTTON_STYLES = `
 
 const COMMENT_SPOT_STYLES = {
   container:
-    'position: fixed; top: 80px; right: 20px; width: 400px; max-height: 400px; background: rgba(255, 255, 255, 0.95); border: 1px solid #ddd; border-radius: 8px; padding: 15px; font-family: Monaco, Menlo, Ubuntu Mono, monospace; font-size: 11px; line-height: 1.4; overflow-y: auto; z-index: 999998; box-shadow: 0 4px 12px rgba(0,0,0,0.2); backdrop-filter: blur(10px);',
-  empty: 'color: #666; font-style: italic;',
-  header: 'font-weight: bold; margin-bottom: 8px; color: #333;',
-  jsonPre: 'margin: 4px 0; font-size: 10px;',
-  noInfo: 'color: #999; font-style: italic; margin-top: 4px;',
-  spotContainer: 'margin-bottom: 12px; padding: 8px; border: 1px solid #eee; border-radius: 4px;',
-  spotTitle: 'font-weight: bold; color: #555;',
-  textareaHeader: 'font-weight: bold; color: #007acc; margin-top: 8px;',
-  textareaPre: 'margin: 4px 0; font-size: 10px; color: #666;',
+    "position: fixed; top: 80px; right: 20px; width: 400px; max-height: 400px; background: rgba(255, 255, 255, 0.95); border: 1px solid #ddd; border-radius: 8px; padding: 15px; font-family: Monaco, Menlo, Ubuntu Mono, monospace; font-size: 11px; line-height: 1.4; overflow-y: auto; z-index: 999998; box-shadow: 0 4px 12px rgba(0,0,0,0.2); backdrop-filter: blur(10px);",
+  empty: "color: #666; font-style: italic;",
+  header: "font-weight: bold; margin-bottom: 8px; color: #333;",
+  jsonPre: "margin: 4px 0; font-size: 10px;",
+  noInfo: "color: #999; font-style: italic; margin-top: 4px;",
+  spotContainer:
+    "margin-bottom: 12px; padding: 8px; border: 1px solid #eee; border-radius: 4px;",
+  spotTitle: "font-weight: bold; color: #555;",
+  textareaHeader: "font-weight: bold; color: #007acc; margin-top: 8px;",
+  textareaPre: "margin: 4px 0; font-size: 10px; color: #666;",
 }
 
 // Middleware to parse JSON bodies
@@ -105,8 +106,8 @@ async function loadHar(key: string): Promise<Har> {
     return harCache.get(key)!
   }
 
-  const harPath = path.join(__dirname, 'corpus', `${key}.har`)
-  const harContent = await fs.readFile(harPath, 'utf-8')
+  const harPath = path.join(__dirname, "corpus", `${key}.har`)
+  const harContent = await fs.readFile(harPath, "utf-8")
   const harData = JSON.parse(harContent)
   harCache.set(key, harData)
   return harData
@@ -121,13 +122,13 @@ Object.entries(CORPUS).forEach(([key, entry]) => {
 })
 
 // List available corpus files
-app.get('/', async (_req, res) => {
+app.get("/", async (_req, res) => {
   try {
     const links = Object.entries(CORPUS)
       .map(([key, entry]) => {
         const description = entry.description
           ? `<div style="color: #666; font-size: 0.9em;">${entry.description}</div>`
-          : ''
+          : ""
         return `
         <li>
           <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -143,7 +144,7 @@ app.get('/', async (_req, res) => {
         </li>
       `
       })
-      .join('')
+      .join("")
 
     res.send(`
 <!DOCTYPE html>
@@ -178,25 +179,25 @@ app.get('/', async (_req, res) => {
 </html>
     `)
   } catch (_error) {
-    res.status(500).send('Error listing corpus files')
+    res.status(500).send("Error listing corpus files")
   }
 })
 
 // Serve the main page from corpus
-app.get('/corpus/:key/:mode(clean|gitcasso)', async (req, res) => {
+app.get("/corpus/:key/:mode(clean|gitcasso)", async (req, res) => {
   try {
     // biome-ignore lint/complexity/useLiteralKeys: type comes from path string
-    const key = req.params['key']
+    const key = req.params["key"]
     // biome-ignore lint/complexity/useLiteralKeys: type comes from path string
-    const mode = req.params['mode'] as 'clean' | 'gitcasso'
+    const mode = req.params["mode"] as "clean" | "gitcasso"
 
     if (!key || !(key in CORPUS)) {
-      return res.status(400).send('Invalid key - not found in CORPUS')
+      return res.status(400).send("Invalid key - not found in CORPUS")
     }
 
     const entry = CORPUS[key]!
 
-    if (entry.type === 'har') {
+    if (entry.type === "har") {
       // Handle HAR corpus
       const harData = await loadHar(key)
       const originalUrl = entry.url
@@ -204,17 +205,17 @@ app.get('/corpus/:key/:mode(clean|gitcasso)', async (req, res) => {
         harData.log.entries.find(
           (entry) =>
             entry.request.url === originalUrl &&
-            entry.response.content.mimeType?.includes('text/html') &&
-            entry.response.content.text,
+            entry.response.content.mimeType?.includes("text/html") &&
+            entry.response.content.text
         ) ||
         harData.log.entries.find(
           (entry) =>
             entry.response.status === 200 &&
-            entry.response.content.mimeType?.includes('text/html') &&
-            entry.response.content.text,
+            entry.response.content.mimeType?.includes("text/html") &&
+            entry.response.content.text
         )
       if (!mainEntry) {
-        return res.status(404).send('No HTML content found in HAR file')
+        return res.status(404).send("No HTML content found in HAR file")
       }
 
       // Extract all domains from HAR entries for dynamic replacement
@@ -235,60 +236,60 @@ app.get('/corpus/:key/:mode(clean|gitcasso)', async (req, res) => {
       html = stripCSPFromHTML(html)
 
       domains.forEach((domain) => {
-        const escapedDomain = domain.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-        const regex = new RegExp(`https?://${escapedDomain}`, 'g')
+        const escapedDomain = domain.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+        const regex = new RegExp(`https?://${escapedDomain}`, "g")
         html = html.replace(regex, `/asset/${key}`)
       })
-      if (mode === 'gitcasso') {
+      if (mode === "gitcasso") {
         html = injectGitcassoScriptForHAR(key, html)
       }
 
       // Set permissive headers for HAR corpus to allow rebuild requests
       res.set({
-        'Content-Security-Policy': PERMISSIVE_CSP,
-        'X-Content-Type-Options': 'nosniff',
+        "Content-Security-Policy": PERMISSIVE_CSP,
+        "X-Content-Type-Options": "nosniff",
       })
 
       return res.send(html)
-    } else if (entry.type === 'html') {
+    } else if (entry.type === "html") {
       // Handle HTML corpus
-      const htmlPath = path.join(__dirname, 'corpus', `${key}.html`)
-      let html = await fs.readFile(htmlPath, 'utf-8')
+      const htmlPath = path.join(__dirname, "corpus", `${key}.html`)
+      let html = await fs.readFile(htmlPath, "utf-8")
 
       // Strip CSP headers that might block our injected scripts
       html = stripCSPFromHTML(html)
 
-      if (mode === 'gitcasso') {
+      if (mode === "gitcasso") {
         html = await injectGitcassoScriptForHTML(key, html)
       }
 
       // Set permissive headers for HTML corpus
       res.set({
-        'Content-Security-Policy': PERMISSIVE_CSP,
-        'X-Content-Type-Options': 'nosniff',
+        "Content-Security-Policy": PERMISSIVE_CSP,
+        "X-Content-Type-Options": "nosniff",
       })
 
       return res.send(html)
     } else {
-      return res.status(400).send('Unknown corpus type')
+      return res.status(400).send("Unknown corpus type")
     }
   } catch (error) {
-    console.error('Error serving page:', error)
-    return res.status(500).send('Error loading page')
+    console.error("Error serving page:", error)
+    return res.status(500).send("Error loading page")
   }
 })
 
 // Serve assets from HAR file (only for HAR corpus)
-app.get('/asset/:key/*', async (req, res) => {
+app.get("/asset/:key/*", async (req, res) => {
   try {
     const key = req.params.key
     if (!key || !(key in CORPUS)) {
-      return res.status(400).send('Invalid key - not found in CORPUS')
+      return res.status(400).send("Invalid key - not found in CORPUS")
     }
 
     const entry = CORPUS[key]!
-    if (entry.type !== 'har') {
-      return res.status(400).send('Asset serving only available for HAR corpus')
+    if (entry.type !== "har") {
+      return res.status(400).send("Asset serving only available for HAR corpus")
     }
 
     const assetPath = (req.params as any)[0] as string
@@ -306,77 +307,80 @@ app.get('/asset/:key/*', async (req, res) => {
     })
 
     if (!assetEntry) {
-      return res.status(404).send('Asset not found')
+      return res.status(404).send("Asset not found")
     }
 
     const content = assetEntry.response.content
-    const mimeType = content.mimeType || 'application/octet-stream'
-    res.set('Content-Type', mimeType)
-    if (content.encoding === 'base64') {
-      return res.send(Buffer.from(content.text!, 'base64'))
+    const mimeType = content.mimeType || "application/octet-stream"
+    res.set("Content-Type", mimeType)
+    if (content.encoding === "base64") {
+      return res.send(Buffer.from(content.text!, "base64"))
     } else {
       return res.send(content.text!)
     }
   } catch (error) {
-    console.error('Error serving asset:', error)
-    return res.status(404).send('Asset not found')
+    console.error("Error serving asset:", error)
+    return res.status(404).send("Asset not found")
   }
 })
 
 // Serve extension assets from filesystem
-app.use('/chrome-mv3-dev', express.static(path.join(__dirname, '..', '.output', 'chrome-mv3-dev')))
+app.use(
+  "/chrome-mv3-dev",
+  express.static(path.join(__dirname, "..", ".output", "chrome-mv3-dev"))
+)
 
 // Rebuild endpoint
-app.post('/rebuild', async (_req, res) => {
+app.post("/rebuild", async (_req, res) => {
   try {
-    console.log('Rebuild triggered via API')
+    console.log("Rebuild triggered via API")
 
     // Run pnpm run build:dev
-    const buildProcess = spawn('pnpm', ['run', 'build:dev'], {
-      cwd: path.join(__dirname, '..'),
-      stdio: ['pipe', 'pipe', 'pipe'],
+    const buildProcess = spawn("pnpm", ["run", "build:dev"], {
+      cwd: path.join(__dirname, ".."),
+      stdio: ["pipe", "pipe", "pipe"],
     })
 
-    let stdout = ''
-    let stderr = ''
+    let stdout = ""
+    let stderr = ""
 
-    buildProcess.stdout.on('data', (data) => {
+    buildProcess.stdout.on("data", (data) => {
       stdout += data.toString()
-      console.log('[BUILD]', data.toString().trim())
+      console.log("[BUILD]", data.toString().trim())
     })
 
-    buildProcess.stderr.on('data', (data) => {
+    buildProcess.stderr.on("data", (data) => {
       stderr += data.toString()
-      console.error('[BUILD ERROR]', data.toString().trim())
+      console.error("[BUILD ERROR]", data.toString().trim())
     })
 
-    buildProcess.on('close', (code) => {
+    buildProcess.on("close", (code) => {
       if (code === 0) {
-        console.log('Build completed successfully')
-        res.json({ message: 'Build completed successfully', success: true })
+        console.log("Build completed successfully")
+        res.json({ message: "Build completed successfully", success: true })
       } else {
-        console.error('Build failed with code:', code)
+        console.error("Build failed with code:", code)
         res.status(500).json({
           error: stderr || stdout,
-          message: 'Build failed',
+          message: "Build failed",
           success: false,
         })
       }
     })
 
-    buildProcess.on('error', (error) => {
-      console.error('Failed to start build process:', error)
+    buildProcess.on("error", (error) => {
+      console.error("Failed to start build process:", error)
       res.status(500).json({
         error: error.message,
-        message: 'Failed to start build process',
+        message: "Failed to start build process",
         success: false,
       })
     })
   } catch (error) {
-    console.error('Rebuild endpoint error:', error)
+    console.error("Rebuild endpoint error:", error)
     res.status(500).json({
-      error: error instanceof Error ? error.message : 'Unknown error',
-      message: 'Internal server error',
+      error: error instanceof Error ? error.message : "Unknown error",
+      message: "Internal server error",
       success: false,
     })
   }
@@ -384,20 +388,29 @@ app.post('/rebuild', async (_req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Corpus Viewer running at http://localhost:${PORT}`)
-  console.log('Click the links to view recorded pages')
+  console.log("Click the links to view recorded pages")
 })
 
 // Strip CSP meta tags and headers from HTML that might block our scripts
 function stripCSPFromHTML(html: string): string {
   // Remove CSP meta tags - more comprehensive patterns
-  html = html.replace(/<meta[^>]*http-equiv\s*=\s*["']?content-security-policy["']?[^>]*>/gi, '')
-  html = html.replace(/<meta[^>]*name\s*=\s*["']?content-security-policy["']?[^>]*>/gi, '')
+  html = html.replace(
+    /<meta[^>]*http-equiv\s*=\s*["']?content-security-policy["']?[^>]*>/gi,
+    ""
+  )
+  html = html.replace(
+    /<meta[^>]*name\s*=\s*["']?content-security-policy["']?[^>]*>/gi,
+    ""
+  )
 
   // Also match patterns where content-security-policy appears anywhere in the meta tag
-  html = html.replace(/<meta[^>]*content-security-policy[^>]*>/gi, '')
+  html = html.replace(/<meta[^>]*content-security-policy[^>]*>/gi, "")
 
   // Remove any other restrictive security meta tags
-  html = html.replace(/<meta[^>]*http-equiv\s*=\s*["']?x-content-type-options["']?[^>]*>/gi, '')
+  html = html.replace(
+    /<meta[^>]*http-equiv\s*=\s*["']?x-content-type-options["']?[^>]*>/gi,
+    ""
+  )
 
   return html
 }
@@ -472,7 +485,9 @@ function createRebuildButtonScript(): string {
   `
 }
 
-function createCommentSpotDisplayScript(urlParts: ReturnType<typeof getUrlParts>): string {
+function createCommentSpotDisplayScript(
+  urlParts: ReturnType<typeof getUrlParts>
+): string {
   return `
     // Create CommentSpot display
     const commentSpotDisplay = document.createElement('div');
@@ -531,7 +546,10 @@ function matchAssetPath(url: URL, assetPath: string): boolean {
   }
   // Handle query parameters - check if path without query matches
   const pathWithoutQuery = url.pathname + url.search
-  if (pathWithoutQuery === `/${assetPath}` || pathWithoutQuery.endsWith(`/${assetPath}`)) {
+  if (
+    pathWithoutQuery === `/${assetPath}` ||
+    pathWithoutQuery.endsWith(`/${assetPath}`)
+  ) {
     return true
   }
   return false
@@ -540,7 +558,7 @@ function matchAssetPath(url: URL, assetPath: string): boolean {
 // Unified script injection with different content script loading strategies
 function createGitcassoScript(
   urlParts: ReturnType<typeof getUrlParts>,
-  contentScriptCode?: string,
+  contentScriptCode?: string
 ): string {
   const contentScriptSetup = contentScriptCode
     ? // Direct embedding (for HTML corpus)
@@ -614,44 +632,48 @@ function injectGitcassoScriptForHAR(key: string, html: string): string {
   const urlParts = getUrlParts(key)
   const contentScriptTag = createGitcassoScript(urlParts)
 
-  if (html.includes('</body>')) {
-    return html.replace('</body>', `${contentScriptTag}</body>`)
+  if (html.includes("</body>")) {
+    return html.replace("</body>", `${contentScriptTag}</body>`)
   } else {
     return html + contentScriptTag
   }
 }
 
 // HTML version - embeds content script directly to avoid CSP issues
-async function injectGitcassoScriptForHTML(key: string, html: string): Promise<string> {
+async function injectGitcassoScriptForHTML(
+  key: string,
+  html: string
+): Promise<string> {
   const urlParts = getUrlParts(key)
 
   // Read and embed the content script directly to avoid CSP issues
-  let contentScriptCode = ''
+  let contentScriptCode = ""
   try {
     const contentScriptPath = path.join(
       __dirname,
-      '..',
-      '.output',
-      'chrome-mv3-dev',
-      'content-scripts',
-      'content.js',
+      "..",
+      ".output",
+      "chrome-mv3-dev",
+      "content-scripts",
+      "content.js"
     )
-    contentScriptCode = await fs.readFile(contentScriptPath, 'utf-8')
+    contentScriptCode = await fs.readFile(contentScriptPath, "utf-8")
 
     // Patch the content script to remove webextension-polyfill issues
     contentScriptCode = contentScriptCode.replace(
       WEBEXTENSION_POLYFILL_PATCH,
-      WEBEXTENSION_POLYFILL_REPLACEMENT,
+      WEBEXTENSION_POLYFILL_REPLACEMENT
     )
   } catch (error) {
-    console.warn('Could not read content script, using fallback:', error)
-    contentScriptCode = 'console.warn("Content script not found - extension may not be built");'
+    console.warn("Could not read content script, using fallback:", error)
+    contentScriptCode =
+      'console.warn("Content script not found - extension may not be built");'
   }
 
   const contentScriptTag = createGitcassoScript(urlParts, contentScriptCode)
 
-  if (html.includes('</body>')) {
-    return html.replace('</body>', `${contentScriptTag}</body>`)
+  if (html.includes("</body>")) {
+    return html.replace("</body>", `${contentScriptTag}</body>`)
   } else {
     return html + contentScriptTag
   }
