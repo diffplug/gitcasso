@@ -8,13 +8,13 @@ export default defineConfig({
     description:
       "Syntax highlighting and autosave for comments on GitHub (and other markdown-friendly websites).",
     host_permissions: ["https://github.com/*"],
+    optional_host_permissions: ["https://*/*", "http://*/*"],
     icons: {
       16: "/icons/icon-16.png",
       48: "/icons/icon-48.png",
       128: "/icons/icon-128.png",
     },
     name: "Gitcasso",
-    optional_host_permissions: ["https://*/*", "http://*/*"],
     permissions: ["activeTab", "tabs"],
     version: "0.1.0",
   },

@@ -1,13 +1,5 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.2.3/schema.json",
-  "assist": {
-    "actions": {
-      "source": {
-        "useSortedKeys": "on"
-      }
-    },
-    "enabled": true
-  },
   "files": {
     "ignoreUnknown": false,
     "includes": [".*", "*.config.ts", "src/**", "tests/**", "!src/overtype"]
