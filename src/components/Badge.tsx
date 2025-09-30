@@ -60,7 +60,7 @@ const Badge = ({ text, type, data }: BadgeProps) => {
       {PopupComponent && data && (
         <div
           className={twMerge(
-            "absolute top-full z-10 w-30 rounded border px-2 py-1 text-left text-xs shadow-lg",
+            "absolute top-full right-0 z-10 w-30 rounded border px-2 py-1 text-left text-xs shadow-lg",
             typeColors[type]
           )}
         >
