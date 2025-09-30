@@ -7,7 +7,7 @@ import { allLeafValues, timeAgo } from "@/components/misc"
 import type { CommentTableRow } from "@/entrypoints/background"
 import type { FilterState } from "@/entrypoints/popup/popup"
 import { EnhancerRegistry } from "@/lib/registries"
-import { generateMockDrafts } from "./replicaData"
+import { generateMockDrafts } from "./claudeData"
 
 export const ClaudePrototype = () => {
   const [drafts] = useState(generateMockDrafts())
