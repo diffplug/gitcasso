@@ -91,7 +91,7 @@ export class GitHubIssueAppendEnhancer
           <IssueOpenedIcon size={16} />
         </span>
         <span>
-          #{spot.number} |{" "}
+          #{spot.number}{" "}
           <a
             href={`https://${spot.domain}/${spot.slug}`}
             className="truncate hover:underline"
