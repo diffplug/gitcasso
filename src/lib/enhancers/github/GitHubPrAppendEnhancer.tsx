@@ -1,4 +1,4 @@
-import { FeedPullRequestOpenIcon } from "@primer/octicons-react"
+import { GitPullRequestIcon } from "@primer/octicons-react"
 import OverType, { type OverTypeInstance } from "overtype"
 import type React from "react"
 import type {
@@ -87,10 +87,10 @@ export class GitHubPrAppendEnhancer
     return (
       <>
         <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center">
-          <FeedPullRequestOpenIcon size={16} />
+          <GitPullRequestIcon size={16} />
         </span>
         <span>
-          #{spot.number} |{" "}
+          #{spot.number}{" "}
           <a
             href={`https://${spot.domain}/${spot.slug}`}
             className="truncate hover:underline"

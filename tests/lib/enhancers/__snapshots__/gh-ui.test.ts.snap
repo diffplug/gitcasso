@@ -16,7 +16,6 @@ exports[`github ui > gh_issue:should render correct UI elements 1`] = `
       <span>
         #
         523
-         |
          
         <a
           className="truncate hover:underline"
@@ -53,7 +52,6 @@ exports[`github ui > gh_issue_edit:should render correct UI elements 1`] = `
       <span>
         #
         56
-         |
          
         <a
           className="truncate hover:underline"
@@ -97,7 +95,6 @@ exports[`github ui > gh_issue_edit_multiple:should render correct UI elements 1`
       <span>
         #
         3
-         |
          
         <a
           className="truncate hover:underline"
@@ -125,7 +122,7 @@ exports[`github ui > gh_issue_new:should render correct UI elements 1`] = `
         />
       </span>
       <span>
-        New |
+        &lt;draft&gt;
          
         <a
           className="truncate hover:underline"
@@ -149,14 +146,13 @@ exports[`github ui > gh_pr:should render correct UI elements 1`] = `
       <span
         className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
       >
-        <FeedPullRequestOpenIcon
+        <GitPullRequestIcon
           size={16}
         />
       </span>
       <span>
         #
         517
-         |
          
         <a
           className="truncate hover:underline"
@@ -188,14 +184,13 @@ exports[`github ui > gh_pr_edit:should render correct UI elements 1`] = `
       <span
         className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
       >
-        <FeedPullRequestOpenIcon
+        <GitPullRequestIcon
           size={16}
         />
       </span>
       <span>
         #
         58
-         |
          
         <a
           className="truncate hover:underline"
@@ -233,14 +228,13 @@ exports[`github ui > gh_pr_edit_multiple:should render correct UI elements 1`] =
       <span
         className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
       >
-        <FeedPullRequestOpenIcon
+        <GitPullRequestIcon
           size={16}
         />
       </span>
       <span>
         #
         5
-         |
          
         <a
           className="truncate hover:underline"
@@ -263,12 +257,12 @@ exports[`github ui > gh_pr_new:should render correct UI elements 1`] = `
       <span
         className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
       >
-        <FeedPullRequestOpenIcon
+        <GitPullRequestIcon
           size={16}
         />
       </span>
       <span>
-        New |
+        &lt;draft&gt;
          
         <a
           className="truncate hover:underline"

@@ -1,4 +1,4 @@
-import { FeedPullRequestOpenIcon } from "@primer/octicons-react"
+import { GitPullRequestIcon } from "@primer/octicons-react"
 import OverType, { type OverTypeInstance } from "overtype"
 import type {
   CommentEnhancer,
@@ -11,12 +11,12 @@ import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
 
 const GH_PR_CREATE = "GH_PR_CREATE" as const
 
-interface GitHubPrCreateSpot extends CommentSpot {
+export interface GitHubPrCreateSpot extends CommentSpot {
   type: typeof GH_PR_CREATE
   domain: string
   slug: string // owner/repo
   title: string
-  head: string // `user:repo:branch` where changes are implemented
+  head: string // `user:repo:branch ` where changes are implemented
   base: string // branch you want changes pulled into
 }
 
@@ -93,10 +93,10 @@ export class GitHubPrCreateEnhancer
     return (
       <>
         <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center">
-          <FeedPullRequestOpenIcon size={16} />
+          <GitPullRequestIcon size={16} />
         </span>
         <span>
-          New |{" "}
+          &lt;draft&gt;{" "}
           <a
             href={`https://${spot.domain}/${spot.slug}`}
             className="truncate hover:underline"
@@ -109,7 +109,7 @@ export class GitHubPrCreateEnhancer
   }
 
   tableTitle(spot: GitHubPrCreateSpot): string {
-    return spot.title || "New Pull Request"
+    return spot.title || "<untitled pull request>"
   }
 
   buildUrl(spot: GitHubPrCreateSpot): string {

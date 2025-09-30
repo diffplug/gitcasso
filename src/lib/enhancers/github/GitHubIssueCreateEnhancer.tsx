@@ -11,7 +11,7 @@ import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
 
 const GH_ISSUE_CREATE = "GH_ISSUE_CREATE" as const
 
-interface GitHubIssueCreateSpot extends CommentSpot {
+export interface GitHubIssueCreateSpot extends CommentSpot {
   type: typeof GH_ISSUE_CREATE
   domain: string
   slug: string // owner/repo
@@ -81,7 +81,7 @@ export class GitHubIssueCreateEnhancer
           <IssueOpenedIcon size={16} />
         </span>
         <span>
-          New |{" "}
+          &lt;draft&gt;{" "}
           <a
             href={`https://${spot.domain}/${spot.slug}`}
             className="truncate hover:underline"
@@ -94,7 +94,7 @@ export class GitHubIssueCreateEnhancer
   }
 
   tableTitle(spot: GitHubIssueCreateSpot): string {
-    return spot.title || "New Issue"
+    return spot.title || "<untitled issue>"
   }
 
   buildUrl(spot: GitHubIssueCreateSpot): string {
