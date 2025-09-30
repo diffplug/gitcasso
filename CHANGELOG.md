@@ -5,7 +5,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Version must be kept in-sync between [`package.json`](package.json) and [`wxt.config.js`](wxt.config.ts).
 
 ## [Unreleased]
-- TBD
+
+## [0.2.0] - 2025-09-30
+- Improved the popup table for switching tabs.
 
 ## [0.1.0] - 2025-09-26
 - Initial release!

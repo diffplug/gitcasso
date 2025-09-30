@@ -16,7 +16,7 @@ export default defineConfig({
     },
     name: "Gitcasso",
     permissions: ["activeTab", "tabs"],
-    version: "0.1.0",
+    version: "0.2.0",
   },
   modules: ["@wxt-dev/webextension-polyfill"],
   srcDir: "src",
