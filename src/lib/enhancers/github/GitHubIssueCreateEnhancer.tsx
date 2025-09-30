@@ -19,7 +19,8 @@ export interface GitHubIssueCreateSpot extends CommentSpot {
 }
 
 export class GitHubIssueCreateEnhancer
-  implements CommentEnhancer<GitHubIssueCreateSpot> {
+  implements CommentEnhancer<GitHubIssueCreateSpot>
+{
   forSpotTypes(): string[] {
     return [GH_ISSUE_CREATE]
   }

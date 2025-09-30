@@ -21,7 +21,8 @@ export interface GitHubPrCreateSpot extends CommentSpot {
 }
 
 export class GitHubPrCreateEnhancer
-  implements CommentEnhancer<GitHubPrCreateSpot> {
+  implements CommentEnhancer<GitHubPrCreateSpot>
+{
   forSpotTypes(): string[] {
     return [GH_PR_CREATE]
   }
