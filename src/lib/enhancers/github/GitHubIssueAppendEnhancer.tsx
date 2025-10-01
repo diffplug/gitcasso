@@ -8,7 +8,7 @@ import type {
   StrippedLocation,
 } from "@/lib/enhancer"
 import { logger } from "@/lib/logger"
-import { fixupOvertype, modifyDOM } from "../modifyDOM"
+import { fixupOvertype, modifyDOM } from "../overtype-misc"
 import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
 
 const GH_ISSUE_APPEND = "GH_ISSUE_APPEND" as const

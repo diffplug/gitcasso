@@ -7,7 +7,7 @@ import type {
   StrippedLocation,
 } from "../../enhancer"
 import { logger } from "../../logger"
-import { fixupOvertype, modifyDOM } from "../modifyDOM"
+import { fixupOvertype, modifyDOM } from "../overtype-misc"
 import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
 
 const GH_ISSUE_CREATE = "GH_ISSUE_CREATE" as const

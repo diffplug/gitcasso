@@ -7,7 +7,7 @@ import type {
   StrippedLocation,
 } from "../../enhancer"
 import { logger } from "../../logger"
-import { fixupOvertype, modifyDOM } from "../modifyDOM"
+import { fixupOvertype, modifyDOM } from "../overtype-misc"
 import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
 
 const GH_PR_CREATE = "GH_PR_CREATE" as const
