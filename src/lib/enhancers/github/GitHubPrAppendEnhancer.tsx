@@ -77,12 +77,6 @@ export class GitHubPrAppendEnhancer
         placeholder: "Add your comment here...",
       })
     )
-    const listenForEmpty = new MutationObserver(() => {
-      if (textArea.value === "") {
-        overtype.updatePreview()
-      }
-    })
-    listenForEmpty.observe(textArea, { attributes: true, characterData: true })
     return overtype
   }
 
