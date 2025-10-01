@@ -209,12 +209,13 @@ export function PopupRoot({ drafts }: PopupRootProps) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-
             {filteredDrafts.length === 0 && (
               <tr>
                 <td colSpan={2}>
                   {drafts.length === 0 && <EmptyState />}
-                  {drafts.length > 0 && <NoMatchesState onClearFilters={clearFilters} />}
+                  {drafts.length > 0 && (
+                    <NoMatchesState onClearFilters={clearFilters} />
+                  )}
                 </td>
               </tr>
             )}
@@ -233,7 +234,7 @@ export function PopupRoot({ drafts }: PopupRootProps) {
       </div>
 
       {/* Footer shelf */}
-      <div className="border-t border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-600">
+      <div className="border-gray-300 border-t bg-gray-50 px-3 py-2 text-gray-600 text-xs">
         <div className="flex items-center justify-between">
           <div>
             built with 🤖 by{" "}
