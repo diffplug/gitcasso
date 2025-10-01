@@ -234,6 +234,43 @@ export function PopupRoot({ drafts }: PopupRootProps) {
           </tbody>
         </table>
       </div>
+
+      {/* Footer shelf */}
+      <div className="border-t border-gray-300 bg-gray-50 px-3 py-2 text-xs text-gray-600">
+        <div className="flex items-center justify-between">
+          <div>
+            built with 🤖 by{" "}
+            <a
+              href="https://nedshed.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              nedshed.dev
+            </a>{" "}
+            using{" "}
+            <a
+              href="https://overtype.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              overtype
+            </a>
+          </div>
+          <div>
+            drafts are not being saved{" "}
+            <a
+              href="https://github.com/diffplug/gitcasso/issues/26"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              save my drafts
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
