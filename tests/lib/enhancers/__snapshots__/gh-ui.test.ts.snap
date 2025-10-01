@@ -136,6 +136,8 @@ exports[`github ui > gh_issue_new:should render correct UI elements 1`] = `
 ]
 `;
 
+exports[`github ui > gh_issue_new_complex_template:should render correct UI elements 1`] = `[]`;
+
 exports[`github ui > gh_pr:should render correct UI elements 1`] = `
 [
   {

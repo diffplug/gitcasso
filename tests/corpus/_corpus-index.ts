@@ -24,9 +24,14 @@ export const CORPUS: Record<string, CorpusEntry> = {
     url: "https://github.com/diffplug/testing-deletable/issues/3",
   },
   gh_issue_new: {
-    description: "a new issue wiht some fields filled out",
+    description: "a new issue with some fields filled out",
     type: "html",
     url: "https://github.com/diffplug/gitcasso/issues/new",
+  },
+  gh_issue_new_complex_template: {
+    description: "a new issue with complex templating and multiple fields",
+    type: "html",
+    url: "https://github.com/anthropics/claude-code/issues",
   },
   gh_pr: {
     type: "har",

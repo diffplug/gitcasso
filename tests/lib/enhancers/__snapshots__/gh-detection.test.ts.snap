@@ -87,6 +87,31 @@ exports[`github detection > gh_issue_new:should detect correct spots 1`] = `
 ]
 `;
 
+exports[`github detection > gh_issue_new_complex_template:should detect correct spots 1`] = `
+[
+  {
+    "for": "id=:ri7: name=null className=prc-Textarea-TextArea-13q4j",
+    "spot": "NO_SPOT",
+  },
+  {
+    "for": "id=:rjd: name=null className=prc-Textarea-TextArea-13q4j",
+    "spot": "NO_SPOT",
+  },
+  {
+    "for": "id= name=null className=prc-Textarea-TextArea-13q4j",
+    "spot": "NO_SPOT",
+  },
+  {
+    "for": "id=:rkn: name=null className=prc-Textarea-TextArea-13q4j focus-visible",
+    "spot": "NO_SPOT",
+  },
+  {
+    "for": "id=:rne: name=null className=prc-Textarea-TextArea-13q4j",
+    "spot": "NO_SPOT",
+  },
+]
+`;
+
 exports[`github detection > gh_pr:should detect correct spots 1`] = `
 [
   {
