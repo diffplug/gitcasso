@@ -17,12 +17,11 @@ exports[`github ui > gh_issue:should render correct UI elements 1`] = `
         #
         523
          
-        <a
-          className="truncate hover:underline"
+        <LinkOutOfPopup
           href="https://github.com/diffplug/selfie"
         >
           diffplug/selfie
-        </a>
+        </LinkOutOfPopup>
       </span>
     </React.Fragment>,
   },
@@ -53,12 +52,11 @@ exports[`github ui > gh_issue_edit:should render correct UI elements 1`] = `
         #
         56
          
-        <a
-          className="truncate hover:underline"
+        <LinkOutOfPopup
           href="https://github.com/diffplug/gitcasso"
         >
           diffplug/gitcasso
-        </a>
+        </LinkOutOfPopup>
       </span>
     </React.Fragment>,
   },
@@ -96,12 +94,11 @@ exports[`github ui > gh_issue_edit_multiple:should render correct UI elements 1`
         #
         3
          
-        <a
-          className="truncate hover:underline"
+        <LinkOutOfPopup
           href="https://github.com/diffplug/testing-deletable"
         >
           diffplug/testing-deletable
-        </a>
+        </LinkOutOfPopup>
       </span>
     </React.Fragment>,
   },
@@ -124,12 +121,11 @@ exports[`github ui > gh_issue_new:should render correct UI elements 1`] = `
       <span>
         &lt;draft&gt;
          
-        <a
-          className="truncate hover:underline"
+        <LinkOutOfPopup
           href="https://github.com/diffplug/gitcasso"
         >
           diffplug/gitcasso
-        </a>
+        </LinkOutOfPopup>
       </span>
     </React.Fragment>,
   },
@@ -156,12 +152,11 @@ exports[`github ui > gh_pr:should render correct UI elements 1`] = `
         #
         517
          
-        <a
-          className="truncate hover:underline"
+        <LinkOutOfPopup
           href="https://github.com/diffplug/selfie"
         >
           diffplug/selfie
-        </a>
+        </LinkOutOfPopup>
       </span>
     </React.Fragment>,
   },
@@ -194,12 +189,11 @@ exports[`github ui > gh_pr_edit:should render correct UI elements 1`] = `
         #
         58
          
-        <a
-          className="truncate hover:underline"
+        <LinkOutOfPopup
           href="https://github.com/diffplug/gitcasso"
         >
           diffplug/gitcasso
-        </a>
+        </LinkOutOfPopup>
       </span>
     </React.Fragment>,
   },
@@ -238,12 +232,11 @@ exports[`github ui > gh_pr_edit_multiple:should render correct UI elements 1`] =
         #
         5
          
-        <a
-          className="truncate hover:underline"
+        <LinkOutOfPopup
           href="https://github.com/diffplug/testing-deletable"
         >
           diffplug/testing-deletable
-        </a>
+        </LinkOutOfPopup>
       </span>
     </React.Fragment>,
   },
@@ -266,12 +259,11 @@ exports[`github ui > gh_pr_new:should render correct UI elements 1`] = `
       <span>
         &lt;draft&gt;
          
-        <a
-          className="truncate hover:underline"
+        <LinkOutOfPopup
           href="https://github.com/diffplug/selfie"
         >
           diffplug/selfie
-        </a>
+        </LinkOutOfPopup>
       </span>
     </React.Fragment>,
   },

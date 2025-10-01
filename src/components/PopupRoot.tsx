@@ -1,7 +1,7 @@
 import { Eye, EyeOff, Search, Settings, Trash2 } from "lucide-react"
 import { useMemo, useState } from "react"
 import { twMerge } from "tailwind-merge"
-import { badgeCVA } from "@/components/design"
+import { badgeCVA, typeIcons } from "@/components/design"
 import MultiSegment from "@/components/MultiSegment"
 import { allLeafValues } from "@/components/misc"
 import type { CommentTableRow } from "@/entrypoints/background"
@@ -100,11 +100,6 @@ export function PopupRoot({ drafts }: PopupRootProps) {
       showTrashed: true,
     })
   }
-
-  if (drafts.length === 0) {
-    return <EmptyState />
-  }
-
   return (
     <div className="bg-white">
       {/* Bulk actions bar - floating popup */}
@@ -217,7 +212,10 @@ export function PopupRoot({ drafts }: PopupRootProps) {
             {filteredDrafts.length === 0 && (
               <tr>
                 <td colSpan={2}>
-                  <NoMatchesState onClearFilters={clearFilters} />
+                  {drafts.length === 0 && <EmptyState />}
+                  {drafts.length > 0 && (
+                    <NoMatchesState onClearFilters={clearFilters} />
+                  )}
                 </td>
               </tr>
             )}
@@ -233,6 +231,50 @@ export function PopupRoot({ drafts }: PopupRootProps) {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Footer shelf */}
+      <div className="border-gray-300 border-t bg-gray-50 px-3 py-2 text-gray-600 text-xs">
+        <div className="flex items-center justify-between">
+          <div>
+            built with 🤖 by{" "}
+            <a
+              href="https://nedshed.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              nedshed.dev
+            </a>{" "}
+            using{" "}
+            <a
+              href="https://overtype.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              overtype
+            </a>
+          </div>
+          <div className="flex items-center gap-2">
+            drafts are not being saved
+            <a
+              href="https://github.com/diffplug/gitcasso/issues/26"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={twMerge(
+                badgeCVA({ type: "save", clickable: true }),
+                "hover:opacity-90"
+              )}
+            >
+              {(() => {
+                const SaveIcon = typeIcons.save
+                return <SaveIcon className="h-3 w-3" />
+              })()}
+              save my drafts
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   )

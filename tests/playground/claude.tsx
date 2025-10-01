@@ -278,23 +278,37 @@ function commentRow(
             </div>
             <div className="flex flex-shrink-0 items-center gap-1">
               {row.latestDraft.stats.links.length > 0 && (
-                <Badge type="link" text={row.latestDraft.stats.links.length} />
+                <Badge
+                  type="link"
+                  text={row.latestDraft.stats.links.length}
+                  data={row}
+                />
               )}
               {row.latestDraft.stats.images.length > 0 && (
                 <Badge
                   type="image"
                   text={row.latestDraft.stats.images.length}
+                  data={row}
                 />
               )}
               {row.latestDraft.stats.codeBlocks.length > 0 && (
                 <Badge
                   type="code"
                   text={row.latestDraft.stats.codeBlocks.length}
+                  data={row}
                 />
               )}
-              <Badge type="text" text={row.latestDraft.stats.charCount} />
-              <Badge type="time" text={timeAgo(row.latestDraft.time)} />
-              {row.isOpenTab && <Badge type="open" />}
+              <Badge
+                type="text"
+                text={row.latestDraft.stats.charCount}
+                data={row}
+              />
+              <Badge
+                type="time"
+                text={timeAgo(row.latestDraft.time)}
+                data={row}
+              />
+              {row.isOpenTab && <Badge type="open" data={row} />}
             </div>
           </div>
 

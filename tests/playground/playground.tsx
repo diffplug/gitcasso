@@ -6,14 +6,14 @@ import { ClaudePrototype } from "./claude"
 import { Replica } from "./replica"
 
 const MODES = {
-  claude: { component: ClaudePrototype, label: "claude" },
   replica: { component: Replica, label: "replica" },
+  claude: { component: ClaudePrototype, label: "claude" },
 } as const
 
 type Mode = keyof typeof MODES
 
 const App = () => {
-  const [activeComponent, setActiveComponent] = useState<Mode>("claude")
+  const [activeComponent, setActiveComponent] = useState<Mode>("replica")
   const ModeComponent = MODES[activeComponent].component
 
   return (
