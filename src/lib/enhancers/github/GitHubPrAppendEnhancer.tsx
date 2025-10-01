@@ -8,7 +8,7 @@ import type {
   StrippedLocation,
 } from "@/lib/enhancer"
 import { logger } from "@/lib/logger"
-import { modifyDOM } from "../modifyDOM"
+import { fixupOvertype, modifyDOM } from "../modifyDOM"
 import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
 
 const GH_PR_APPEND = "GH_PR_APPEND" as const
@@ -69,12 +69,14 @@ export class GitHubPrAppendEnhancer
   ): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
-    const overtype = new OverType(overtypeContainer, {
-      ...commonGitHubOptions,
-      minHeight: "102px",
-      padding: "var(--base-size-8)",
-      placeholder: "Add your comment here...",
-    })[0]!
+    const overtype = fixupOvertype(
+      new OverType(overtypeContainer, {
+        ...commonGitHubOptions,
+        minHeight: "102px",
+        padding: "var(--base-size-8)",
+        placeholder: "Add your comment here...",
+      })
+    )
     const listenForEmpty = new MutationObserver(() => {
       if (textArea.value === "") {
         overtype.updatePreview()

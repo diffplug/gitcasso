@@ -6,7 +6,7 @@ import type {
   StrippedLocation,
 } from "@/lib/enhancer"
 import { logger } from "@/lib/logger"
-import { modifyDOM } from "../modifyDOM"
+import { fixupOvertype, modifyDOM } from "../modifyDOM"
 import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
 
 const GH_EDIT = "GH_EDIT" as const
@@ -71,13 +71,12 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
   ): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
-    const overtype = new OverType(overtypeContainer, {
-      ...commonGitHubOptions,
-      padding: spot.isIssue ? "var(--base-size-16)" : "var(--base-size-8)",
-    })[0]!
-    if (!spot.isIssue) {
-      // TODO: autoheight not working
-    }
+    const overtype = fixupOvertype(
+      new OverType(overtypeContainer, {
+        ...commonGitHubOptions,
+        padding: spot.isIssue ? "var(--base-size-16)" : "var(--base-size-8)",
+      })
+    )
     return overtype
   }
 
