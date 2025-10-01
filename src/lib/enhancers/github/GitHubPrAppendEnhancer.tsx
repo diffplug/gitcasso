@@ -1,6 +1,7 @@
 import { GitPullRequestIcon } from "@primer/octicons-react"
 import OverType, { type OverTypeInstance } from "overtype"
 import type React from "react"
+import { LinkOutOfPopup } from "@/components/LinkOutOfPopup"
 import type {
   CommentEnhancer,
   CommentSpot,
@@ -91,12 +92,9 @@ export class GitHubPrAppendEnhancer
         </span>
         <span>
           #{spot.number}{" "}
-          <a
-            href={`https://${spot.domain}/${spot.slug}`}
-            className="truncate hover:underline"
-          >
+          <LinkOutOfPopup href={`https://${spot.domain}/${spot.slug}`}>
             {spot.slug}
-          </a>
+          </LinkOutOfPopup>
         </span>
       </>
     )

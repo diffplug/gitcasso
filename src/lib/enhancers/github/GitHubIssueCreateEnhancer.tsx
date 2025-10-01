@@ -1,5 +1,6 @@
 import { IssueOpenedIcon } from "@primer/octicons-react"
 import OverType, { type OverTypeInstance } from "overtype"
+import { LinkOutOfPopup } from "@/components/LinkOutOfPopup"
 import type {
   CommentEnhancer,
   CommentSpot,
@@ -82,12 +83,9 @@ export class GitHubIssueCreateEnhancer
         </span>
         <span>
           &lt;draft&gt;{" "}
-          <a
-            href={`https://${spot.domain}/${spot.slug}`}
-            className="truncate hover:underline"
-          >
+          <LinkOutOfPopup href={`https://${spot.domain}/${spot.slug}`}>
             {spot.slug}
-          </a>
+          </LinkOutOfPopup>
         </span>
       </>
     )
