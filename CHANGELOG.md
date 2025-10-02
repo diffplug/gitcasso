@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Version must be kept in-sync between [`package.json`](package.json) and [`wxt.config.js`](wxt.config.ts).
 
 ## [Unreleased]
+## [1.0.0] - 2025-10-02
+- Fix html escaping inside single-tick and double-tick code blocks.
+- Add syntax highlighting for github-style #number.
+- Add syntax highlighting for html tags (such as `<img>` or `<details>`).
+- Fix sync issues for things like images being dragged onto a GitHub textrea.
 
 ## [0.2.0] - 2025-09-30
 - Improved the popup table for switching tabs.
