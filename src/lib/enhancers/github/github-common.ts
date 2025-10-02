@@ -44,7 +44,7 @@ function escapeHtml(text: string): string {
     '"': "&quot;",
     "'": "&#39;",
   }
-  return text.replace(/[&<>"']/g, (m) => map[m])
+  return text.replace(/[&<>"']/g, (m) => map[m]!)
 }
 
 function githubHighlighter(code: string, language?: string) {
