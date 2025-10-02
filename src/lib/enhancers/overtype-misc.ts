@@ -1,3 +1,26 @@
+import type { OverTypeInstance } from "overtype"
+
+// Assert that OverType returned exactly one instance and return it
+export function fixupOvertype(instances: OverTypeInstance[]): OverTypeInstance {
+  if (instances.length !== 1) {
+    throw new Error(
+      `Expected OverType to return exactly 1 instance, got ${instances.length}`
+    )
+  }
+  const overtype = instances[0]!
+  // this works, but we're now updating twice as often as we need to, because
+  // overtype has a built-in update which usually works but not always (#101)
+  // and we're doing this which does always work
+  const updateOnChange = new MutationObserver(() => {
+    overtype.updatePreview()
+  })
+  updateOnChange.observe(overtype.textarea, {
+    attributes: true,
+    characterData: true,
+  })
+  return overtype
+}
+
 // Modify the DOM to trick overtype into adopting it instead of recreating it
 export function modifyDOM(overtypeInput: HTMLTextAreaElement): HTMLElement {
   overtypeInput.classList.add("overtype-input")

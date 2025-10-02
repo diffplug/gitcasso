@@ -8,7 +8,7 @@ import type {
   StrippedLocation,
 } from "@/lib/enhancer"
 import { logger } from "@/lib/logger"
-import { modifyDOM } from "../modifyDOM"
+import { fixupOvertype, modifyDOM } from "../overtype-misc"
 import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
 
 const GH_ISSUE_APPEND = "GH_ISSUE_APPEND" as const
@@ -78,11 +78,13 @@ export class GitHubIssueAppendEnhancer
   ): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
-    return new OverType(overtypeContainer, {
-      ...commonGitHubOptions,
-      minHeight: "100px",
-      placeholder: "Use Markdown to format your comment",
-    })[0]!
+    return fixupOvertype(
+      new OverType(overtypeContainer, {
+        ...commonGitHubOptions,
+        minHeight: "100px",
+        placeholder: "Use Markdown to format your comment",
+      })
+    )
   }
 
   tableUpperDecoration(spot: GitHubIssueAppendSpot): React.ReactNode {

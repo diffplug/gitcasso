@@ -7,7 +7,7 @@ import type {
   StrippedLocation,
 } from "../../enhancer"
 import { logger } from "../../logger"
-import { modifyDOM } from "../modifyDOM"
+import { fixupOvertype, modifyDOM } from "../overtype-misc"
 import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
 
 const GH_ISSUE_CREATE = "GH_ISSUE_CREATE" as const
@@ -68,11 +68,13 @@ export class GitHubIssueCreateEnhancer
   ): OverTypeInstance {
     prepareGitHubHighlighter()
     const overtypeContainer = modifyDOM(textArea)
-    return new OverType(overtypeContainer, {
-      ...commonGitHubOptions,
-      minHeight: "400px",
-      placeholder: "Type your description here...",
-    })[0]!
+    return fixupOvertype(
+      new OverType(overtypeContainer, {
+        ...commonGitHubOptions,
+        minHeight: "400px",
+        placeholder: "Type your description here...",
+      })
+    )
   }
 
   tableUpperDecoration(spot: GitHubIssueCreateSpot): React.ReactNode {
