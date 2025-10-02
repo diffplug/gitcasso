@@ -29,7 +29,7 @@ jobs:
       - run: pnpm wxt zip
       - name: wxt submit chrome
         if: "${{ github.event.inputs.to_publish == 'all' || github.event.inputs.to_publish == 'chrome' }}"
-        run: pnpm wxt submit --chrome-zip .output/*-chrome.zip \
+        run: pnpm wxt submit --chrome-zip .output/*-chrome.zip
         env:
           CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
           CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
@@ -37,7 +37,8 @@ jobs:
           CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
       - name: wxt submit edge
         if: "${{ github.event.inputs.to_publish == 'all' || github.event.inputs.to_publish == 'edge' }}"
-        run: pnpm wxt submit --edge-zip .output/*-chrome.zip \
+        run: pnpm wxt submit --edge-zip .output/*-chrome.zip
         env:
           EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
           EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
