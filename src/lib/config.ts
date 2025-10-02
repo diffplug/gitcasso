@@ -1,4 +1,4 @@
-const MODES = ["PROD", "PLAYGROUNDS_PR"] as const
+const MODES = ["PROD"] as const
 
 export type ModeType = (typeof MODES)[number]
 
@@ -8,6 +8,8 @@ export type LogLevel = (typeof LOG_LEVELS)[number]
 
 export const CONFIG = {
   EXTENSION_NAME: "gitcasso", // decorates logs
-  LOG_LEVEL: "DEBUG" satisfies LogLevel,
+  LOG_LEVEL: (import.meta.env.MODE === "production"
+    ? "WARN"
+    : "DEBUG") satisfies LogLevel,
   MODE: "PROD" satisfies ModeType,
 } as const

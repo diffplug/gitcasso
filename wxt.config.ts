@@ -15,7 +15,7 @@ export default defineConfig({
       128: "/icons/icon-128.png",
     },
     name: "Gitcasso",
-    permissions: ["activeTab", "tabs"],
+    permissions: ["activeTab"],
     version: "0.2.0",
   },
   modules: ["@wxt-dev/webextension-polyfill"],
