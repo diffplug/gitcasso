@@ -36,16 +36,28 @@ export function prepareGitHubHighlighter() {
   })
 }
 
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  }
+  return text.replace(/[&<>"']/g, (m) => map[m]!)
+}
+
 function githubHighlighter(code: string, language?: string) {
   try {
     if (language && hljs.getLanguage(language)) {
       const result = hljs.highlight(code, { language })
       return result.value
     } else {
-      return code
+      // No language specified - escape HTML to prevent tags from being interpreted
+      return escapeHtml(code)
     }
   } catch (error) {
     console.warn("highlight.js highlighting failed:", error)
-    return code
+    return escapeHtml(code)
   }
 }
