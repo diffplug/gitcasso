@@ -46,9 +46,8 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
       "[data-wrapper-timeline-id]"
     )
     const isPRBodyEdit =
-      textarea.name === "pull_request[body]" ||
-      textarea.name === "issue_comment[body]"
-    //                   ^this is the root pr comment              ^this is the other pr comments (surprising!)
+      textarea.name === "pull_request[body]" || // this is the root pr comment
+      textarea.name === "issue_comment[body]" // this is the other pr comments (surprising!)
 
     if (!isIssueBodyRootEdit && !isIssueBodyCommentEdit && !isPRBodyEdit) {
       return null
