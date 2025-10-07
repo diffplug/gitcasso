@@ -7,7 +7,7 @@
 
 ## Install
 
-- Chrome Web Store TODO
+- [Chrome Web Store](https://chromewebstore.google.com/detail/gitcasso/pcmhndeklkimmcbklmbikdooghkmilpf)
 - [Microsoft Edge Add-on](https://microsoftedge.microsoft.com/addons/detail/gitcasso/agldcmiblfnebkjielmgcipekjhejihp)
 
 ## Screenshots
