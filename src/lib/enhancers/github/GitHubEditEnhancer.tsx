@@ -29,6 +29,28 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
       return null
     }
 
+    // Check for project draft edit first
+    const isProjectDraftEdit = location.pathname.match(
+      /^\/(?:orgs|users)\/[^/]+\/projects\/\d+\/views\/\d+/
+    )
+    if (isProjectDraftEdit) {
+      const params = new URLSearchParams(location.search)
+      const itemId = params.get("itemId")
+      if (itemId && textarea.closest("[role='dialog']")) {
+        const unique_key = `github.com:project-draft:${itemId}:edit-body`
+        logger.debug(
+          `${this.constructor.name} enhanced project draft body textarea`,
+          unique_key
+        )
+        return {
+          isIssue: true,
+          type: GH_EDIT,
+          unique_key,
+        }
+      }
+      return null
+    }
+
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
     const match = location.pathname.match(
       /^\/([^/]+)\/([^/]+)\/(?:issues|pull)\/(\d+)/

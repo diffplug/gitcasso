@@ -224,8 +224,12 @@ exports[`github detection > gh_project_draft:should detect correct spots 1`] = `
 exports[`github detection > gh_project_draft_edit:should detect correct spots 1`] = `
 [
   {
-    "for": "id=:r5a: name=null className=prc-Textarea-TextArea-13q4j",
-    "spot": "NO_SPOT",
+    "for": "id=:r5a: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+    "spot": {
+      "isIssue": true,
+      "type": "GH_EDIT",
+      "unique_key": "github.com:project-draft:129503329:edit-body",
+    },
   },
 ]
 `;
@@ -233,8 +237,12 @@ exports[`github detection > gh_project_draft_edit:should detect correct spots 1`
 exports[`github detection > gh_project_issue:should detect correct spots 1`] = `
 [
   {
-    "for": "id=:rbs: name=null className=prc-Textarea-TextArea-13q4j",
-    "spot": "NO_SPOT",
+    "for": "id=:rbs: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+    "spot": {
+      "isIssue": true,
+      "type": "GH_EDIT",
+      "unique_key": "github.com:project-draft:129503239:edit-body",
+    },
   },
 ]
 `;
@@ -242,12 +250,20 @@ exports[`github detection > gh_project_issue:should detect correct spots 1`] = `
 exports[`github detection > gh_project_issue_edit:should detect correct spots 1`] = `
 [
   {
-    "for": "id=:rdh: name=null className=prc-Textarea-TextArea-13q4j",
-    "spot": "NO_SPOT",
+    "for": "id=:rdh: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+    "spot": {
+      "isIssue": true,
+      "type": "GH_EDIT",
+      "unique_key": "github.com:project-draft:129503239:edit-body",
+    },
   },
   {
-    "for": "id=:rbs: name=null className=prc-Textarea-TextArea-13q4j",
-    "spot": "NO_SPOT",
+    "for": "id=:rbs: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+    "spot": {
+      "isIssue": true,
+      "type": "GH_EDIT",
+      "unique_key": "github.com:project-draft:129503239:edit-body",
+    },
   },
 ]
 `;

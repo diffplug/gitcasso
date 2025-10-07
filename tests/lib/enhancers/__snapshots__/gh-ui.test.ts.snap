@@ -274,8 +274,45 @@ exports[`github ui > gh_project:should render correct UI elements 1`] = `[]`;
 
 exports[`github ui > gh_project_draft:should render correct UI elements 1`] = `[]`;
 
-exports[`github ui > gh_project_draft_edit:should render correct UI elements 1`] = `[]`;
+exports[`github ui > gh_project_draft_edit:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=:r5a: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+    "title": "N/A",
+    "upperDecoration": <span>
+      N/A
+    </span>,
+  },
+]
+`;
 
-exports[`github ui > gh_project_issue:should render correct UI elements 1`] = `[]`;
+exports[`github ui > gh_project_issue:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=:rbs: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+    "title": "N/A",
+    "upperDecoration": <span>
+      N/A
+    </span>,
+  },
+]
+`;
 
-exports[`github ui > gh_project_issue_edit:should render correct UI elements 1`] = `[]`;
+exports[`github ui > gh_project_issue_edit:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=:rdh: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+    "title": "N/A",
+    "upperDecoration": <span>
+      N/A
+    </span>,
+  },
+  {
+    "for": "id=:rbs: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+    "title": "N/A",
+    "upperDecoration": <span>
+      N/A
+    </span>,
+  },
+]
+`;
