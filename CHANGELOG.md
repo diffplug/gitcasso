@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Version must be kept in-sync between [`package.json`](package.json) and [`wxt.config.js`](wxt.config.ts).
 
 ## [Unreleased]
+### Added
+- Support for GitHub projects (draft and "real" issues). ([#108](https://github.com/diffplug/gitcasso/pull/108))
 ### Fixed
 - Appending to GitHub issues was not being enhanced, now fixed. ([#105](https://github.com/diffplug/gitcasso/issues/105))
 - Reduced unnecessary permissions (no need for `host_permissions`)

@@ -7,7 +7,13 @@ import type {
 } from "@/lib/enhancer"
 import { logger } from "@/lib/logger"
 import { fixupOvertype, modifyDOM } from "../overtype-misc"
-import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
+import {
+  commonGitHubOptions,
+  isInProjectCommentBox,
+  isProjectUrl,
+  parseProjectIssueParam,
+  prepareGitHubHighlighter,
+} from "./github-common"
 
 const GH_EDIT = "GH_EDIT" as const
 
@@ -29,6 +35,50 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
       return null
     }
 
+    // Check for project draft edit first
+    if (isProjectUrl(location.pathname)) {
+      const params = new URLSearchParams(location.search)
+      const itemId = params.get("itemId")
+
+      // Handle draft editing (itemId parameter)
+      if (itemId) {
+        // Exclude textareas within Shared-module__CommentBox (those are for adding new comments, not editing)
+        if (!isInProjectCommentBox(textarea)) {
+          const unique_key = `github.com:project-draft:${itemId}:edit-body`
+          logger.debug(
+            `${this.constructor.name} enhanced project draft body textarea`,
+            unique_key
+          )
+          return {
+            isIssue: true,
+            type: GH_EDIT,
+            unique_key,
+          }
+        }
+      }
+
+      // Handle existing issue comment editing (issue parameter)
+      const issueInfo = parseProjectIssueParam(params)
+      if (issueInfo) {
+        // Edit mode: empty placeholder
+        // Add new comment mode: has placeholder "Add your comment here..." or similar
+        if (!textarea.placeholder || textarea.placeholder.trim() === "") {
+          const unique_key = `github.com:${issueInfo.slug}:${issueInfo.number}:edit-comment`
+          logger.debug(
+            `${this.constructor.name} enhanced project issue comment edit textarea`,
+            unique_key
+          )
+          return {
+            isIssue: true,
+            type: GH_EDIT,
+            unique_key,
+          }
+        }
+      }
+
+      return null
+    }
+
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
     const match = location.pathname.match(
       /^\/([^/]+)\/([^/]+)\/(?:issues|pull)\/(\d+)/
@@ -46,9 +96,8 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
       "[data-wrapper-timeline-id]"
     )
     const isPRBodyEdit =
-      textarea.name === "pull_request[body]" ||
-      textarea.name === "issue_comment[body]"
-    //                   ^this is the root pr comment              ^this is the other pr comments (surprising!)
+      textarea.name === "pull_request[body]" || // this is the root pr comment
+      textarea.name === "issue_comment[body]" // this is the other pr comments (surprising!)
 
     if (!isIssueBodyRootEdit && !isIssueBodyCommentEdit && !isPRBodyEdit) {
       return null

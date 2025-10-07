@@ -9,7 +9,13 @@ import type {
 } from "@/lib/enhancer"
 import { logger } from "@/lib/logger"
 import { fixupOvertype, modifyDOM } from "../overtype-misc"
-import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
+import {
+  commonGitHubOptions,
+  isInProjectCommentBox,
+  isProjectUrl,
+  parseProjectIssueParam,
+  prepareGitHubHighlighter,
+} from "./github-common"
 
 const GH_ISSUE_APPEND = "GH_ISSUE_APPEND" as const
 
@@ -42,6 +48,32 @@ export class GitHubIssueAppendEnhancer
     // Don't enhance textareas that are within the issue/PR body editing container
     const bodyContainer = textarea.closest(".react-issue-body")
     if (bodyContainer) {
+      return null
+    }
+
+    // Check for project URLs with issue parameter first
+    if (isProjectUrl(location.pathname)) {
+      const params = new URLSearchParams(location.search)
+      // Only match textareas within Shared-module__CommentBox (those are for adding new comments)
+      if (isInProjectCommentBox(textarea)) {
+        const issueInfo = parseProjectIssueParam(params)
+        if (issueInfo) {
+          const unique_key = `github.com:${issueInfo.slug}:${issueInfo.number}`
+          // For project views, the title is in the side panel dialog
+          const title =
+            document
+              .querySelector('[data-testid="issue-title"]')
+              ?.textContent?.trim() || ""
+          return {
+            domain: location.host,
+            number: issueInfo.number,
+            slug: issueInfo.slug,
+            title,
+            type: GH_ISSUE_APPEND,
+            unique_key,
+          }
+        }
+      }
       return null
     }
 

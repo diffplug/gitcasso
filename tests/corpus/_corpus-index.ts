@@ -76,4 +76,9 @@ export const CORPUS: Record<string, CorpusEntry> = {
     type: "html",
     url: "https://github.com/orgs/diffplug/projects/12/views/1?pane=issue&itemId=129503239&issue=diffplug%7Cgitcasso%7C57",
   },
+  gh_project_issue_new: {
+    description: "creating a new issue within a project",
+    type: "html",
+    url: "https://github.com/orgs/diffplug/projects/12",
+  },
 } as const

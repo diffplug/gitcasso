@@ -15,6 +15,7 @@ function detectLocation(): StrippedLocation {
   const result = {
     host: window.location.host,
     pathname: window.location.pathname,
+    search: window.location.search,
   }
   logger.debug("[gitcasso] detectLocation called, returning:", result)
   return result

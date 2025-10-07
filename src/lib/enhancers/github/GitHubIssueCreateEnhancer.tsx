@@ -8,7 +8,11 @@ import type {
 } from "../../enhancer"
 import { logger } from "../../logger"
 import { fixupOvertype, modifyDOM } from "../overtype-misc"
-import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
+import {
+  commonGitHubOptions,
+  isProjectUrl,
+  prepareGitHubHighlighter,
+} from "./github-common"
 
 const GH_ISSUE_CREATE = "GH_ISSUE_CREATE" as const
 
@@ -34,6 +38,32 @@ export class GitHubIssueCreateEnhancer
       return null
     }
     if (location.host !== "github.com") {
+      return null
+    }
+
+    // Check for project board URLs first
+    if (isProjectUrl(location.pathname)) {
+      // Check if we're in a "Create new issue" dialog
+      const dialog = textarea.closest('[role="dialog"]')
+      if (dialog) {
+        const dialogHeading = dialog.querySelector("h1")?.textContent
+        const slugMatch = dialogHeading?.match(/Create new issue in (.+)/)
+        if (slugMatch) {
+          const slug = slugMatch[1]!
+          const unique_key = `github.com:${slug}:new`
+          const titleInput = document.querySelector(
+            'input[placeholder="Title"]'
+          ) as HTMLInputElement
+          const title = titleInput?.value || ""
+          return {
+            domain: location.host,
+            slug,
+            title,
+            type: GH_ISSUE_CREATE,
+            unique_key,
+          }
+        }
+      }
       return null
     }
 

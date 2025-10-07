@@ -97,6 +97,7 @@ function getUrlParts(key: string) {
     hostname: url.hostname,
     href: originalUrl,
     pathname: url.pathname,
+    search: url.search,
   }
 }
 
@@ -562,11 +563,12 @@ function createGitcassoScript(
 ): string {
   const contentScriptSetup = contentScriptCode
     ? // Direct embedding (for HTML corpus)
-    `
+      `
       // Set up mocked location
       window.gitcassoMockLocation = {
         host: '${urlParts.host}',
-        pathname: '${urlParts.pathname}'
+        pathname: '${urlParts.pathname}',
+        search: '${urlParts.search}'
       };
 
       // Set up browser API mocks
@@ -589,7 +591,7 @@ function createGitcassoScript(
       }
       `
     : // Fetch-based loading (for HAR corpus)
-    `
+      `
       // Fetch and patch the content script to remove webextension-polyfill issues
       fetch('/chrome-mv3-dev/content-scripts/content.js')
         .then(response => response.text())
@@ -603,7 +605,8 @@ function createGitcassoScript(
           );
           window.gitcassoMockLocation = {
             host: '${urlParts.host}',
-            pathname: '${urlParts.pathname}'
+            pathname: '${urlParts.pathname}',
+            search: '${urlParts.search}'
           };
 
           // Execute the patched script with browser API mocks prepended
