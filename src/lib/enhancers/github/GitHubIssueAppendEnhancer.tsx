@@ -9,7 +9,13 @@ import type {
 } from "@/lib/enhancer"
 import { logger } from "@/lib/logger"
 import { fixupOvertype, modifyDOM } from "../overtype-misc"
-import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
+import {
+  commonGitHubOptions,
+  isInProjectCommentBox,
+  isProjectUrl,
+  parseProjectIssueParam,
+  prepareGitHubHighlighter,
+} from "./github-common"
 
 const GH_ISSUE_APPEND = "GH_ISSUE_APPEND" as const
 
@@ -46,24 +52,13 @@ export class GitHubIssueAppendEnhancer
     }
 
     // Check for project URLs with issue parameter first
-    const isProjectView = location.pathname.match(
-      /^\/(?:orgs|users)\/[^/]+\/projects\/\d+(?:\/views\/\d+)?/
-    )
-    if (isProjectView) {
+    if (isProjectUrl(location.pathname)) {
       const params = new URLSearchParams(location.search)
-      const issueParam = params.get("issue")
       // Only match textareas within Shared-module__CommentBox (those are for adding new comments)
-      const isInCommentBox = textarea.closest(
-        '[class*="Shared-module__CommentBox"]'
-      )
-      if (issueParam && isInCommentBox) {
-        // Parse issue parameter: "owner|repo|number" (URL encoded as owner%7Crepo%7Cnumber)
-        const parts = issueParam.split("|")
-        if (parts.length === 3) {
-          const [owner, repo, numberStr] = parts
-          const slug = `${owner}/${repo}`
-          const number = parseInt(numberStr!, 10)
-          const unique_key = `github.com:${slug}:${number}`
+      if (isInProjectCommentBox(textarea)) {
+        const issueInfo = parseProjectIssueParam(params)
+        if (issueInfo) {
+          const unique_key = `github.com:${issueInfo.slug}:${issueInfo.number}`
           // For project views, the title is in the side panel dialog
           const title =
             document
@@ -71,8 +66,8 @@ export class GitHubIssueAppendEnhancer
               ?.textContent?.trim() || ""
           return {
             domain: location.host,
-            number,
-            slug,
+            number: issueInfo.number,
+            slug: issueInfo.slug,
             title,
             type: GH_ISSUE_APPEND,
             unique_key,

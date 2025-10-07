@@ -61,3 +61,49 @@ function githubHighlighter(code: string, language?: string) {
     return escapeHtml(code)
   }
 }
+
+// Project-related helper functions
+
+/**
+ * Check if the pathname matches a GitHub project URL pattern.
+ * Matches: /orgs/{org}/projects/{id} or /users/{user}/projects/{id}
+ * Optional: /views/{viewId} suffix
+ */
+export function isProjectUrl(pathname: string): boolean {
+  return /^\/(?:orgs|users)\/[^/]+\/projects\/\d+(?:\/views\/\d+)?/.test(
+    pathname
+  )
+}
+
+/**
+ * Parse the issue parameter from project URLs.
+ * Format: ?issue=owner|repo|number
+ * Returns: { slug: "owner/repo", number: 123 } or null if invalid
+ */
+export function parseProjectIssueParam(
+  searchParams: URLSearchParams
+): { slug: string; number: number } | null {
+  const issueParam = searchParams.get("issue")
+  if (!issueParam) return null
+
+  const parts = issueParam.split("|")
+  if (parts.length !== 3) return null
+
+  const [owner, repo, numberStr] = parts
+  const number = parseInt(numberStr!, 10)
+
+  if (Number.isNaN(number)) return null
+
+  return {
+    slug: `${owner}/${repo}`,
+    number,
+  }
+}
+
+/**
+ * Check if an element is within a project CommentBox container.
+ * CommentBox containers are used for adding new comments (not editing).
+ */
+export function isInProjectCommentBox(element: HTMLElement): boolean {
+  return !!element.closest('[class*="Shared-module__CommentBox"]')
+}

@@ -7,7 +7,13 @@ import type {
 } from "@/lib/enhancer"
 import { logger } from "@/lib/logger"
 import { fixupOvertype, modifyDOM } from "../overtype-misc"
-import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
+import {
+  commonGitHubOptions,
+  isInProjectCommentBox,
+  isProjectUrl,
+  parseProjectIssueParam,
+  prepareGitHubHighlighter,
+} from "./github-common"
 
 const GH_EDIT = "GH_EDIT" as const
 
@@ -30,21 +36,14 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
     }
 
     // Check for project draft edit first
-    const isProjectDraftEdit = location.pathname.match(
-      /^\/(?:orgs|users)\/[^/]+\/projects\/\d+(?:\/views\/\d+)?/
-    )
-    if (isProjectDraftEdit) {
+    if (isProjectUrl(location.pathname)) {
       const params = new URLSearchParams(location.search)
       const itemId = params.get("itemId")
-      const issueParam = params.get("issue")
 
       // Handle draft editing (itemId parameter)
       if (itemId) {
         // Exclude textareas within Shared-module__CommentBox (those are for adding new comments, not editing)
-        const isInCommentBox = textarea.closest(
-          '[class*="Shared-module__CommentBox"]'
-        )
-        if (!isInCommentBox) {
+        if (!isInProjectCommentBox(textarea)) {
           const unique_key = `github.com:project-draft:${itemId}:edit-body`
           logger.debug(
             `${this.constructor.name} enhanced project draft body textarea`,
@@ -59,27 +58,20 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
       }
 
       // Handle existing issue comment editing (issue parameter)
-      if (issueParam) {
-        // Parse issue parameter: "owner|repo|number"
-        const parts = issueParam.split("|")
-        if (parts.length === 3) {
-          const [owner, repo, numberStr] = parts
-          const slug = `${owner}/${repo}`
-          const number = parseInt(numberStr!, 10)
-
-          // Edit mode: empty placeholder
-          // Add new comment mode: has placeholder "Add your comment here..." or similar
-          if (!textarea.placeholder || textarea.placeholder.trim() === "") {
-            const unique_key = `github.com:${slug}:${number}:edit-comment`
-            logger.debug(
-              `${this.constructor.name} enhanced project issue comment edit textarea`,
-              unique_key
-            )
-            return {
-              isIssue: true,
-              type: GH_EDIT,
-              unique_key,
-            }
+      const issueInfo = parseProjectIssueParam(params)
+      if (issueInfo) {
+        // Edit mode: empty placeholder
+        // Add new comment mode: has placeholder "Add your comment here..." or similar
+        if (!textarea.placeholder || textarea.placeholder.trim() === "") {
+          const unique_key = `github.com:${issueInfo.slug}:${issueInfo.number}:edit-comment`
+          logger.debug(
+            `${this.constructor.name} enhanced project issue comment edit textarea`,
+            unique_key
+          )
+          return {
+            isIssue: true,
+            type: GH_EDIT,
+            unique_key,
           }
         }
       }
