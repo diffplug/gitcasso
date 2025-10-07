@@ -97,6 +97,7 @@ function getUrlParts(key: string) {
     hostname: url.hostname,
     href: originalUrl,
     pathname: url.pathname,
+    search: url.search,
   }
 }
 
@@ -566,7 +567,8 @@ function createGitcassoScript(
       // Set up mocked location
       window.gitcassoMockLocation = {
         host: '${urlParts.host}',
-        pathname: '${urlParts.pathname}'
+        pathname: '${urlParts.pathname}',
+        search: '${urlParts.search}'
       };
 
       // Set up browser API mocks
@@ -603,7 +605,8 @@ function createGitcassoScript(
           );
           window.gitcassoMockLocation = {
             host: '${urlParts.host}',
-            pathname: '${urlParts.pathname}'
+            pathname: '${urlParts.pathname}',
+            search: '${urlParts.search}'
           };
 
           // Execute the patched script with browser API mocks prepended

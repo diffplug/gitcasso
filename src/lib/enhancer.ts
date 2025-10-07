@@ -26,6 +26,7 @@ export interface CommentEvent {
 export interface StrippedLocation {
   host: string
   pathname: string
+  search: string
 }
 
 /** Wraps the textareas of a given platform with Gitcasso's enhancements. */

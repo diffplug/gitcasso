@@ -66,6 +66,7 @@ export function detectedSpots() {
   const location: StrippedLocation = {
     host: window.location.host,
     pathname: window.location.pathname,
+    search: window.location.search,
   }
   const detectionResults = []
   for (const textarea of textareas) {
@@ -86,6 +87,7 @@ export function tableUI() {
   const location: StrippedLocation = {
     host: window.location.host,
     pathname: window.location.pathname,
+    search: window.location.search,
   }
   const uiResults = []
   for (const textarea of textareas) {
