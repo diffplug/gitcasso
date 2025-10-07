@@ -47,7 +47,7 @@ export class GitHubIssueAppendEnhancer
 
     // Check for project URLs with issue parameter first
     const isProjectView = location.pathname.match(
-      /^\/(?:orgs|users)\/[^/]+\/projects\/\d+\/views\/\d+/
+      /^\/(?:orgs|users)\/[^/]+\/projects\/\d+(?:\/views\/\d+)?/
     )
     if (isProjectView) {
       const params = new URLSearchParams(location.search)
