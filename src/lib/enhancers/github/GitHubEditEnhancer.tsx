@@ -9,8 +9,8 @@ import { logger } from "@/lib/logger"
 import { fixupOvertype, modifyDOM } from "../overtype-misc"
 import {
   commonGitHubOptions,
-  isProjectUrl,
   isInProjectCommentBox,
+  isProjectUrl,
   parseProjectIssueParam,
   prepareGitHubHighlighter,
 } from "./github-common"

@@ -10,7 +10,6 @@ import { logger } from "../../logger"
 import { fixupOvertype, modifyDOM } from "../overtype-misc"
 import {
   commonGitHubOptions,
-  extractDialogSlug,
   isProjectUrl,
   prepareGitHubHighlighter,
 } from "./github-common"
@@ -25,7 +24,8 @@ export interface GitHubIssueCreateSpot extends CommentSpot {
 }
 
 export class GitHubIssueCreateEnhancer
-  implements CommentEnhancer<GitHubIssueCreateSpot> {
+  implements CommentEnhancer<GitHubIssueCreateSpot>
+{
   forSpotTypes(): string[] {
     return [GH_ISSUE_CREATE]
   }
@@ -46,8 +46,10 @@ export class GitHubIssueCreateEnhancer
       // Check if we're in a "Create new issue" dialog
       const dialog = textarea.closest('[role="dialog"]')
       if (dialog) {
-        const slug = extractDialogSlug(dialog)
-        if (slug) {
+        const dialogHeading = dialog.querySelector("h1")?.textContent
+        const slugMatch = dialogHeading?.match(/Create new issue in (.+)/)
+        if (slugMatch) {
+          const slug = slugMatch[1]!
           const unique_key = `github.com:${slug}:new`
           const titleInput = document.querySelector(
             'input[placeholder="Title"]'

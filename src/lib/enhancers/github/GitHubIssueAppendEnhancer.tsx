@@ -11,9 +11,8 @@ import { logger } from "@/lib/logger"
 import { fixupOvertype, modifyDOM } from "../overtype-misc"
 import {
   commonGitHubOptions,
-  extractProjectIssueTitle,
-  isProjectUrl,
   isInProjectCommentBox,
+  isProjectUrl,
   parseProjectIssueParam,
   prepareGitHubHighlighter,
 } from "./github-common"
@@ -29,7 +28,8 @@ export interface GitHubIssueAppendSpot extends CommentSpot {
 }
 
 export class GitHubIssueAppendEnhancer
-  implements CommentEnhancer<GitHubIssueAppendSpot> {
+  implements CommentEnhancer<GitHubIssueAppendSpot>
+{
   forSpotTypes(): string[] {
     return [GH_ISSUE_APPEND]
   }
@@ -60,7 +60,10 @@ export class GitHubIssueAppendEnhancer
         if (issueInfo) {
           const unique_key = `github.com:${issueInfo.slug}:${issueInfo.number}`
           // For project views, the title is in the side panel dialog
-          const title = extractProjectIssueTitle()
+          const title =
+            document
+              .querySelector('[data-testid="issue-title"]')
+              ?.textContent?.trim() || ""
           return {
             domain: location.host,
             number: issueInfo.number,

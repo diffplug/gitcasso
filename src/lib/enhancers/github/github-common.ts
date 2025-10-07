@@ -107,26 +107,3 @@ export function parseProjectIssueParam(
 export function isInProjectCommentBox(element: HTMLElement): boolean {
   return !!element.closest('[class*="Shared-module__CommentBox"]')
 }
-
-/**
- * Extract the issue title from a project view.
- * Used when viewing issues within a project board.
- */
-export function extractProjectIssueTitle(): string {
-  return (
-    document
-      .querySelector('[data-testid="issue-title"]')
-      ?.textContent?.trim() || ""
-  )
-}
-
-/**
- * Extract the repository slug from a "Create new issue" dialog heading.
- * Heading format: "Create new issue in owner/repo"
- * Returns: "owner/repo" or null if not found
- */
-export function extractDialogSlug(dialog: Element): string | null {
-  const dialogHeading = dialog.querySelector("h1")?.textContent
-  const slugMatch = dialogHeading?.match(/Create new issue in (.+)/)
-  return slugMatch ? slugMatch[1]! : null
-}
