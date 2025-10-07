@@ -5,7 +5,7 @@
  * It provides two viewing modes: 'clean' (original page) and 'gitcasso' (with extension injected).
  *
  * Key components:
- * - Loads HAR files from ./corpus/har/ and HTML files from ./corpus/html/ based on CORPUS index in `./_corpus-index.ts`
+ * - Loads HAR and HTML files from `./corpus/` based on CORPUS index in `./corpus/_corpus-index.ts`
  * - For HAR: Patches URLs in HTML to serve assets locally from HAR data
  * - For HTML: Serves SingleFile-captured HTML directly (assets already inlined)
  * - Handles asset serving by matching HAR entries to requested paths (HAR corpus only)
@@ -562,7 +562,7 @@ function createGitcassoScript(
 ): string {
   const contentScriptSetup = contentScriptCode
     ? // Direct embedding (for HTML corpus)
-      `
+    `
       // Set up mocked location
       window.gitcassoMockLocation = {
         host: '${urlParts.host}',
@@ -589,7 +589,7 @@ function createGitcassoScript(
       }
       `
     : // Fetch-based loading (for HAR corpus)
-      `
+    `
       // Fetch and patch the content script to remove webextension-polyfill issues
       fetch('/chrome-mv3-dev/content-scripts/content.js')
         .then(response => response.text())
