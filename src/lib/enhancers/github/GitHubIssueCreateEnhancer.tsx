@@ -8,7 +8,12 @@ import type {
 } from "../../enhancer"
 import { logger } from "../../logger"
 import { fixupOvertype, modifyDOM } from "../overtype-misc"
-import { commonGitHubOptions, prepareGitHubHighlighter } from "./github-common"
+import {
+  commonGitHubOptions,
+  extractDialogSlug,
+  isGitHubProjectUrl,
+  prepareGitHubHighlighter,
+} from "./github-common"
 
 const GH_ISSUE_CREATE = "GH_ISSUE_CREATE" as const
 
@@ -38,17 +43,12 @@ export class GitHubIssueCreateEnhancer
     }
 
     // Check for project board URLs first
-    const isProjectView = location.pathname.match(
-      /^\/(?:orgs|users)\/[^/]+\/projects\/\d+(?:\/views\/\d+)?/
-    )
-    if (isProjectView) {
+    if (isGitHubProjectUrl(location.pathname)) {
       // Check if we're in a "Create new issue" dialog
       const dialog = textarea.closest('[role="dialog"]')
       if (dialog) {
-        const dialogHeading = dialog.querySelector("h1")?.textContent
-        const slugMatch = dialogHeading?.match(/Create new issue in (.+)/)
-        if (slugMatch) {
-          const slug = slugMatch[1]!
+        const slug = extractDialogSlug(dialog)
+        if (slug) {
           const unique_key = `github.com:${slug}:new`
           const titleInput = document.querySelector(
             'input[placeholder="Title"]'
