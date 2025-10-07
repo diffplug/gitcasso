@@ -5,6 +5,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Version must be kept in-sync between [`package.json`](package.json) and [`wxt.config.js`](wxt.config.ts).
 
 ## [Unreleased]
+### Fixed
+- Appending to GitHub issues was not being enhanced, now fixed. ([#105](https://github.com/diffplug/gitcasso/issues/105))
+
 ## [1.0.0] - 2025-10-02
 - Fix html escaping inside single-tick and double-tick code blocks.
 - Add syntax highlighting for github-style #number.

@@ -3,7 +3,7 @@
 exports[`github detection > gh_issue:should detect correct spots 1`] = `
 [
   {
-    "for": "id=:rn: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+    "for": "id=:r2q: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
     "spot": {
       "domain": "github.com",
       "number": 523,
@@ -32,7 +32,7 @@ exports[`github detection > gh_issue_edit:should detect correct spots 1`] = `
       "domain": "github.com",
       "number": 56,
       "slug": "diffplug/gitcasso",
-      "title": "what about the draft?",
+      "title": "Description",
       "type": "GH_ISSUE_APPEND",
       "unique_key": "github.com:diffplug/gitcasso:56",
     },
@@ -64,7 +64,7 @@ exports[`github detection > gh_issue_edit_multiple:should detect correct spots 1
       "domain": "github.com",
       "number": 3,
       "slug": "diffplug/testing-deletable",
-      "title": "Test 3",
+      "title": "Description",
       "type": "GH_ISSUE_APPEND",
       "unique_key": "github.com:diffplug/testing-deletable:3",
     },
