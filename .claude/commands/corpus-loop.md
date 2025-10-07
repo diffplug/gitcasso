@@ -33,7 +33,7 @@ description: uses Playwright MCP and the `corpus` to parse page elements
 - this output means that this page is simulating the url `https://github.com/diffplug/selfie/issues/523`
 - every textarea on the page is represented
 - `NO_SPOT` means that the spot was not enhanced
-- `type: GH_ISSUE_ADD_COMMENT` means that it was enhanced by whichever implementation of `CommentEnhancer` returns the spot type `GH_ISSUE_ADD_COMMENT`
+- `type: GH_ISSUE_APPEND` means that it was enhanced by whichever implementation of `CommentEnhancer` returns the spot type `GH_ISSUE_APPEND`
 - if you search for that string in `src/lib/enhancers` you will find the correct one
 - the `tryToEnhance` method returned a `CommentSpot`, and that whole data is splatted out above
 
