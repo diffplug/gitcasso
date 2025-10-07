@@ -348,3 +348,30 @@ exports[`github ui > gh_project_issue_edit:should render correct UI elements 1`]
   },
 ]
 `;
+
+exports[`github ui > gh_project_issue_new:should render correct UI elements 1`] = `
+[
+  {
+    "for": "id=:r4t: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+    "title": "Draft project title",
+    "upperDecoration": <React.Fragment>
+      <span
+        className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
+      >
+        <IssueOpenedIcon
+          size={16}
+        />
+      </span>
+      <span>
+        &lt;draft&gt;
+         
+        <LinkOutOfPopup
+          href="https://github.com/diffplug/gitcasso"
+        >
+          diffplug/gitcasso
+        </LinkOutOfPopup>
+      </span>
+    </React.Fragment>,
+  },
+]
+`;

@@ -273,3 +273,18 @@ exports[`github detection > gh_project_issue_edit:should detect correct spots 1`
   },
 ]
 `;
+
+exports[`github detection > gh_project_issue_new:should detect correct spots 1`] = `
+[
+  {
+    "for": "id=:r4t: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
+    "spot": {
+      "domain": "github.com",
+      "slug": "diffplug/gitcasso",
+      "title": "Draft project title",
+      "type": "GH_ISSUE_CREATE",
+      "unique_key": "github.com:diffplug/gitcasso:new",
+    },
+  },
+]
+`;

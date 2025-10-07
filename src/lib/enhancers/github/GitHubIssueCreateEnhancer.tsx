@@ -37,6 +37,35 @@ export class GitHubIssueCreateEnhancer
       return null
     }
 
+    // Check for project board URLs first
+    const isProjectView = location.pathname.match(
+      /^\/(?:orgs|users)\/[^/]+\/projects\/\d+(?:\/views\/\d+)?/
+    )
+    if (isProjectView) {
+      // Check if we're in a "Create new issue" dialog
+      const dialog = textarea.closest('[role="dialog"]')
+      if (dialog) {
+        const dialogHeading = dialog.querySelector("h1")?.textContent
+        const slugMatch = dialogHeading?.match(/Create new issue in (.+)/)
+        if (slugMatch) {
+          const slug = slugMatch[1]!
+          const unique_key = `github.com:${slug}:new`
+          const titleInput = document.querySelector(
+            'input[placeholder="Title"]'
+          ) as HTMLInputElement
+          const title = titleInput?.value || ""
+          return {
+            domain: location.host,
+            slug,
+            title,
+            type: GH_ISSUE_CREATE,
+            unique_key,
+          }
+        }
+      }
+      return null
+    }
+
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
     logger.debug(`${this.constructor.name} examing url`, location.pathname)
 
