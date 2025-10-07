@@ -36,7 +36,11 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
     if (isProjectDraftEdit) {
       const params = new URLSearchParams(location.search)
       const itemId = params.get("itemId")
-      if (itemId && textarea.closest("[role='dialog']")) {
+      // Exclude textareas within Shared-module__CommentBox (those are for adding new comments, not editing)
+      const isInCommentBox = textarea.closest(
+        '[class*="Shared-module__CommentBox"]'
+      )
+      if (itemId && textarea.closest("[role='dialog']") && !isInCommentBox) {
         const unique_key = `github.com:project-draft:${itemId}:edit-body`
         logger.debug(
           `${this.constructor.name} enhanced project draft body textarea`,

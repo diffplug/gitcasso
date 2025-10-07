@@ -45,6 +45,43 @@ export class GitHubIssueAppendEnhancer
       return null
     }
 
+    // Check for project URLs with issue parameter first
+    const isProjectView = location.pathname.match(
+      /^\/(?:orgs|users)\/[^/]+\/projects\/\d+\/views\/\d+/
+    )
+    if (isProjectView) {
+      const params = new URLSearchParams(location.search)
+      const issueParam = params.get("issue")
+      // Only match textareas within Shared-module__CommentBox (those are for adding new comments)
+      const isInCommentBox = textarea.closest(
+        '[class*="Shared-module__CommentBox"]'
+      )
+      if (issueParam && isInCommentBox) {
+        // Parse issue parameter: "owner|repo|number" (URL encoded as owner%7Crepo%7Cnumber)
+        const parts = issueParam.split("|")
+        if (parts.length === 3) {
+          const [owner, repo, numberStr] = parts
+          const slug = `${owner}/${repo}`
+          const number = parseInt(numberStr!, 10)
+          const unique_key = `github.com:${slug}:${number}`
+          // For project views, the title is in the side panel dialog
+          const title =
+            document
+              .querySelector('[data-testid="issue-title"]')
+              ?.textContent?.trim() || ""
+          return {
+            domain: location.host,
+            number,
+            slug,
+            title,
+            type: GH_ISSUE_APPEND,
+            unique_key,
+          }
+        }
+      }
+      return null
+    }
+
     // Parse GitHub URL structure: /owner/repo/issues/123 or /owner/repo/pull/456
     logger.debug(`${this.constructor.name} examing url`, location.pathname)
 

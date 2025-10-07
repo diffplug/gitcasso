@@ -239,9 +239,12 @@ exports[`github detection > gh_project_issue:should detect correct spots 1`] = `
   {
     "for": "id=:rbs: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
     "spot": {
-      "isIssue": true,
-      "type": "GH_EDIT",
-      "unique_key": "github.com:project-draft:129503239:edit-body",
+      "domain": "github.com",
+      "number": 57,
+      "slug": "diffplug/gitcasso",
+      "title": "what about drafts?",
+      "type": "GH_ISSUE_APPEND",
+      "unique_key": "github.com:diffplug/gitcasso:57",
     },
   },
 ]
@@ -260,9 +263,12 @@ exports[`github detection > gh_project_issue_edit:should detect correct spots 1`
   {
     "for": "id=:rbs: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
     "spot": {
-      "isIssue": true,
-      "type": "GH_EDIT",
-      "unique_key": "github.com:project-draft:129503239:edit-body",
+      "domain": "github.com",
+      "number": 57,
+      "slug": "diffplug/gitcasso",
+      "title": "what about drafts?",
+      "type": "GH_ISSUE_APPEND",
+      "unique_key": "github.com:diffplug/gitcasso:57",
     },
   },
 ]
