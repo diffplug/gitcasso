@@ -69,7 +69,7 @@ function githubHighlighter(code: string, language?: string) {
  * Matches: /orgs/{org}/projects/{id} or /users/{user}/projects/{id}
  * Optional: /views/{viewId} suffix
  */
-export function isGitHubProjectUrl(pathname: string): boolean {
+export function isProjectUrl(pathname: string): boolean {
   return /^\/(?:orgs|users)\/[^/]+\/projects\/\d+(?:\/views\/\d+)?/.test(
     pathname
   )

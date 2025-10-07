@@ -9,7 +9,7 @@ import { logger } from "@/lib/logger"
 import { fixupOvertype, modifyDOM } from "../overtype-misc"
 import {
   commonGitHubOptions,
-  isGitHubProjectUrl,
+  isProjectUrl,
   isInProjectCommentBox,
   parseProjectIssueParam,
   prepareGitHubHighlighter,
@@ -36,7 +36,7 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
     }
 
     // Check for project draft edit first
-    if (isGitHubProjectUrl(location.pathname)) {
+    if (isProjectUrl(location.pathname)) {
       const params = new URLSearchParams(location.search)
       const itemId = params.get("itemId")
 

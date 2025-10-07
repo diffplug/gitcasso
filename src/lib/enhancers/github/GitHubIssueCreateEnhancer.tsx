@@ -11,7 +11,7 @@ import { fixupOvertype, modifyDOM } from "../overtype-misc"
 import {
   commonGitHubOptions,
   extractDialogSlug,
-  isGitHubProjectUrl,
+  isProjectUrl,
   prepareGitHubHighlighter,
 } from "./github-common"
 
@@ -25,8 +25,7 @@ export interface GitHubIssueCreateSpot extends CommentSpot {
 }
 
 export class GitHubIssueCreateEnhancer
-  implements CommentEnhancer<GitHubIssueCreateSpot>
-{
+  implements CommentEnhancer<GitHubIssueCreateSpot> {
   forSpotTypes(): string[] {
     return [GH_ISSUE_CREATE]
   }
@@ -43,7 +42,7 @@ export class GitHubIssueCreateEnhancer
     }
 
     // Check for project board URLs first
-    if (isGitHubProjectUrl(location.pathname)) {
+    if (isProjectUrl(location.pathname)) {
       // Check if we're in a "Create new issue" dialog
       const dialog = textarea.closest('[role="dialog"]')
       if (dialog) {

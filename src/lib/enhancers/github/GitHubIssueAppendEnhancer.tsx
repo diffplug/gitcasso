@@ -12,7 +12,7 @@ import { fixupOvertype, modifyDOM } from "../overtype-misc"
 import {
   commonGitHubOptions,
   extractProjectIssueTitle,
-  isGitHubProjectUrl,
+  isProjectUrl,
   isInProjectCommentBox,
   parseProjectIssueParam,
   prepareGitHubHighlighter,
@@ -29,8 +29,7 @@ export interface GitHubIssueAppendSpot extends CommentSpot {
 }
 
 export class GitHubIssueAppendEnhancer
-  implements CommentEnhancer<GitHubIssueAppendSpot>
-{
+  implements CommentEnhancer<GitHubIssueAppendSpot> {
   forSpotTypes(): string[] {
     return [GH_ISSUE_APPEND]
   }
@@ -53,7 +52,7 @@ export class GitHubIssueAppendEnhancer
     }
 
     // Check for project URLs with issue parameter first
-    if (isGitHubProjectUrl(location.pathname)) {
+    if (isProjectUrl(location.pathname)) {
       const params = new URLSearchParams(location.search)
       // Only match textareas within Shared-module__CommentBox (those are for adding new comments)
       if (isInProjectCommentBox(textarea)) {
