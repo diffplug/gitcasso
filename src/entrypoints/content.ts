@@ -55,7 +55,7 @@ export default defineContentScript({
       "handlers"
     )
   },
-  matches: ["<all_urls>"],
+  matches: ["https://*/*", "http://*/*"],
   runAt: "document_end",
 })
 

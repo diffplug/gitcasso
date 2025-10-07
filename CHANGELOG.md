@@ -7,6 +7,7 @@ Version must be kept in-sync between [`package.json`](package.json) and [`wxt.co
 ## [Unreleased]
 ### Fixed
 - Appending to GitHub issues was not being enhanced, now fixed. ([#105](https://github.com/diffplug/gitcasso/issues/105))
+- Reduced unnecessary permissions (no need for `host_permissions`)
 
 ## [1.0.0] - 2025-10-02
 - Fix html escaping inside single-tick and double-tick code blocks.
