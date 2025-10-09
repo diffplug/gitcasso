@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Version must be kept in-sync between [`package.json`](package.json) and [`wxt.config.js`](wxt.config.ts).
 
 ## [Unreleased]
+### Fixed
+- We don't show edited comments in the popup table anymore. ([#110](https://github.com/diffplug/gitcasso/pull/110))
 
 ## [1.1.0] - 2025-10-07
 ### Added

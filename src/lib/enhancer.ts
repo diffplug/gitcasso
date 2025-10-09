@@ -50,3 +50,40 @@ export interface CommentEnhancer<Spot extends CommentSpot = CommentSpot> {
   /** The default title of a row */
   tableTitle(spot: Spot): string
 }
+
+/**
+ * Special sentinel value for unique_key indicating that draft history
+ * should not be stored for this spot. Spots with this unique_key will:
+ * - Still be enhanced with OverType
+ * - NOT be stored in the background service's openSpots map
+ * - NOT appear in the popup table
+ */
+export const DRAFT_STORAGE_UNSUPPORTED = "DRAFT_STORAGE_UNSUPPORTED" as const
+
+/**
+ * Abstract base class for enhancers that return spots with DRAFT_STORAGE_UNSUPPORTED.
+ * Table methods throw exceptions since such spots won't appear in the table.
+ */
+export abstract class CommentEnhancerNoDraftHistory<
+  Spot extends CommentSpot = CommentSpot,
+> implements CommentEnhancer<Spot>
+{
+  abstract forSpotTypes(): string[]
+  abstract tryToEnhance(
+    textarea: HTMLTextAreaElement,
+    location: StrippedLocation
+  ): Spot | null
+  abstract enhance(textarea: HTMLTextAreaElement, spot: Spot): OverTypeInstance
+
+  tableUpperDecoration(_spot: Spot): never {
+    throw new Error(
+      "tableUpperDecoration should not be called for DRAFT_STORAGE_UNSUPPORTED spots"
+    )
+  }
+
+  tableTitle(_spot: Spot): never {
+    throw new Error(
+      "tableTitle should not be called for DRAFT_STORAGE_UNSUPPORTED spots"
+    )
+  }
+}
