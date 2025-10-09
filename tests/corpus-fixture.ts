@@ -30,7 +30,10 @@ vi.mock("overtype", () => {
 })
 
 import { describe as baseDescribe, test as baseTest, expect } from "vitest"
-import type { StrippedLocation } from "@/lib/enhancer"
+import {
+  DRAFT_STORAGE_UNSUPPORTED,
+  type StrippedLocation,
+} from "@/lib/enhancer"
 import { EnhancerRegistry } from "../src/lib/registries"
 import type { CORPUS } from "./corpus/_corpus-index"
 import { cleanupDOM, setupDOM } from "./corpus-utils"
@@ -94,6 +97,10 @@ export function tableUI() {
     const enhanced = enhancers.tryToEnhance(textarea, location)
     const forValue = `id=${textarea.id} name=${textarea.name} className=${textarea.className}`
     if (enhanced) {
+      // Skip spots that don't support table display (DRAFT_STORAGE_UNSUPPORTED)
+      if (enhanced.spot.unique_key === DRAFT_STORAGE_UNSUPPORTED) {
+        continue
+      }
       uiResults.push({
         for: forValue,
         title: enhanced.enhancer.tableTitle(enhanced.spot),

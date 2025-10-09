@@ -23,7 +23,7 @@ exports[`github detection > gh_issue_edit:should detect correct spots 1`] = `
     "spot": {
       "isIssue": true,
       "type": "GH_EDIT",
-      "unique_key": "github.com:diffplug/gitcasso:56:edit-body",
+      "unique_key": "DRAFT_STORAGE_UNSUPPORTED",
     },
   },
   {
@@ -47,7 +47,7 @@ exports[`github detection > gh_issue_edit_multiple:should detect correct spots 1
     "spot": {
       "isIssue": true,
       "type": "GH_EDIT",
-      "unique_key": "github.com:diffplug/testing-deletable:3:edit-body",
+      "unique_key": "DRAFT_STORAGE_UNSUPPORTED",
     },
   },
   {
@@ -55,7 +55,7 @@ exports[`github detection > gh_issue_edit_multiple:should detect correct spots 1
     "spot": {
       "isIssue": true,
       "type": "GH_EDIT",
-      "unique_key": "github.com:diffplug/testing-deletable:3:edit-body",
+      "unique_key": "DRAFT_STORAGE_UNSUPPORTED",
     },
   },
   {
@@ -140,7 +140,7 @@ exports[`github detection > gh_pr_edit:should detect correct spots 1`] = `
     "spot": {
       "isIssue": false,
       "type": "GH_EDIT",
-      "unique_key": "github.com:diffplug/gitcasso:58:edit-body",
+      "unique_key": "DRAFT_STORAGE_UNSUPPORTED",
     },
   },
   {
@@ -166,7 +166,7 @@ exports[`github detection > gh_pr_edit_multiple:should detect correct spots 1`] 
     "spot": {
       "isIssue": false,
       "type": "GH_EDIT",
-      "unique_key": "github.com:diffplug/testing-deletable:5:edit-body",
+      "unique_key": "DRAFT_STORAGE_UNSUPPORTED",
     },
   },
   {
@@ -178,7 +178,7 @@ exports[`github detection > gh_pr_edit_multiple:should detect correct spots 1`] 
     "spot": {
       "isIssue": false,
       "type": "GH_EDIT",
-      "unique_key": "github.com:diffplug/testing-deletable:5:edit-body",
+      "unique_key": "DRAFT_STORAGE_UNSUPPORTED",
     },
   },
   {
@@ -228,7 +228,7 @@ exports[`github detection > gh_project_draft_edit:should detect correct spots 1`
     "spot": {
       "isIssue": true,
       "type": "GH_EDIT",
-      "unique_key": "github.com:project-draft:129503329:edit-body",
+      "unique_key": "DRAFT_STORAGE_UNSUPPORTED",
     },
   },
 ]
@@ -257,7 +257,7 @@ exports[`github detection > gh_project_issue_edit:should detect correct spots 1`
     "spot": {
       "isIssue": true,
       "type": "GH_EDIT",
-      "unique_key": "github.com:project-draft:129503239:edit-body",
+      "unique_key": "DRAFT_STORAGE_UNSUPPORTED",
     },
   },
   {

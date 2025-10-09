@@ -1,7 +1,8 @@
-import type {
-  CommentEvent,
-  CommentEventType,
-  CommentSpot,
+import {
+  type CommentEvent,
+  type CommentEventType,
+  type CommentSpot,
+  DRAFT_STORAGE_UNSUPPORTED,
 } from "@/lib/enhancer"
 import { type DraftStats, statsFor } from "@/lib/enhancers/draft-stats"
 import { logger } from "@/lib/logger"
@@ -48,6 +49,11 @@ export function handleCommentEvent(
 
   // Only process events with valid tab information
   if (!sender.tab?.id || !sender.tab?.windowId) {
+    return CLOSE_MESSAGE_PORT
+  }
+
+  // Skip storage for spots that don't support draft history
+  if (message.spot.unique_key === DRAFT_STORAGE_UNSUPPORTED) {
     return CLOSE_MESSAGE_PORT
   }
 
