@@ -1,11 +1,10 @@
 import OverType, { type OverTypeInstance } from "overtype"
-import type React from "react"
-import type {
-  CommentEnhancer,
-  CommentSpot,
-  StrippedLocation,
+import {
+  CommentEnhancerNoDraftHistory,
+  type CommentSpot,
+  DRAFT_STORAGE_UNSUPPORTED,
+  type StrippedLocation,
 } from "@/lib/enhancer"
-import { logger } from "@/lib/logger"
 import { fixupOvertype, modifyDOM } from "../overtype-misc"
 import {
   commonGitHubOptions,
@@ -22,7 +21,7 @@ export interface GitHubEditSpot extends CommentSpot {
   type: typeof GH_EDIT
 }
 
-export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
+export class GitHubEditEnhancer extends CommentEnhancerNoDraftHistory<GitHubEditSpot> {
   forSpotTypes(): string[] {
     return [GH_EDIT]
   }
@@ -44,15 +43,10 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
       if (itemId) {
         // Exclude textareas within Shared-module__CommentBox (those are for adding new comments, not editing)
         if (!isInProjectCommentBox(textarea)) {
-          const unique_key = `github.com:project-draft:${itemId}:edit-body`
-          logger.debug(
-            `${this.constructor.name} enhanced project draft body textarea`,
-            unique_key
-          )
           return {
             isIssue: true,
             type: GH_EDIT,
-            unique_key,
+            unique_key: DRAFT_STORAGE_UNSUPPORTED,
           }
         }
       }
@@ -63,15 +57,10 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
         // Edit mode: empty placeholder
         // Add new comment mode: has placeholder "Add your comment here..." or similar
         if (!textarea.placeholder || textarea.placeholder.trim() === "") {
-          const unique_key = `github.com:${issueInfo.slug}:${issueInfo.number}:edit-comment`
-          logger.debug(
-            `${this.constructor.name} enhanced project issue comment edit textarea`,
-            unique_key
-          )
           return {
             isIssue: true,
             type: GH_EDIT,
-            unique_key,
+            unique_key: DRAFT_STORAGE_UNSUPPORTED,
           }
         }
       }
@@ -86,9 +75,6 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
     if (!match) {
       return null
     }
-    const [, owner, repo, numberStr] = match
-    const number = parseInt(numberStr!, 10)
-    const unique_key = `github.com:${owner}/${repo}:${number}:edit-body`
 
     // Only enhance textareas that are for editing issue/PR body
     const isIssueBodyRootEdit = textarea.closest(".react-issue-body")
@@ -102,15 +88,10 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
     if (!isIssueBodyRootEdit && !isIssueBodyCommentEdit && !isPRBodyEdit) {
       return null
     }
-
-    logger.debug(
-      `${this.constructor.name} enhanced issue/PR body textarea`,
-      unique_key
-    )
     return {
       isIssue: !!(isIssueBodyRootEdit || isIssueBodyCommentEdit),
       type: GH_EDIT,
-      unique_key,
+      unique_key: DRAFT_STORAGE_UNSUPPORTED,
     }
   }
 
@@ -127,13 +108,5 @@ export class GitHubEditEnhancer implements CommentEnhancer<GitHubEditSpot> {
       })
     )
     return overtype
-  }
-
-  tableUpperDecoration(_spot: GitHubEditSpot): React.ReactNode {
-    return <span>N/A</span>
-  }
-
-  tableTitle(_spot: GitHubEditSpot): string {
-    return "N/A"
   }
 }
