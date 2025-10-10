@@ -91,7 +91,7 @@ export class GitHubIssueAppendEnhancer
     const number = parseInt(numberStr!, 10)
     const unique_key = `github.com:${slug}:${number}`
     const title = document
-      .querySelector("main h2")!
+      .querySelector("main h1")!
       .textContent!.replace(/\s*#\d+$/, "")
       .trim()
     return {
