@@ -81,4 +81,49 @@ export const CORPUS: Record<string, CorpusEntry> = {
     type: "html",
     url: "https://github.com/orgs/diffplug/projects/12",
   },
+  reddit_subreddit_home: {
+    description: "r/programming home page",
+    type: "html",
+    url: "https://www.reddit.com/r/programming/",
+  },
+  reddit_create_post_link_rich: {
+    description: "r/programming create link post (rich text)",
+    type: "html",
+    url: "https://www.reddit.com/r/programming/submit/?type=LINK",
+  },
+  reddit_create_post_link_md: {
+    description: "r/programming create link post (markdown)",
+    type: "html",
+    url: "https://www.reddit.com/r/programming/submit/?type=LINK",
+  },
+  reddit_create_post_text_md: {
+    description: "r/nba create text post (markdown)",
+    type: "html",
+    url: "https://www.reddit.com/r/nba/submit/?type=TEXT",
+  },
+  reddit_thread: {
+    description: "r/programming thread",
+    type: "html",
+    url: "https://www.reddit.com/r/programming/comments/1nq6g8p/postgresql_18_released/",
+  },
+  reddit_thread_root_comment_md: {
+    description: "root comment (markdown)",
+    type: "html",
+    url: "https://www.reddit.com/r/programming/comments/1nq6g8p/postgresql_18_released/",
+  },
+  reddit_thread_root_comment_rich: {
+    description: "root comment (rich text)",
+    type: "html",
+    url: "https://www.reddit.com/r/programming/comments/1nq6g8p/postgresql_18_released/",
+  },
+  reddit_thread_comment_reply_md: {
+    description: "root comment (rich text)",
+    type: "html",
+    url: "https://www.reddit.com/r/programming/comments/1nq6g8p/postgresql_18_released/",
+  },
+  reddit_thread_comment_reply_multi_md: {
+    description: "root comment (rich text)",
+    type: "html",
+    url: "https://www.reddit.com/r/programming/comments/1nq6g8p/postgresql_18_released/",
+  },
 } as const
