@@ -32,7 +32,7 @@ exports[`github ui > gh_issue_edit:should render correct UI elements 1`] = `
 [
   {
     "for": "id=:ra7: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
-    "title": "Description",
+    "title": "what about the draft?",
     "upperDecoration": <React.Fragment>
       <span
         className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
@@ -60,7 +60,7 @@ exports[`github ui > gh_issue_edit_multiple:should render correct UI elements 1`
 [
   {
     "for": "id=:r5b: name=null className=prc-Textarea-TextArea-13q4j overtype-input",
-    "title": "Description",
+    "title": "Test 3",
     "upperDecoration": <React.Fragment>
       <span
         className="flex h-4 w-4 flex-shrink-0 items-center justify-center"
