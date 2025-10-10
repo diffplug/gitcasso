@@ -16,6 +16,8 @@
 
 ![screenshot of the draft history popup](.github/screenshot-popup.png)
 
+[![screenshot of the draft history popup](.github/youtube-thumbnail.jpg)](https://www.youtube.com/watch?v=wm7fVg4DWqk)
+
 ## Contributing
 
 If there's something you'd like to add or fix, see [CONTRIBUTING.md](CONTRIBUTING.md).
